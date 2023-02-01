@@ -1,4 +1,4 @@
-package com.bcgg.android
+package com.bcgg.core.designsystem
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
