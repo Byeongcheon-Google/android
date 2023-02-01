@@ -7,7 +7,7 @@ object Versions {
     const val APP_COMPAT = "1.4.1"
     const val MATERIAL = "1.5.0"
     const val CONSTRAINT_LAYOUT = "2.1.3"
-    const val COMPOSE_UI = "1.2.0"
+    const val COMPOSE_UI = "1.3.3"
 
     // KTX
     const val CORE = "1.7.0"
