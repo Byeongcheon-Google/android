@@ -1,4 +1,4 @@
-package com.bcgg.core.networking
+package com.bcgg.core.util
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

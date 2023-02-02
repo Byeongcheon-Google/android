@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.bcgg.core.networking"
+    namespace = "com.bcgg.core.util"
     compileSdk = 33
 
     defaultConfig {
