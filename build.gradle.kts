@@ -1,6 +1,9 @@
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version Versions.KTLINT
     id("io.gitlab.arturbosch.detekt") version Versions.DETEKT
+    id("com.android.library") version "7.4.0" apply false
+    id("org.jetbrains.kotlin.android") version Versions.KOTLIN_VERSION apply false
+    id("com.google.dagger.hilt.android") version Versions.HILT_VERSION apply false
 }
 
 buildscript {
