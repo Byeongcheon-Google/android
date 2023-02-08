@@ -11,6 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Travelplangeneratorandroid"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="${naver_maps_client_id}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

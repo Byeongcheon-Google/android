@@ -1,7 +1,11 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
 }
+
+val naverMapsClientId: String = gradleLocalProperties(rootDir).getProperty("naver_maps_client_id")
 
 android {
     namespace = "com.bcgg.core.ui"
@@ -12,6 +16,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        manifestPlaceholders["naver_maps_client_id"] = naverMapsClientId
     }
 
     buildTypes {
@@ -51,6 +57,7 @@ dependencies {
         Libraries.AndroidX.COMPOSE_UI_PREVIEW,
         Libraries.AndroidX.MATERIAL3,
         Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
+        Libraries.NaverMap.NAVER_MAP_SDK,
         composeBom
     )
 

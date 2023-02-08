@@ -1,7 +1,11 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
 }
+
+val naverMapsClientId: String = gradleLocalProperties(rootDir).getProperty("naver_maps_client_id")
 
 android {
     namespace = "com.bcgg.android"
@@ -19,6 +23,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        manifestPlaceholders["naver_maps_client_id"] = naverMapsClientId
     }
 
     buildTypes {
@@ -53,11 +59,10 @@ android {
 }
 
 dependencies {
+    api(project(":core:ui"))
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.1")
-    implementation("androidx.compose.ui:ui:${Versions.COMPOSE_UI}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_UI}")
     implementation("androidx.compose.material:material:1.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

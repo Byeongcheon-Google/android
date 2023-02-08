@@ -27,6 +27,9 @@ object Versions {
 
     //DI
     const val HILT_VERSION = "2.44"
+
+    //Naver Map
+    const val NAVER_MAP = "3.16.2"
 }
 
 object Libraries {
@@ -63,5 +66,9 @@ object Libraries {
     object Di {
         const val HILT_ANDROID = "com.google.dagger:hilt-android:${Versions.HILT_VERSION}"
         const val HILT_ANDROID_COMPILER = "com.google.dagger:hilt-android-compiler:${Versions.HILT_VERSION}"
+    }
+
+    object NaverMap {
+        const val NAVER_MAP_SDK = "com.naver.maps:map-sdk:${Versions.NAVER_MAP}"
     }
 }

@@ -101,7 +101,7 @@ fun AppTheme(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun AppThemePreview() {
     AppTheme {
