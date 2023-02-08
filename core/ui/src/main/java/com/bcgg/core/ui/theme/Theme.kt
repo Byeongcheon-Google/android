@@ -1,23 +1,21 @@
 package com.bcgg.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.ui.components.LargeButton
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -102,26 +100,45 @@ fun AppTheme(
     )
 }
 
-@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AppThemePreview() {
     AppTheme {
-        Surface {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Button(
+        Scaffold(
+            bottomBar = {
+                LargeButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .heightIn(min = 48.dp),
-                    onClick = { /*TODO*/ }
+                        .padding(bottom = 16.dp),
+                    onClick = { /*TODO*/ },
+                    enabled = false
                 ) {
                     Text(text = "홀리몰리")
                 }
             }
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(it)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 24.dp),
+                    text = "졸작 앱 스타일",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp),
+                    text = "test".repeat(REPEAT)
+                )
+            }
         }
     }
 }
+
+internal const val REPEAT = 100
