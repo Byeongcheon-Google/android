@@ -1,6 +1,6 @@
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    id("kotlin-android")
 }
 
 android {
@@ -23,10 +23,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -36,18 +38,24 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = AppConfig.KOTLIN_COMPILER_EXTENSION_VERSION
     }
 }
 
 dependencies {
+    val composeBom = platform(Libraries.AndroidX.composeBom)
 
     implementation(
         Libraries.Ktx.CORE,
         Libraries.AndroidX.COMPOSE_UI,
         Libraries.AndroidX.COMPOSE_UI_PREVIEW,
         Libraries.AndroidX.MATERIAL3,
-        Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS
+        Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
+        composeBom
+    )
+
+    debugImplementation(
+        Libraries.AndroidX.COMPOSE_UI_TOOLING
     )
 
     testImplementation(

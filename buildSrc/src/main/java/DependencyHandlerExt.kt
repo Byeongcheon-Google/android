@@ -6,25 +6,37 @@ fun DependencyHandler.kapt(vararg dependencies: String) {
     }
 }
 
-fun DependencyHandler.implementation(vararg dependencies: String) {
+fun DependencyHandler.implementation(vararg dependencies: Any) {
     dependencies.forEach { dependency ->
         add("implementation", dependency)
     }
 }
 
-fun DependencyHandler.api(vararg dependencies: String) {
+fun DependencyHandler.debugImplementation(vararg dependencies: Any) {
+    dependencies.forEach { dependency ->
+        add("debugImplementation", dependency)
+    }
+}
+
+fun DependencyHandler.api(vararg dependencies: Any) {
     dependencies.forEach { dependency ->
         add("api", dependency)
     }
 }
 
-fun DependencyHandler.androidTestImplementation(vararg dependencies: String) {
+fun DependencyHandler.debugApi(vararg dependencies: Any) {
+    dependencies.forEach { dependency ->
+        add("debugApi", dependency)
+    }
+}
+
+fun DependencyHandler.androidTestImplementation(vararg dependencies: Any) {
     dependencies.forEach { dependency ->
         add("androidTestImplementation", dependency)
     }
 }
 
-fun DependencyHandler.testImplementation(vararg dependencies: String) {
+fun DependencyHandler.testImplementation(vararg dependencies: Any) {
     dependencies.forEach { dependency ->
         add("testImplementation", dependency)
     }

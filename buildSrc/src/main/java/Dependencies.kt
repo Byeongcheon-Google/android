@@ -34,9 +34,12 @@ object Libraries {
         const val APP_COMPAT = "androidx.appcompat:appcompat:${Versions.APP_COMPAT}"
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
         const val COMPOSE_UI = "androidx.compose.ui:ui:${Versions.COMPOSE_UI}"
+        const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling:${Versions.COMPOSE_UI}"
         const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_UI}"
         const val MATERIAL3 = "androidx.compose.material3:material3:${Versions.MATERIAL3}"
         const val MATERIAL3_WINDOW_SIZE_CLASS = "androidx.compose.material3:material3-window-size-class:${Versions.MATERIAL3}"
+
+        val composeBom = "androidx.compose:compose-bom:2022.12.00"
     }
 
     object Ktx {
