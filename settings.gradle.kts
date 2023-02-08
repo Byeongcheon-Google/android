@@ -16,7 +16,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "travel-plan-generator-android"
 include(":app")
-include(":core:design-system")
 include(":core:network")
 include(":core:util")
 include(":core:ui")

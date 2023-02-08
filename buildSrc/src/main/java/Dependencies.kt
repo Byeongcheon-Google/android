@@ -1,11 +1,12 @@
 // Dependencies.kt
 object Versions {
 
-    const val KOTLIN_VERSION = "1.7.21"
+    const val KOTLIN_VERSION = "1.7.20"
 
     // AndroidX
     const val APP_COMPAT = "1.6.0"
     const val MATERIAL = "1.8.0"
+    const val MATERIAL3 = "1.0.1"
     const val COMPOSE_UI = "1.3.3"
 
     // KTX
@@ -32,7 +33,10 @@ object Libraries {
     object AndroidX {
         const val APP_COMPAT = "androidx.appcompat:appcompat:${Versions.APP_COMPAT}"
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
-        const val COMPOSE_UI = "androidx.compose.material:material:${Versions.COMPOSE_UI}"
+        const val COMPOSE_UI = "androidx.compose.ui:ui:${Versions.COMPOSE_UI}"
+        const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_UI}"
+        const val MATERIAL3 = "androidx.compose.material3:material3:${Versions.MATERIAL3}"
+        const val MATERIAL3_WINDOW_SIZE_CLASS = "androidx.compose.material3:material3-window-size-class:${Versions.MATERIAL3}"
     }
 
     object Ktx {
