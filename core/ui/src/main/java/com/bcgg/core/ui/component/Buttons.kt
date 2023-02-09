@@ -1,4 +1,4 @@
-package com.bcgg.core.ui.components
+package com.bcgg.core.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

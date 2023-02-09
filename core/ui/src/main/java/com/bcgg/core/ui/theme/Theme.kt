@@ -1,5 +1,6 @@
 package com.bcgg.core.ui.theme
 
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.ui.components.LargeButton
+import androidx.core.view.WindowCompat
+import com.bcgg.core.ui.component.LargeButton
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -90,6 +95,14 @@ fun AppTheme(
         LightColors
     } else {
         DarkColors
+    }
+
+    val view = LocalView.current
+
+    SideEffect {
+        val window = (view.context as Activity).window
+        window.statusBarColor = colors.surface.toArgb()
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !useDarkTheme
     }
 
     MaterialTheme(

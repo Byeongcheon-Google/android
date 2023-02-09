@@ -57,7 +57,6 @@ dependencies {
         Libraries.AndroidX.COMPOSE_UI_PREVIEW,
         Libraries.AndroidX.MATERIAL3,
         Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
-        Libraries.NaverMap.NAVER_MAP_SDK,
         composeBom
     )
 

@@ -5,6 +5,7 @@ complexity:
     constructorThreshold: 7
     ignoreDefaultParameters: false
     ignoreDataClasses: true
+    ignoreAnnotated: [ 'Composable', 'Test' ]
   ComplexCondition:
     active: true
   CyclomaticComplexMethod:
@@ -12,6 +13,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 40
+    ignoreAnnotated: [ 'Composable', 'Test' ]
   NestedBlockDepth:
     active: true
     threshold: 4
@@ -25,6 +27,7 @@ complexity:
     ignoreDeprecated: true
     ignorePrivate: true
     ignoreOverridden: false
+    ignoreAnnotated: [ 'Composable', 'Test' ]
   LargeClass:
     active: true
     threshold: 500

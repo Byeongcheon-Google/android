@@ -59,15 +59,32 @@ android {
 }
 
 dependencies {
-    api(project(":core:ui"))
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+
+    val composeBom = platform(Libraries.AndroidX.composeBom)
+
+    implementation(
+        project(":core:ui"),
+        Libraries.Ktx.CORE,
+        Libraries.AndroidX.COMPOSE_UI,
+        Libraries.AndroidX.COMPOSE_UI_PREVIEW,
+        Libraries.AndroidX.MATERIAL3,
+        Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
+        Libraries.NaverMap.NAVER_MAP_COMPOSE,
+        composeBom
+    )
+
+    debugImplementation(
+        Libraries.AndroidX.COMPOSE_UI_TOOLING
+    )
+
+    testImplementation(
+        Libraries.Test.JUNIT
+    )
+
+    androidTestImplementation(
+        Libraries.AndroidTest.JUNIT,
+        Libraries.AndroidTest.ESPRESSO_CORE
+    )
+
     implementation("androidx.activity:activity-compose:1.3.1")
-    implementation("androidx.compose.material:material:1.2.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.COMPOSE_UI}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${Versions.COMPOSE_UI}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.COMPOSE_UI}")
 }

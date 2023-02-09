@@ -8,6 +8,7 @@ object Versions {
     const val MATERIAL = "1.8.0"
     const val MATERIAL3 = "1.0.1"
     const val COMPOSE_UI = "1.3.3"
+    const val COMPOSE_BOM = "2023.01.00"
 
     // KTX
     const val CORE = "1.9.0"
@@ -29,20 +30,20 @@ object Versions {
     const val HILT_VERSION = "2.44"
 
     //Naver Map
-    const val NAVER_MAP = "3.16.2"
+    const val NAVER_MAP_COMPOSE = "1.2.3"
 }
 
 object Libraries {
     object AndroidX {
         const val APP_COMPAT = "androidx.appcompat:appcompat:${Versions.APP_COMPAT}"
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
-        const val COMPOSE_UI = "androidx.compose.ui:ui:${Versions.COMPOSE_UI}"
-        const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling:${Versions.COMPOSE_UI}"
-        const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_UI}"
+        const val COMPOSE_UI = "androidx.compose.ui:ui"
+        const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling"
+        const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview"
         const val MATERIAL3 = "androidx.compose.material3:material3:${Versions.MATERIAL3}"
         const val MATERIAL3_WINDOW_SIZE_CLASS = "androidx.compose.material3:material3-window-size-class:${Versions.MATERIAL3}"
 
-        val composeBom = "androidx.compose:compose-bom:2022.12.00"
+        val composeBom = "androidx.compose:compose-bom:${Versions.COMPOSE_BOM}"
     }
 
     object Ktx {
@@ -69,6 +70,6 @@ object Libraries {
     }
 
     object NaverMap {
-        const val NAVER_MAP_SDK = "com.naver.maps:map-sdk:${Versions.NAVER_MAP}"
+        const val NAVER_MAP_COMPOSE = "io.github.fornewid:naver-map-compose:${Versions.NAVER_MAP_COMPOSE}"
     }
 }
