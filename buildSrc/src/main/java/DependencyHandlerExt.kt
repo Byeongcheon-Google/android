@@ -41,3 +41,9 @@ fun DependencyHandler.testImplementation(vararg dependencies: Any) {
         add("testImplementation", dependency)
     }
 }
+
+fun DependencyHandler.kapt(vararg dependencies: Any) {
+    dependencies.forEach { dependency ->
+        add("testImplementation", dependency)
+    }
+}

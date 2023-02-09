@@ -2,15 +2,18 @@
 object Versions {
 
     const val KOTLIN_VERSION = "1.7.20"
+    const val AGP_VERSION = "7.4.1"
 
     // AndroidX
     const val APP_COMPAT = "1.6.0"
     const val MATERIAL = "1.8.0"
     const val MATERIAL3 = "1.0.1"
     const val COMPOSE_UI = "1.3.3"
+    const val ACTIVITY_COMPOSE = "1.6.1"
 
     // KTX
     const val CORE = "1.9.0"
+    const val LIFECYCLE_RUNTIME = "2.5.1"
 
     // TEST
     const val JUNIT = "1.1.5"
@@ -29,24 +32,31 @@ object Versions {
     const val HILT_VERSION = "2.44"
 
     //Naver Map
-    const val NAVER_MAP = "3.16.2"
+    const val NAVER_MAP_COMPOSE = "1.2.3"
+
+    //Desugaring
+    const val CORE_LIBRARY_DESUGRAING = "2.0.0"
 }
 
 object Libraries {
     object AndroidX {
         const val APP_COMPAT = "androidx.appcompat:appcompat:${Versions.APP_COMPAT}"
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
-        const val COMPOSE_UI = "androidx.compose.ui:ui:${Versions.COMPOSE_UI}"
-        const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling:${Versions.COMPOSE_UI}"
-        const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE_UI}"
         const val MATERIAL3 = "androidx.compose.material3:material3:${Versions.MATERIAL3}"
         const val MATERIAL3_WINDOW_SIZE_CLASS = "androidx.compose.material3:material3-window-size-class:${Versions.MATERIAL3}"
 
         val composeBom = "androidx.compose:compose-bom:2022.12.00"
+        const val COMPOSE_UI = "androidx.compose.ui:ui"
+        const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling"
+        const val COMPOSE_UI_PREVIEW = "androidx.compose.ui:ui-tooling-preview"
+        const val COMPOSE_TEST_JUNIT4 = "androidx.compose.ui:ui-test-junit4"
+        const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest"
+        const val ACTIVITY_COMPOSE = "androidx.activity:activity-compose:${Versions.ACTIVITY_COMPOSE}"
     }
 
     object Ktx {
         const val CORE = "androidx.core:core-ktx:${Versions.CORE}"
+        const val LIFECYCLE_RUNTIME = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE_RUNTIME}"
     }
 
     object Test {
@@ -69,6 +79,10 @@ object Libraries {
     }
 
     object NaverMap {
-        const val NAVER_MAP_SDK = "com.naver.maps:map-sdk:${Versions.NAVER_MAP}"
+        const val NAVER_MAP_COMPOSE = "io.github.fornewid:naver-map-compose:${Versions.NAVER_MAP_COMPOSE}"
+    }
+
+    object Desugaring {
+        const val CORE_LIBRARY_DESUGRAING = "com.android.tools:desugar_jdk_libs:${Versions.CORE_LIBRARY_DESUGRAING}"
     }
 }
