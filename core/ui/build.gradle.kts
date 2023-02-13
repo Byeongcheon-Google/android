@@ -11,3 +11,7 @@ android {
     configureKotlinAndroid(this)
     configureCompose(this)
 }
+
+dependencies {
+    implementation(project(":core:util"))
+}

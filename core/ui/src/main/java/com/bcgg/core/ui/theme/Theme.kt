@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.ui.components.LargeButton
+import com.bcgg.core.ui.component.LargeButton
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,

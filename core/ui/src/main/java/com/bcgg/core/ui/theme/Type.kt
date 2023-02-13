@@ -71,14 +71,14 @@ internal val PretendardTypography = androidx.compose.material3.Typography(
     ),
     titleLarge = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
+        fontSize = 18.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
         fontFamily = PretendardFont
     ),
     titleMedium = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
+        fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp,
         fontFamily = PretendardFont
