@@ -50,8 +50,9 @@ style:
   MagicNumber:
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotated: [ 'Composable', 'Test' ]
   UnusedPrivateMember:
-    ignoreAnnotated: [ 'preview' ]
+    ignoreAnnotated: [ 'Preview' ]
 
 naming:
   active: true

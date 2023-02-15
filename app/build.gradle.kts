@@ -15,7 +15,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:ui"))
+    implementation(
+        project(":core:ui"),
+        project(":feature:planeditor")
+    )
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.6.1")
