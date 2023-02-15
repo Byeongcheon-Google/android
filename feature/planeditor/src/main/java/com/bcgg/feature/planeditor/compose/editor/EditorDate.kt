@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -139,7 +140,7 @@ fun EditorDateItem(
     val backgroundColor = when {
         isSelected -> MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp)
         isValid -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-        else -> MaterialTheme.colorScheme.surface
+        else -> Color.Transparent
     }
 
     Column(

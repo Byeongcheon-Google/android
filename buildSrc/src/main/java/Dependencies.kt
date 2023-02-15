@@ -17,6 +17,9 @@ object Versions {
     const val LIFECYCLE_RUNTIME = "2.5.1"
     const val SERIALIZATION = "1.4.1"
 
+    // Google Play
+    const val GMS_LOCATION = "21.0.1"
+
     // TEST
     const val JUNIT = "1.1.5"
 
@@ -102,5 +105,9 @@ object Libraries {
     object Desugaring {
         const val CORE_LIBRARY_DESUGRAING =
             "com.android.tools:desugar_jdk_libs:${Versions.CORE_LIBRARY_DESUGRAING}"
+    }
+
+    object Gms {
+        const val GMS_LOCATION = "com.google.android.gms:play-services-location:${Versions.GMS_LOCATION}"
     }
 }

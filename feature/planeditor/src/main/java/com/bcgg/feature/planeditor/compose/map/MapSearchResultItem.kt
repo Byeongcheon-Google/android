@@ -1,5 +1,6 @@
 package com.bcgg.feature.planeditor.compose.map
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.MapSearchResult
@@ -24,12 +28,22 @@ import com.bcgg.core.ui.theme.AppTheme
 fun MapSearchResultItem(
     mapSearchResult: MapSearchResult,
     isAdded: Boolean,
+    selected: Boolean,
     onAddButtonClick: (MapSearchResult) -> Unit,
     onRemoveButtonClick: (MapSearchResult) -> Unit,
     onItemClick: (MapSearchResult) -> Unit
 ) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
+        } else {
+            Color.Transparent
+        }
+    )
+
     Column(
         modifier = Modifier
+            .background(color = backgroundColor)
             .clickable {
                 onItemClick(mapSearchResult)
             }
@@ -91,13 +105,12 @@ private fun MapSearchResultItemPreview() {
                     MapSearchResultItem(
                         mapSearchResult = MapSearchResult(
                             name = "성심당 DCC점",
-                            address = "대전 유성구 엑스포로 107",
-                            katechMapX = "",
-                            katechMapY = ""
+                            address = "대전 유성구 엑스포로 107"
                         ),
                         isAdded = it.second,
                         onAddButtonClick = {},
-                        onRemoveButtonClick = {}
+                        onRemoveButtonClick = {},
+                        selected = true
                     ) {
                     }
                 }

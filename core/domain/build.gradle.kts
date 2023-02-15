@@ -15,9 +15,13 @@ android {
 
 dependencies {
     implementation(
-        project(":core:data-map"),
         project(":core:network"),
         project(":core:util")
     )
+
     implementation("javax.inject:javax.inject:1")
+
+    api(
+        project(":core:data-map")
+    )
 }

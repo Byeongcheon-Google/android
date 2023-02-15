@@ -290,8 +290,6 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "한기대",
                     address = "충남 천안시 동남구 충절로 1600",
-                    katechMapX = "",
-                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)),
                     type = Destination.Type.Travel
@@ -299,8 +297,6 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "터미널",
                     address = "몰루",
-                    katechMapX = "",
-                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 0)),
                     type = Destination.Type.Travel
@@ -308,8 +304,6 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "천안역",
                     address = "몰루",
-                    katechMapX = "",
-                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
                     type = Destination.Type.Travel

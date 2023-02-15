@@ -30,7 +30,8 @@ fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *>) {
             Libraries.AndroidX.COMPOSE_UI_PREVIEW,
             Libraries.AndroidX.MATERIAL3,
             Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
-            Libraries.AndroidX.LIFECYCLE_VIEWMODEL_COMPOSE
+            Libraries.AndroidX.LIFECYCLE_VIEWMODEL_COMPOSE,
+            Libraries.AndroidX.ACTIVITY_COMPOSE
         )
 
         debugImplementation(

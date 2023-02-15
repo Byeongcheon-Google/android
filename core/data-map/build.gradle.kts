@@ -18,6 +18,7 @@ android {
 dependencies {
     implementation(
         project(":core:util"),
-        project(":core:network")
+        project(":core:network"),
+        "org.osgeo:proj4j:0.1.0"
     )
 }

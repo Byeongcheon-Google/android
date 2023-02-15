@@ -1,6 +1,6 @@
 package com.bcgg.core.domain.module
 
-import com.bcgg.core.datamap.source.NaverMapPlaceDataSource
+import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
 import com.bcgg.core.domain.repository.MapPlaceRepository
 import com.bcgg.core.networking.qualifiers.NoAuth
 import dagger.Module
@@ -16,8 +16,8 @@ object MapPlaceModule {
     @Provides
     @Singleton
     fun provideMapPlaceRepository(
-        naverMapPlaceDataSource: NaverMapPlaceDataSource
+        kakaoMapPlaceDataSource: KakaoMapPlaceDataSource
     ): MapPlaceRepository {
-        return MapPlaceRepository(naverMapPlaceDataSource)
+        return MapPlaceRepository(kakaoMapPlaceDataSource)
     }
 }

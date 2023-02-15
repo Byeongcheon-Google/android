@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.Schedule
+import com.bcgg.core.ui.constant.UiConstant
 import com.bcgg.core.ui.theme.AppTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -66,7 +67,7 @@ fun EditorContainer(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = UiConstant.SEMI_TRANSPARENT_AMOUNT))
             .height(height)
             .scrollable(
                 state = scrollState,
@@ -121,8 +122,6 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "한기대",
                 address = "충남 천안시 동남구 충절로 1600",
-                katechMapX = "",
-                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)),
                 type = Destination.Type.Travel
@@ -130,8 +129,6 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "터미널",
                 address = "몰루",
-                katechMapX = "",
-                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 0)),
                 type = Destination.Type.Travel
@@ -139,8 +136,6 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "천안역",
                 address = "몰루",
-                katechMapX = "",
-                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
                 type = Destination.Type.Travel

@@ -10,12 +10,14 @@ data class UiState(
     val expanded: Expanded? = null,
     val search: String = "",
     val isSearching: Boolean = false,
+    val searchButtonEnabled: Boolean = false,
     val schedule: Schedule = newSchedule(),
     val mapSearchResult: List<MapSearchResult>? = null,
+    val selectedSearchResult: MapSearchResult? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val snackbarState: SnackbarState? = null
 ) {
-    val isShowSearchContainer get() = search.isNotBlank()
+    val isShowSearchContainer get() = search.isNotBlank() && mapSearchResult != null
     val hasNoSearchResult get() = mapSearchResult == null
 
     enum class Expanded {
@@ -29,14 +31,12 @@ data class UiState(
 
 fun Iterable<Destination>.contains(mapSearchResult: MapSearchResult): Boolean {
     return this.any {
-        it.katechMapX == mapSearchResult.katechMapX &&
-            it.katechMapY == mapSearchResult.katechMapY
+        it.lat == mapSearchResult.lat && it.lng == mapSearchResult.lng
     }
 }
 
 fun Iterable<Destination>.find(mapSearchResult: MapSearchResult): Destination? {
     return this.find {
-        it.katechMapX == mapSearchResult.katechMapX &&
-            it.katechMapY == mapSearchResult.katechMapY
+        it.lat == mapSearchResult.lat && it.lng == mapSearchResult.lng
     }
 }

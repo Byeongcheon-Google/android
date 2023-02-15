@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.ui.constant.UiConstant
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.theme.divider
 import com.bcgg.feature.planeditor.compose.screen.contains
@@ -43,7 +46,9 @@ fun MapSearchResultContainer(
     modifier: Modifier = Modifier,
     mapSearchResults: List<MapSearchResult>,
     destinations: List<Destination>,
+    selectedSearchResult: MapSearchResult?,
     expanded: Boolean = true,
+    lazyListState: LazyListState = rememberLazyListState(),
     onAddButtonClick: (MapSearchResult) -> Unit,
     onRemoveButtonClick: (MapSearchResult) -> Unit,
     onItemClick: (MapSearchResult) -> Unit,
@@ -56,7 +61,7 @@ fun MapSearchResultContainer(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = UiConstant.SEMI_TRANSPARENT_AMOUNT))
             .clickable { if (!expanded) onRequestExpandButtonClicked() }
             .heightIn(min = 40.dp, max = (localConfiguration.screenHeightDp * 0.4).dp),
         contentAlignment = Alignment.Center
@@ -76,7 +81,8 @@ fun MapSearchResultContainer(
                 exit = slideOutVertically() + shrinkVertically() + fadeOut()
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    state = lazyListState
                 ) {
                     items(mapSearchResults.size) { position ->
                         MapSearchResultItem(
@@ -84,6 +90,7 @@ fun MapSearchResultContainer(
                             isAdded = destinations.contains(mapSearchResults[position]),
                             onAddButtonClick = onAddButtonClick,
                             onRemoveButtonClick = onRemoveButtonClick,
+                            selected = mapSearchResults[position] == selectedSearchResult,
                             onItemClick = onItemClick
                         )
                         if (position != mapSearchResults.lastIndex) {
@@ -161,7 +168,8 @@ private fun MapSearchResultItemPreview() {
                     onAddButtonClick = {},
                     onRemoveButtonClick = {},
                     onItemClick = { expanded = false },
-                    onRequestExpandButtonClicked = { expanded = true }
+                    onRequestExpandButtonClicked = { expanded = true },
+                    selectedSearchResult = null
                 )
             }
         ) {

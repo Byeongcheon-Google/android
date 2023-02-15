@@ -10,13 +10,10 @@ import com.bcgg.core.util.localdatetime.floorTenMinutes
 import com.bcgg.feature.planeditor.compose.screen.UiState
 import com.bcgg.feature.planeditor.compose.screen.find
 import com.bcgg.feature.planeditor.constant.Constant
-import com.bcgg.feature.planeditor.constant.Constant.SEARCH_DEBOUNCE
 import com.bcgg.feature.planeditor.util.calculateDestinationAvailableTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -30,29 +27,22 @@ class PlanEditorViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
 
-    val queryChannel = MutableStateFlow(uiState.value.search)
+    var mapLat: Double = Double.NaN
+    var mapLng: Double = Double.NaN
 
-    init {
-        viewModelScope.launch {
-            queryChannel.collectLatest {
-                _uiState.value =
-                    uiState.value.copy(search = it, expanded = UiState.Expanded.SearchResult)
-            }
-        }
-
-        viewModelScope.launch {
-            queryChannel
-                .debounce(SEARCH_DEBOUNCE)
-                .collectLatest {
-                    search(it)
-                }
-        }
+    fun updateSearchText(text: String) {
+        _uiState.value = uiState.value.copy(search = text, searchButtonEnabled = text.isNotBlank())
     }
 
-    suspend fun search(query: String) {
+    fun search(query: String) = viewModelScope.launch {
         _uiState.value = uiState.value.copy(isSearching = true)
-        _uiState.value = uiState.value.copy(mapSearchResult = mapPlaceRepository.getPlace(query))
-        _uiState.value = uiState.value.copy(isSearching = false)
+        val mapSearchResult = mapPlaceRepository.getPlace(query, mapLng, mapLat, 1)
+        _uiState.value = uiState.value.copy(
+            mapSearchResult = mapSearchResult,
+            selectedSearchResult = mapSearchResult.firstOrNull(),
+            isSearching = false,
+            expanded = UiState.Expanded.SearchResult
+        )
     }
 
     fun requestExpandSearchContainer() {
@@ -61,6 +51,10 @@ class PlanEditorViewModel @Inject constructor(
 
     fun requestExpandEditorContainer() {
         _uiState.value = uiState.value.copy(expanded = UiState.Expanded.ScheduleEdit)
+    }
+
+    fun requestShrinkContainer() {
+        _uiState.value = uiState.value.copy(expanded = null)
     }
 
     fun changeSelectedDate(selectedDate: LocalDate) {
@@ -88,8 +82,8 @@ class PlanEditorViewModel @Inject constructor(
         val destination = Destination(
             name = mapSearchResult.name,
             address = mapSearchResult.address,
-            katechMapX = mapSearchResult.katechMapX,
-            katechMapY = mapSearchResult.katechMapY,
+            lat = mapSearchResult.lat,
+            lng = mapSearchResult.lng,
             stayTimeHour = Constant.MIN_STAY_TIME,
             comeTime = LocalDateTime.of(uiState.value.selectedDate, startTime),
             type = Destination.Type.Travel
@@ -131,5 +125,14 @@ class PlanEditorViewModel @Inject constructor(
 
     fun switchSnackbarState(snackbarState: UiState.SnackbarState?) {
         _uiState.value = uiState.value.copy(snackbarState = snackbarState)
+    }
+
+    fun selectSearchResult(mapSearchResult: MapSearchResult?) {
+        _uiState.value = uiState.value.copy(selectedSearchResult = mapSearchResult)
+    }
+
+    fun setMapLatLng(lat: Double, lng: Double) {
+        this.mapLat = lat
+        this.mapLng = lng
     }
 }

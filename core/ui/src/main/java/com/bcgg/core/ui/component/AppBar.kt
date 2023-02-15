@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,11 +22,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.ui.constant.UiConstant.SEMI_TRANSPARENT_AMOUNT
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowleft
 import com.bcgg.core.ui.icon.icons.Food
@@ -37,7 +43,6 @@ fun RoundedAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     title: @Composable () -> Unit,
 ) {
@@ -50,33 +55,33 @@ fun RoundedAppBar(
         title = title,
         navigationIcon = navigationIcon,
         actions = actions,
-        windowInsets = windowInsets,
         colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = SEMI_TRANSPARENT_AMOUNT),
             navigationIconContentColor = MaterialTheme.colorScheme.primary,
             actionIconContentColor = MaterialTheme.colorScheme.secondary
         ),
+        windowInsets = WindowInsets(0.dp),
         scrollBehavior = scrollBehavior
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     search: String,
     placeholderText: String,
     onSearchTextChanged: (String) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     RoundedAppBar(
         modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        windowInsets = windowInsets,
         scrollBehavior = scrollBehavior,
     ) {
         BasicTextField(
@@ -97,7 +102,11 @@ fun SearchAppBar(
                     )
                 }
                 innerTextField()
-            }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { keyboardController?.hide() }
+            )
         )
     }
 }

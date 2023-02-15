@@ -1,22 +1,32 @@
 package com.bcgg.core.domain.repository
 
-import com.bcgg.core.datamap.source.NaverMapPlaceDataSource
-import com.bcgg.core.domain.constant.MapConstant.MAP_SEARCH_DISPLAY_SIZE
+import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
 import com.bcgg.core.domain.model.MapSearchResult
 import javax.inject.Inject
 
 class MapPlaceRepository @Inject constructor(
-    private val naverMapPlaceDataSource: NaverMapPlaceDataSource
+    private val kakaoMapPlaceDataSource: KakaoMapPlaceDataSource
 ) {
-    suspend fun getPlace(query: String): List<MapSearchResult> {
-        val response = naverMapPlaceDataSource.getPlace(query, MAP_SEARCH_DISPLAY_SIZE)
+    suspend fun getPlace(
+        query: String,
+        lng: Double,
+        lat: Double,
+        page: Int
+    ): List<MapSearchResult> {
+
+        val response = kakaoMapPlaceDataSource.getPlace(
+            query = query,
+            lng = lng.toString(),
+            lat = lat.toString(),
+            page = page
+        )
 
         return response.items.map {
             MapSearchResult(
-                name = it.title,
+                name = it.name,
                 address = it.address,
-                katechMapX = it.mapX,
-                katechMapY = it.mapY,
+                lat = it.lat.toDouble(),
+                lng = it.lng.toDouble()
             )
         }
     }

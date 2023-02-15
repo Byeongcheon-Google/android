@@ -19,7 +19,6 @@ import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowright
 import com.bcgg.core.ui.preview.PreviewContainer
-import java.time.LocalDateTime
 
 @Composable
 fun EditorCompressed(
@@ -74,35 +73,7 @@ fun EditorCompressed(
 @Preview
 @Composable
 private fun EditorCompressedPreview() {
-    val sample = listOf(
-        Destination(
-            name = "한기대",
-            address = "한기대",
-            katechMapX = "",
-            katechMapY = "",
-            stayTimeHour = 2,
-            comeTime = LocalDateTime.now(),
-            type = Destination.Type.Travel
-        ),
-        Destination(
-            name = "터미널",
-            address = "한기대",
-            katechMapX = "",
-            katechMapY = "",
-            stayTimeHour = 2,
-            comeTime = LocalDateTime.now(),
-            type = Destination.Type.Travel
-        ),
-        Destination(
-            name = "천안역",
-            address = "한기대",
-            katechMapX = "",
-            katechMapY = "",
-            stayTimeHour = 2,
-            comeTime = LocalDateTime.now(),
-            type = Destination.Type.Travel
-        )
-    )
+    val sample = listOf<Destination>()
     PreviewContainer {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),

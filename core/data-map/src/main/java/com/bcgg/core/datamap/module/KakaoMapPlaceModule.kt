@@ -1,8 +1,8 @@
 package com.bcgg.core.datamap.module
 
 import com.bcgg.core.datamap.BuildConfig
-import com.bcgg.core.datamap.source.NaverMapPlaceDataSource
-import com.bcgg.core.datamap.source.fake.FakeNaverMapPlaceDataSource
+import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
+import com.bcgg.core.datamap.source.fake.FakeKakaoMapPlaceDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,14 +11,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NaverMapPlaceModule {
+object KakaoMapPlaceModule {
     @Provides
     @Singleton
-    fun provideNaverMapPlaceDataSource(): NaverMapPlaceDataSource {
+    fun provideKakaoMapPlaceDataSource(): KakaoMapPlaceDataSource {
         if (BuildConfig.FLAVOR == "fake") {
-            return FakeNaverMapPlaceDataSource()
+            return FakeKakaoMapPlaceDataSource()
         }
 
-        return FakeNaverMapPlaceDataSource()
+        return FakeKakaoMapPlaceDataSource()
     }
 }
