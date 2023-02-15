@@ -10,7 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.feature.planeditor.compose.screen.PlanEditorScreen
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalNaverMapApi::class, ExperimentalMaterial3Api::class)

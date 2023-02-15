@@ -25,7 +25,6 @@ fun EditorDestinationItemIndicator(
     ) {
         Box(
             modifier = Modifier
-                .width(2.dp)
                 .indicatorLine(indicatorType)
                 .background(MaterialTheme.colorScheme.primary)
                 .align(Alignment.TopCenter)
@@ -45,13 +44,21 @@ internal fun Modifier.indicatorLine(indicatorType: IndicatorType): Modifier {
     return when (indicatorType) {
         IndicatorType.Header ->
             this
+                .width(2.dp)
                 .fillMaxHeight()
                 .padding(top = 28.dp)
-        IndicatorType.Footer -> this.height(28.dp)
-        IndicatorType.Normal -> this.fillMaxHeight()
+        IndicatorType.Footer ->
+            this
+                .width(2.dp)
+                .height(28.dp)
+        IndicatorType.Normal ->
+            this
+                .width(2.dp)
+                .fillMaxHeight()
+        IndicatorType.One -> this
     }
 }
 
 enum class IndicatorType {
-    Header, Footer, Normal
+    Header, Footer, Normal, One
 }

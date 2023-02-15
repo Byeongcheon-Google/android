@@ -9,7 +9,7 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.*
 
-fun Project.configureKotlinXSerialization(commonExtension: CommonExtension<*, *, *, *>) {
+fun Project.configureKotlinXSerialization() {
     pluginManager.apply("kotlinx-serialization")
 
     dependencies {

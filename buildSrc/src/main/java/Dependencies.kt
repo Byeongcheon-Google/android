@@ -10,6 +10,7 @@ object Versions {
     const val MATERIAL3 = "1.0.1"
     const val COMPOSE_UI = "1.3.3"
     const val ACTIVITY_COMPOSE = "1.6.1"
+    const val LIFECYCLE = "2.5.1"
 
     // KTX
     const val CORE = "1.9.0"
@@ -29,9 +30,10 @@ object Versions {
     //Networking
     const val RETROFIT = "2.9.0"
     const val RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER = "0.8.0"
+    const val OKHTTP = "4.10.0"
 
     //DI
-    const val HILT_VERSION = "2.44"
+    const val HILT_VERSION = "2.44.2"
 
     //Naver Map
     const val NAVER_MAP_COMPOSE = "1.2.3"
@@ -56,6 +58,9 @@ object Libraries {
         const val COMPOSE_UI_TEST_MANIFEST = "androidx.compose.ui:ui-test-manifest"
         const val ACTIVITY_COMPOSE =
             "androidx.activity:activity-compose:${Versions.ACTIVITY_COMPOSE}"
+
+        const val LIFECYCLE_VIEWMODEL_COMPOSE =
+            "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.LIFECYCLE}"
     }
 
     object Ktx {
@@ -79,6 +84,8 @@ object Libraries {
         const val RETROFIT = "com.squareup.retrofit2:retrofit:${Versions.RETROFIT}"
         const val RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER =
             "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:${Versions.RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER}"
+        const val OKHTTP = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP}"
+        const val OKHTTP_LOGGING_INTERCEPTOR = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP}"
     }
 
     object Di {

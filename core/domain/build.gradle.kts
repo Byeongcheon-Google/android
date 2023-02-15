@@ -1,13 +1,23 @@
+
+import gradleconfig.configureHilt
+import gradleconfig.configureKotlinAndroid
+
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    id("com.android.library")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+android {
+    namespace = "com.bcgg.core.domain"
+
+    configureKotlinAndroid(this)
+    configureHilt(this)
 }
 
 dependencies {
+    implementation(
+        project(":core:data-map"),
+        project(":core:network"),
+        project(":core:util")
+    )
     implementation("javax.inject:javax.inject:1")
 }

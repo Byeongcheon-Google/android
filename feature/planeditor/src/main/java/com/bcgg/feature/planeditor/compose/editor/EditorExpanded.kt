@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.feature.planeditor.util.calculateDestinationAvailableTime
+import com.bcgg.feature.planeditor.util.positionToIndicatorType
 
 @Composable
 fun EditorExpanded(
@@ -17,11 +18,7 @@ fun EditorExpanded(
     ) {
         items(destinations.size) { position ->
             EditorDestinationItem(
-                indicatorType = when (position) {
-                    0 -> IndicatorType.Header
-                    destinations.lastIndex -> IndicatorType.Footer
-                    else -> IndicatorType.Normal
-                },
+                indicatorType = positionToIndicatorType(position, destinations.size),
                 availableTime = calculateDestinationAvailableTime(
                     beforeDestination = if (position > 0) destinations[position - 1] else null,
                     afterDestination = if (position < destinations.lastIndex) destinations[position + 1] else null

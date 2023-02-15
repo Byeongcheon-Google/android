@@ -49,7 +49,7 @@ fun EditorContainer(
     selectedDate: LocalDate,
     onExpandButtonClicked: () -> Unit,
     onDateClick: (LocalDate) -> Unit,
-    onDestinationChanged: (List<Destination>) -> Unit
+    onDestinationChanged: (oldDestination: Destination, newDestination: Destination) -> Unit
 ) {
     val localConfigutaion = LocalConfiguration.current
 
@@ -96,11 +96,7 @@ fun EditorContainer(
 
         AnimatedVisibility(visible = expanded) {
             EditorExpanded(destinations = schedule.getFilteredDestinations(selectedDate)) { old, new ->
-                onDestinationChanged(
-                    schedule.destinations.map {
-                        if (it == old) new else it
-                    }
-                )
+                onDestinationChanged(old, new)
             }
         }
     }
@@ -125,8 +121,8 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "한기대",
                 address = "충남 천안시 동남구 충절로 1600",
-                lat = 1.0,
-                lng = 1.0,
+                katechMapX = "",
+                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)),
                 type = Destination.Type.Travel
@@ -134,8 +130,8 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "터미널",
                 address = "몰루",
-                lat = 1.0,
-                lng = 1.0,
+                katechMapX = "",
+                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 0)),
                 type = Destination.Type.Travel
@@ -143,8 +139,8 @@ private fun EditorContainerPreview() {
             Destination(
                 name = "천안역",
                 address = "몰루",
-                lat = 1.0,
-                lng = 1.0,
+                katechMapX = "",
+                katechMapY = "",
                 stayTimeHour = 2,
                 comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
                 type = Destination.Type.Travel
@@ -171,8 +167,7 @@ private fun EditorContainerPreview() {
                     onDateClick = {
                         selectedDate = it
                     },
-                    onDestinationChanged = {
-                    }
+                    onDestinationChanged = { _, _ -> }
                 )
             }
         ) {

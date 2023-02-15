@@ -4,7 +4,7 @@ import java.time.LocalTime
 
 object LocalTimeConstants {
     val dayStart: LocalTime = LocalTime.of(0, 0)
-    val dayEnd: LocalTime = LocalTime.of(23, 59)
+    val dayEnd: LocalTime = LocalTime.of(23, 50)
 
     const val HOURS_PER_DAY = 24
 
@@ -67,4 +67,6 @@ object LocalTimeConstants {
      * Nanos per day.
      */
     const val NANOS_PER_DAY = NANOS_PER_HOUR * HOURS_PER_DAY
+
+    const val TEN_MINUTES = 10
 }

@@ -9,8 +9,10 @@ object Constant {
 
     const val DAY_HOURS_THRESHOLD = 24
 
-    const val TIME_SLIDER_END_TIME = 23f + 5 / 6
+    const val TIME_SLIDER_END_TIME = 23f + 5 / 6f
 
     const val VERTICAL_LINE_TICK_START = 0
     const val SLIDER_MINUTE_FLOOR = -1
+
+    const val SEARCH_DEBOUNCE = 100L
 }

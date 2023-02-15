@@ -35,18 +35,14 @@ fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *>)
             isCoreLibraryDesugaringEnabled = true
         }
 
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-        }
-
         buildTypes {
             getByName("release") {
                 isMinifyEnabled = true
                 proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             }
         }
+
+        configureDataFlavors(this)
     }
 
     dependencies {

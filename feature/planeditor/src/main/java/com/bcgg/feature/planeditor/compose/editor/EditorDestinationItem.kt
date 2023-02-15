@@ -56,9 +56,26 @@ fun EditorDestinationItem(
     indicatorType: IndicatorType,
     destination: Destination,
     showDivider: Boolean,
-    availableTime: ClosedRange<LocalTime>,
+    availableTime: ClosedRange<LocalTime>?,
     onChange: (Destination) -> Unit
 ) {
+    if (availableTime == null) {
+        Column {
+            Text(
+                text = destination.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                text = "Not available",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+
+        return
+    }
+
     var selectedChip: SelectedChip? by rememberSaveable {
         mutableStateOf(null)
     }
@@ -202,7 +219,7 @@ fun EditorDestinationItem(
                 },
                 availableTime = availableTime,
                 comeTime = destination.comeTime.toLocalTime(),
-                unlimited = indicatorType == IndicatorType.Footer
+                unlimited = indicatorType == IndicatorType.Footer || indicatorType == IndicatorType.One
             )
 
             if (showDivider) {
@@ -273,8 +290,8 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "한기대",
                     address = "충남 천안시 동남구 충절로 1600",
-                    lat = 1.0,
-                    lng = 1.0,
+                    katechMapX = "",
+                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)),
                     type = Destination.Type.Travel
@@ -282,8 +299,8 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "터미널",
                     address = "몰루",
-                    lat = 1.0,
-                    lng = 1.0,
+                    katechMapX = "",
+                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 0)),
                     type = Destination.Type.Travel
@@ -291,8 +308,8 @@ private fun EditorDestinationItemPreview() {
                 Destination(
                     name = "천안역",
                     address = "몰루",
-                    lat = 1.0,
-                    lng = 1.0,
+                    katechMapX = "",
+                    katechMapY = "",
                     stayTimeHour = 2,
                     comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
                     type = Destination.Type.Travel
@@ -309,7 +326,7 @@ private fun EditorDestinationItemPreview() {
                     indicatorType = when (position) {
                         0 -> IndicatorType.Header
                         destinations.lastIndex -> IndicatorType.Footer
-                        else -> IndicatorType.Normal
+                        else -> if (destinations.size > 1)IndicatorType.Normal else IndicatorType.One
                     },
                     availableTime = calculateDestinationAvailableTime(
                         beforeDestination = if (position > 0) destinations[position - 1] else null,

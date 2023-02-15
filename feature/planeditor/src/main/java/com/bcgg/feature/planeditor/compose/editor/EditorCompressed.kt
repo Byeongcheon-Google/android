@@ -32,7 +32,7 @@ fun EditorCompressed(
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = "가고 싶은 여행지를 선택하세요.",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.outline
             )
         } else {
@@ -78,8 +78,8 @@ private fun EditorCompressedPreview() {
         Destination(
             name = "한기대",
             address = "한기대",
-            lat = 1.0,
-            lng = 1.0,
+            katechMapX = "",
+            katechMapY = "",
             stayTimeHour = 2,
             comeTime = LocalDateTime.now(),
             type = Destination.Type.Travel
@@ -87,8 +87,8 @@ private fun EditorCompressedPreview() {
         Destination(
             name = "터미널",
             address = "한기대",
-            lat = 1.0,
-            lng = 1.0,
+            katechMapX = "",
+            katechMapY = "",
             stayTimeHour = 2,
             comeTime = LocalDateTime.now(),
             type = Destination.Type.Travel
@@ -96,8 +96,8 @@ private fun EditorCompressedPreview() {
         Destination(
             name = "천안역",
             address = "한기대",
-            lat = 1.0,
-            lng = 1.0,
+            katechMapX = "",
+            katechMapY = "",
             stayTimeHour = 2,
             comeTime = LocalDateTime.now(),
             type = Destination.Type.Travel

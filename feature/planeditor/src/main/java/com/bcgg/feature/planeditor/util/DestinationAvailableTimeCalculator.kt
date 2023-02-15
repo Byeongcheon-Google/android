@@ -9,12 +9,12 @@ import java.time.LocalTime
 fun calculateDestinationAvailableTime(
     beforeDestination: Destination?,
     afterDestination: Destination?
-): ClosedRange<LocalTime> {
+): ClosedRange<LocalTime>? {
     val startTime = if (beforeDestination == null) {
         LocalTimeConstants.dayStart
     } else {
-        if (beforeDestination.comeTime.hour + beforeDestination.stayTimeHour > DAY_HOURS_THRESHOLD) {
-            LocalTimeConstants.dayEnd
+        if (beforeDestination.comeTime.hour + beforeDestination.stayTimeHour >= DAY_HOURS_THRESHOLD) {
+            return null
         } else {
             beforeDestination.comeTime.toLocalTime()
                 .plusHours(beforeDestination.stayTimeHour.toLong())

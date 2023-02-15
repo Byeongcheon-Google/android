@@ -1,3 +1,5 @@
+
+import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureNaverMapCompose
 
@@ -10,6 +12,7 @@ android {
 
     configureKotlinAndroid(this)
     configureNaverMapCompose(this)
+    configureHilt(this)
 }
 
 dependencies {

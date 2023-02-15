@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 data class Destination(
     val name: String,
     val address: String,
-    val lat: Double,
-    val lng: Double,
+    val katechMapX: String,
+    val katechMapY: String,
     val stayTimeHour: Int,
     val comeTime: LocalDateTime,
     val type: Type

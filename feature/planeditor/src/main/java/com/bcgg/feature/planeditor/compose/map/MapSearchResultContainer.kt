@@ -32,14 +32,17 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.MapSearchResult
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.theme.divider
+import com.bcgg.feature.planeditor.compose.screen.contains
 
 @Composable
 fun MapSearchResultContainer(
     modifier: Modifier = Modifier,
     mapSearchResults: List<MapSearchResult>,
+    destinations: List<Destination>,
     expanded: Boolean = true,
     onAddButtonClick: (MapSearchResult) -> Unit,
     onRemoveButtonClick: (MapSearchResult) -> Unit,
@@ -75,15 +78,15 @@ fun MapSearchResultContainer(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(mapSearchResults.size) {
+                    items(mapSearchResults.size) { position ->
                         MapSearchResultItem(
-                            mapSearchResult = mapSearchResults[it],
-                            isAdded = it == 0,
+                            mapSearchResult = mapSearchResults[position],
+                            isAdded = destinations.contains(mapSearchResults[position]),
                             onAddButtonClick = onAddButtonClick,
                             onRemoveButtonClick = onRemoveButtonClick,
                             onItemClick = onItemClick
                         )
-                        if (it != mapSearchResults.lastIndex) {
+                        if (position != mapSearchResults.lastIndex) {
                             Divider(color = MaterialTheme.colorScheme.divider)
                         }
                     }
@@ -99,7 +102,7 @@ fun MapSearchResultContainer(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     text = "검색 결과를 확인하려면 터치하세요.",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
@@ -153,6 +156,7 @@ private fun MapSearchResultItemPreview() {
                     modifier = Modifier
                         .padding(horizontal = 16.dp),
                     mapSearchResults = sample,
+                    destinations = listOf(),
                     expanded = expanded,
                     onAddButtonClick = {},
                     onRemoveButtonClick = {},

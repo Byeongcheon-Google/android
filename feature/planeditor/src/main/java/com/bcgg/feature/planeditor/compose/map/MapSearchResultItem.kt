@@ -45,11 +45,6 @@ fun MapSearchResultItem(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
-            Text(
-                text = mapSearchResult.distance,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline
-            )
         }
         Text(
             text = mapSearchResult.address,
@@ -96,10 +91,9 @@ private fun MapSearchResultItemPreview() {
                     MapSearchResultItem(
                         mapSearchResult = MapSearchResult(
                             name = "성심당 DCC점",
-                            distance = "50km",
                             address = "대전 유성구 엑스포로 107",
-                            lat = 1.0,
-                            lng = 1.0
+                            katechMapX = "",
+                            katechMapY = ""
                         ),
                         isAdded = it.second,
                         onAddButtonClick = {},

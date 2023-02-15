@@ -27,6 +27,10 @@ fun Project.configureHilt(commonExtension: CommonExtension<*, *, *, *>) {
         }
     }
 
+    with((this as org.gradle.api.plugins.ExtensionAware).extensions.getByName("hilt") as dagger.hilt.android.plugin.HiltExtension) {
+        enableAggregatingTask = true
+    }
+
     dependencies {
         implementation(Libraries.Di.HILT_ANDROID)
         kapt(Libraries.Di.HILT_ANDROID_COMPILER)
