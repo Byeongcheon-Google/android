@@ -45,6 +45,7 @@ import com.bcgg.feature.planeditor.constant.Constant.MAP_SELECTED_MARKER_Z_INDEX
 import com.bcgg.feature.planeditor.constant.Constant.SEARCH_ZOOM
 import com.bcgg.feature.planeditor.constant.Constant.SEOUL_LAT
 import com.bcgg.feature.planeditor.constant.Constant.SEOUL_LNG
+import com.bcgg.feature.planeditor.util.rememberFusedLocationSource
 import com.bcgg.feature.planeditor.viewmodel.PlanEditorViewModel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
@@ -52,8 +53,10 @@ import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapType
+import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
@@ -80,7 +83,6 @@ fun PlanEditorScreen(
     var mapTopPadding by remember { mutableStateOf(0.dp) }
     var mapBottomPadding by remember { mutableStateOf(0.dp) }
     val lazyListState = rememberLazyListState()
-
     val searchResult = uiState.mapSearchResult?.collectAsLazyPagingItems()
 
     if (uiState.snackbarState != null) {
@@ -151,7 +153,12 @@ fun PlanEditorScreen(
                     properties = MapProperties(
                         mapType = if (useNaviType) MapType.Navi else MapType.Basic,
                         isNightModeEnabled = useDarkTheme,
-                        isIndoorEnabled = true
+                        isIndoorEnabled = true,
+                        locationTrackingMode = LocationTrackingMode.Follow,
+                    ),
+                    locationSource = rememberFusedLocationSource(),
+                    uiSettings = MapUiSettings(
+                        isLocationButtonEnabled = true,
                     )
                 ) {
                     searchResult?.itemSnapshotList?.mapIndexed { index, result ->

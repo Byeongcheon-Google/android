@@ -12,6 +12,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:${Versions.AGP_VERSION}")
         classpath("org.jetbrains.kotlin:kotlin-serialization:${Versions.KOTLIN_VERSION}")
         classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT_VERSION}")
+        classpath("com.google.gms:google-services:${Versions.GMS}")
         classpath(kotlin("gradle-plugin", version = Versions.KOTLIN_VERSION))
 
         // NOTE: Do not place your application dependencies here; they belong

@@ -20,6 +20,7 @@ object Versions {
     const val SERIALIZATION = "1.4.1"
 
     // Google Play
+    const val GMS = "4.3.15"
     const val GMS_LOCATION = "21.0.1"
 
     // TEST

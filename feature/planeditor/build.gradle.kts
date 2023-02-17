@@ -24,5 +24,7 @@ dependencies {
         project(":core:domain"),
         project(":core:ui"),
         project(":core:util"),
+
+        "com.google.accompanist:accompanist-permissions:0.29.1-alpha"
     )
 }
