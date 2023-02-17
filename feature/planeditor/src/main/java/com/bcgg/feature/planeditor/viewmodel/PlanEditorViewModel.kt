@@ -11,6 +11,7 @@ import com.bcgg.feature.planeditor.compose.screen.UiState
 import com.bcgg.feature.planeditor.compose.screen.find
 import com.bcgg.feature.planeditor.constant.Constant
 import com.bcgg.feature.planeditor.util.calculateDestinationAvailableTime
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,12 +35,11 @@ class PlanEditorViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(search = text, searchButtonEnabled = text.isNotBlank())
     }
 
-    fun search(query: String) = viewModelScope.launch {
+    fun search(query: String, latLng: LatLng) = viewModelScope.launch {
         _uiState.value = uiState.value.copy(isSearching = true)
-        val mapSearchResult = mapPlaceRepository.getPlace(query, mapLng, mapLat, 1)
+        val mapSearchResult = mapPlaceRepository.getPlace(query, latLng.longitude, latLng.latitude)
         _uiState.value = uiState.value.copy(
             mapSearchResult = mapSearchResult,
-            selectedSearchResult = mapSearchResult.firstOrNull(),
             isSearching = false,
             expanded = UiState.Expanded.SearchResult
         )
@@ -127,8 +127,8 @@ class PlanEditorViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(snackbarState = snackbarState)
     }
 
-    fun selectSearchResult(mapSearchResult: MapSearchResult?) {
-        _uiState.value = uiState.value.copy(selectedSearchResult = mapSearchResult)
+    fun selectSearchResult(position: Int) {
+        _uiState.value = uiState.value.copy(selectedSearchPosition = position)
     }
 
     fun setMapLatLng(lat: Double, lng: Double) {

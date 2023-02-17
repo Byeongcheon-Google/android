@@ -11,6 +11,8 @@ object Versions {
     const val COMPOSE_UI = "1.3.3"
     const val ACTIVITY_COMPOSE = "1.6.1"
     const val LIFECYCLE = "2.5.1"
+    const val PAGING = "3.1.1"
+    const val PAGING_COMPOSE = "1.0.0-alpha17"
 
     // KTX
     const val CORE = "1.9.0"
@@ -64,6 +66,9 @@ object Libraries {
 
         const val LIFECYCLE_VIEWMODEL_COMPOSE =
             "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.LIFECYCLE}"
+
+        const val PAGING_RUNTIME = "androidx.paging:paging-runtime:${Versions.PAGING}"
+        const val PAGING_COMPOSE = "androidx.paging:paging-compose:${Versions.PAGING_COMPOSE}"
     }
 
     object Ktx {

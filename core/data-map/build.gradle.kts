@@ -1,5 +1,6 @@
 
 import gradleconfig.configureHilt
+import gradleconfig.configureKakaoApiKey
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureRetrofit2
 
@@ -13,12 +14,14 @@ android {
     configureKotlinAndroid(this)
     configureRetrofit2()
     configureHilt(this)
+    configureKakaoApiKey(this)
 }
 
 dependencies {
     implementation(
         project(":core:util"),
         project(":core:network"),
-        "org.osgeo:proj4j:0.1.0"
+
+        Libraries.AndroidX.PAGING_RUNTIME
     )
 }

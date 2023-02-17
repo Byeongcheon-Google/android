@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.utils.EdgeToEdge
 import com.bcgg.feature.planeditor.compose.editor.EditorContainer
@@ -80,6 +81,8 @@ fun PlanEditorScreen(
     var mapBottomPadding by remember { mutableStateOf(0.dp) }
     val lazyListState = rememberLazyListState()
 
+    val searchResult = uiState.mapSearchResult?.collectAsLazyPagingItems()
+
     if (uiState.snackbarState != null) {
         LaunchedEffect(uiState.snackbarState) {
             val message = when (uiState.snackbarState) {
@@ -91,28 +94,29 @@ fun PlanEditorScreen(
         }
     }
 
-    if (uiState.selectedSearchResult != null) {
-        LaunchedEffect(uiState.selectedSearchResult) {
+    if (uiState.selectedSearchPosition >= 0) {
+        LaunchedEffect(uiState.selectedSearchPosition) {
             viewModel.requestExpandSearchContainer()
-            with(uiState.selectedSearchResult!!) {
+            searchResult?.get(uiState.selectedSearchPosition)?.let {
                 cameraPositionState.move(
                     CameraUpdate
                         .scrollAndZoomTo(
-                            LatLng(lat, lng),
+                            LatLng(it.lat, it.lng),
                             SEARCH_ZOOM
                         )
                         .animate(CameraAnimation.Easing, MAP_CAMERA_ANIMATION_DURATION)
                 )
-                if (!uiState.mapSearchResult.isNullOrEmpty()) {
-                    val position = uiState.mapSearchResult!!.indexOf(uiState.selectedSearchResult)
-                    if (position >= 0) {
-                        lazyListState.animateScrollToItem(
-                            position,
-                            with(localDensity) { -60.dp.toPx() }.toInt()
-                        )
-                    }
-                }
+                lazyListState.animateScrollToItem(
+                    uiState.selectedSearchPosition,
+                    with(localDensity) { -100.dp.toPx() }.toInt()
+                )
             }
+        }
+    }
+
+    if (searchResult != null && searchResult.itemCount > 0) {
+        LaunchedEffect(searchResult) {
+            viewModel.selectSearchResult(0)
         }
     }
 
@@ -138,12 +142,6 @@ fun PlanEditorScreen(
                 NaverMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
-                    onLocationChange = {
-                        viewModel.setMapLatLng(
-                            lat = it.latitude,
-                            lng = it.longitude
-                        )
-                    },
                     contentPadding = PaddingValues(
                         top = mapTopPadding +
                             statusBarPaddingValues.calculateTopPadding(),
@@ -156,26 +154,30 @@ fun PlanEditorScreen(
                         isIndoorEnabled = true
                     )
                 ) {
-                    uiState.mapSearchResult?.map { result ->
-                        Marker(
-                            state = MarkerState(position = LatLng(result.lat, result.lng)),
-                            captionText = result.name,
-                            onClick = {
-                                viewModel.selectSearchResult(result)
-                                false
-                            },
-                            icon = MarkerIcons.BLACK,
-                            iconTintColor = if (uiState.selectedSearchResult == result) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.secondary
-                            },
-                            zIndex = if (uiState.selectedSearchResult == result) {
-                                MAP_SELECTED_MARKER_Z_INDEX
-                            } else {
-                                MAP_MARKER_Z_INDEX
-                            }
-                        )
+                    searchResult?.itemSnapshotList?.mapIndexed { index, result ->
+                        if (result != null) {
+                            val isSelected = index == uiState.selectedSearchPosition
+
+                            Marker(
+                                state = MarkerState(position = LatLng(result.lat, result.lng)),
+                                captionText = result.name,
+                                onClick = {
+                                    viewModel.selectSearchResult(index)
+                                    false
+                                },
+                                icon = MarkerIcons.BLACK,
+                                iconTintColor = if (isSelected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.secondary
+                                },
+                                zIndex = if (isSelected) {
+                                    MAP_SELECTED_MARKER_Z_INDEX
+                                } else {
+                                    MAP_MARKER_Z_INDEX
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -190,7 +192,7 @@ fun PlanEditorScreen(
                     search = uiState.search,
                     onSearchTextChanged = { viewModel.updateSearchText(it) },
                     onSearch = {
-                        viewModel.search(it)
+                        viewModel.search(it, cameraPositionState.position.target)
                     },
                     isSearching = uiState.isSearching,
                     onBack = {
@@ -211,15 +213,15 @@ fun PlanEditorScreen(
                 ) {
                     AnimatedVisibility(visible = uiState.isShowSearchContainer) {
                         MapSearchResultContainer(
-                            mapSearchResults = uiState.mapSearchResult ?: listOf(),
+                            mapSearchResults = searchResult!!,
                             onAddButtonClick = {
                                 viewModel.addItem(it)
                             },
                             onRemoveButtonClick = {
                                 viewModel.removeItem(it)
                             },
-                            onItemClick = {
-                                viewModel.selectSearchResult(it)
+                            onItemClick = { position, _ ->
+                                viewModel.selectSearchResult(position)
                             },
                             expanded = uiState.expanded == UiState.Expanded.SearchResult,
                             onRequestExpandButtonClicked = {
@@ -228,7 +230,7 @@ fun PlanEditorScreen(
                             destinations = uiState.schedule.destinations.filter {
                                 it.comeTime.toLocalDate() == uiState.selectedDate
                             },
-                            selectedSearchResult = uiState.selectedSearchResult,
+                            selectedSearchResultPosition = uiState.selectedSearchPosition,
                             lazyListState = lazyListState
                         )
                     }

@@ -12,7 +12,7 @@ class FakeKakaoMapPlaceDataSource : KakaoMapPlaceDataSource {
         query: String,
         lng: String,
         lat: String,
-        radius: Int,
+        size: Int,
         page: Int
     ): KakaoMapPlaceResponse {
         delay(FakeValues.FAKE_DELAY)

@@ -1,13 +1,10 @@
 package gradleconfig
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import java.util.*
 
 fun Project.configureNaverMapCompose(commonExtension: CommonExtension<*, *, *, *>) {
     configureCompose(commonExtension)
@@ -16,6 +13,7 @@ fun Project.configureNaverMapCompose(commonExtension: CommonExtension<*, *, *, *
 
     commonExtension.apply {
         defaultConfig {
+            buildConfigField("String", AppConfig.NAVER_MAPS_CLIENT_ID, "\"$naverMapsClientId\"")
             manifestPlaceholders["naver_maps_client_id"] = naverMapsClientId
         }
     }
@@ -25,16 +23,4 @@ fun Project.configureNaverMapCompose(commonExtension: CommonExtension<*, *, *, *
             Libraries.NaverMap.NAVER_MAP_COMPOSE
         )
     }
-}
-
-internal fun gradleLocalProperties(projectRootDir : File) : Properties {
-    val properties = Properties()
-    val localProperties = File(projectRootDir, "local.properties")
-
-    if (localProperties.isFile) {
-        InputStreamReader(FileInputStream(localProperties), Charsets.UTF_8).use { reader ->
-            properties.load(reader)
-        }
-    }
-    return properties
 }

@@ -18,40 +18,34 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.MapSearchResult
 import com.bcgg.core.ui.constant.UiConstant
-import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.theme.divider
 import com.bcgg.feature.planeditor.compose.screen.contains
 
 @Composable
 fun MapSearchResultContainer(
     modifier: Modifier = Modifier,
-    mapSearchResults: List<MapSearchResult>,
+    mapSearchResults: LazyPagingItems<MapSearchResult>,
     destinations: List<Destination>,
-    selectedSearchResult: MapSearchResult?,
+    selectedSearchResultPosition: Int,
     expanded: Boolean = true,
     lazyListState: LazyListState = rememberLazyListState(),
     onAddButtonClick: (MapSearchResult) -> Unit,
     onRemoveButtonClick: (MapSearchResult) -> Unit,
-    onItemClick: (MapSearchResult) -> Unit,
+    onItemClick: (Int, MapSearchResult) -> Unit,
     onRequestExpandButtonClicked: () -> Unit
 ) {
     val localConfiguration = LocalConfiguration.current
@@ -66,7 +60,7 @@ fun MapSearchResultContainer(
             .heightIn(min = 40.dp, max = (localConfiguration.screenHeightDp * 0.4).dp),
         contentAlignment = Alignment.Center
     ) {
-        if (mapSearchResults.isEmpty()) {
+        if (mapSearchResults.itemCount == 0) {
             Text(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),
@@ -84,17 +78,23 @@ fun MapSearchResultContainer(
                     modifier = Modifier.fillMaxSize(),
                     state = lazyListState
                 ) {
-                    items(mapSearchResults.size) { position ->
-                        MapSearchResultItem(
-                            mapSearchResult = mapSearchResults[position],
-                            isAdded = destinations.contains(mapSearchResults[position]),
-                            onAddButtonClick = onAddButtonClick,
-                            onRemoveButtonClick = onRemoveButtonClick,
-                            selected = mapSearchResults[position] == selectedSearchResult,
-                            onItemClick = onItemClick
-                        )
-                        if (position != mapSearchResults.lastIndex) {
-                            Divider(color = MaterialTheme.colorScheme.divider)
+                    items(mapSearchResults.itemCount) { position ->
+                        val result = mapSearchResults[position]
+
+                        if (result != null) {
+                            MapSearchResultItem(
+                                mapSearchResult = result,
+                                isAdded = destinations.contains(result),
+                                onAddButtonClick = onAddButtonClick,
+                                onRemoveButtonClick = onRemoveButtonClick,
+                                selected = position == selectedSearchResultPosition,
+                                onItemClick = {
+                                    onItemClick(position, it)
+                                }
+                            )
+                            if (position != mapSearchResults.itemCount - 1) {
+                                Divider(color = MaterialTheme.colorScheme.divider)
+                            }
                         }
                     }
                 }
@@ -112,68 +112,6 @@ fun MapSearchResultContainer(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(device = Devices.NEXUS_5)
-@Composable
-private fun MapSearchResultItemPreview() {
-
-    var heightDp by remember {
-        mutableStateOf(240.dp)
-    }
-    var expanded by remember {
-        mutableStateOf(true)
-    }
-
-    val sample = listOf<MapSearchResult>(
-        /*MapSearchResult(
-            name = "성심당 DCC점",
-            distance = "50km",
-            address = "대전 유성구 엑스포로 107",
-            lat = 1.0,
-            lng = 1.0
-        ),
-        MapSearchResult(
-            name = "성심당 롯데백화점대전점",
-            distance = "53km",
-            address = "대전 서구 계롱로 598",
-            lat = 1.0,
-            lng = 1.0
-        ),
-        MapSearchResult(
-            name = "성심당 대전역점",
-            distance = "56km",
-            address = "대전 동구 중앙로 215",
-            lat = 1.0,
-            lng = 1.0
-        )*/
-    )
-
-    AppTheme(
-        useDarkTheme = false
-    ) {
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.secondary,
-            bottomBar = {
-                MapSearchResultContainer(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
-                    mapSearchResults = sample,
-                    destinations = listOf(),
-                    expanded = expanded,
-                    onAddButtonClick = {},
-                    onRemoveButtonClick = {},
-                    onItemClick = { expanded = false },
-                    onRequestExpandButtonClicked = { expanded = true },
-                    selectedSearchResult = null
-                )
-            }
-        ) {
-            Box(modifier = Modifier.padding(it)) {
             }
         }
     }

@@ -18,9 +18,11 @@ android {
 }
 
 dependencies {
+    implementation(Libraries.AndroidX.PAGING_COMPOSE)
+
     implementation(
         project(":core:domain"),
         project(":core:ui"),
-        project(":core:util")
+        project(":core:util"),
     )
 }

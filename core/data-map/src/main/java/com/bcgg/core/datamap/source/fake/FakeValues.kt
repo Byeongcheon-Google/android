@@ -218,13 +218,13 @@ object FakeValues {
           ],
           "meta": {
             "is_end": false,
-            "pageable_count": 21,
+            "pageable_count": 15,
             "same_name": {
               "keyword": "한기대",
               "region": [],
               "selected_region": ""
             },
-            "total_count": 21
+            "total_count": 15
           }
         }
     """.trimIndent()

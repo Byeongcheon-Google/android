@@ -16,7 +16,9 @@ android {
 dependencies {
     implementation(
         project(":core:network"),
-        project(":core:util")
+        project(":core:util"),
+
+        Libraries.AndroidX.PAGING_RUNTIME
     )
 
     implementation("javax.inject:javax.inject:1")

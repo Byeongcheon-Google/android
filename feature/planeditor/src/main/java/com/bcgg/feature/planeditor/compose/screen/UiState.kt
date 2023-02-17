@@ -1,9 +1,11 @@
 package com.bcgg.feature.planeditor.compose.screen
 
+import androidx.paging.PagingData
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.MapSearchResult
 import com.bcgg.core.domain.model.Schedule
 import com.bcgg.core.domain.model.newSchedule
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 data class UiState(
@@ -12,12 +14,12 @@ data class UiState(
     val isSearching: Boolean = false,
     val searchButtonEnabled: Boolean = false,
     val schedule: Schedule = newSchedule(),
-    val mapSearchResult: List<MapSearchResult>? = null,
-    val selectedSearchResult: MapSearchResult? = null,
+    val mapSearchResult: Flow<PagingData<MapSearchResult>>? = null,
+    val selectedSearchPosition: Int = -1,
     val selectedDate: LocalDate = LocalDate.now(),
     val snackbarState: SnackbarState? = null
 ) {
-    val isShowSearchContainer get() = search.isNotBlank() && mapSearchResult != null
+    val isShowSearchContainer get() = mapSearchResult != null
     val hasNoSearchResult get() = mapSearchResult == null
 
     enum class Expanded {

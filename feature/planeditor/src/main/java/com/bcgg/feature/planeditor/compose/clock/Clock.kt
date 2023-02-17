@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.bcgg.core.ui.preview.PreviewContainer
 import com.bcgg.feature.planeditor.constant.Constant.HOUR_DIVIDER
 import com.bcgg.feature.planeditor.constant.Constant.MINUTE_DIVIDER
-import kotlinx.coroutines.delay
 import java.time.LocalTime
 import kotlin.math.cos
 import kotlin.math.sin
@@ -111,7 +110,6 @@ private fun ClockPreview() {
     LaunchedEffect(key1 = true) {
         while (true) {
             plusHour = Random.nextInt(1..16)
-            delay(1000)
         }
     }
 
