@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.bcgg.core.ui.provider.LocalActivity
 import com.bcgg.core.ui.theme.AppTheme
-import com.bcgg.feature.planeditor.compose.screen.PlanEditorScreen
+import com.bcgg.feature.ui.login.ui.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,9 +21,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             CompositionLocalProvider(LocalActivity provides this) {
-                PlanEditorScreen {
-                    finish()
-                }
+                LoginScreen()
             }
         }
     }

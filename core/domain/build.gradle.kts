@@ -17,13 +17,12 @@ dependencies {
     implementation(
         project(":core:network"),
         project(":core:util"),
+        project(":core:data"),
+        project(":core:data-security"),
+        project(":core:data-map"),
 
         Libraries.AndroidX.PAGING_RUNTIME
     )
 
     implementation("javax.inject:javax.inject:1")
-
-    api(
-        project(":core:data-map")
-    )
 }

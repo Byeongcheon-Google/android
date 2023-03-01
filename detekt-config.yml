@@ -73,6 +73,8 @@ naming:
   MatchingDeclarationName:
     active: false
 
+exceptions:
+  active: false
 
 output-reports:
   active: true

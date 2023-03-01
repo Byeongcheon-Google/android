@@ -41,8 +41,6 @@ fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *>)
                 proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             }
         }
-
-        configureDataFlavors(this)
     }
 
     dependencies {

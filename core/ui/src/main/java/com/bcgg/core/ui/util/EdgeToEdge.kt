@@ -1,4 +1,4 @@
-package com.bcgg.core.ui.utils
+package com.bcgg.core.ui.util
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

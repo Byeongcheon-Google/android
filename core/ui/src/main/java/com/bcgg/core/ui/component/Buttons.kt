@@ -26,7 +26,6 @@ fun LargeButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .heightIn(min = 48.dp),
         enabled = enabled,
         onClick = onClick,

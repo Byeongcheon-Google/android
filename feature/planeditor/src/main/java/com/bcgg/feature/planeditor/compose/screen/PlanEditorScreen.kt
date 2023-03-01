@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bcgg.core.ui.theme.AppTheme
-import com.bcgg.core.ui.utils.EdgeToEdge
+import com.bcgg.core.ui.util.EdgeToEdge
 import com.bcgg.feature.planeditor.compose.editor.EditorContainer
 import com.bcgg.feature.planeditor.compose.map.MapSearchResultContainer
 import com.bcgg.feature.planeditor.compose.search.SearchBar

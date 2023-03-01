@@ -19,7 +19,8 @@ android {
 dependencies {
     implementation(
         project(":core:ui"),
-        project(":feature:planeditor")
+        project(":feature:planeditor"),
+        project(":feature:user")
     )
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")

@@ -13,6 +13,7 @@ object Versions {
     const val LIFECYCLE = "2.5.1"
     const val PAGING = "3.1.1"
     const val PAGING_COMPOSE = "1.0.0-alpha17"
+    const val DATASTORE = "1.0.0"
 
     // KTX
     const val CORE = "1.9.0"
@@ -70,6 +71,8 @@ object Libraries {
 
         const val PAGING_RUNTIME = "androidx.paging:paging-runtime:${Versions.PAGING}"
         const val PAGING_COMPOSE = "androidx.paging:paging-compose:${Versions.PAGING_COMPOSE}"
+
+        const val DATASTORE = "androidx.datastore:datastore-preferences:${Versions.DATASTORE}"
     }
 
     object Ktx {
