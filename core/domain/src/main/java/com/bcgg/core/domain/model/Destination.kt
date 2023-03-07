@@ -1,6 +1,6 @@
 package com.bcgg.core.domain.model
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 data class Destination(
     val name: String,
@@ -8,7 +8,7 @@ data class Destination(
     val lat: Double = Double.NaN,
     val lng: Double = Double.NaN,
     val stayTimeHour: Int,
-    val comeTime: LocalDateTime,
+    val date: LocalDate,
     val type: Type
 ) {
     enum class Type {
