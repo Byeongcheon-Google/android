@@ -11,7 +11,7 @@ data class Schedule(
         BeforeRun, Running, ResultCreated
     }
 
-    fun getFilteredDestinations(date: LocalDate) = destinations.filter { it.comeTime.toLocalDate() == date }
+    fun getFilteredDestinations(date: LocalDate) = destinations.filter { it.date == date }
 }
 
 fun newSchedule() = Schedule(

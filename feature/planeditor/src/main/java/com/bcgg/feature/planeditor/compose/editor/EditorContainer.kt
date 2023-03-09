@@ -39,8 +39,6 @@ import com.bcgg.core.domain.model.Schedule
 import com.bcgg.core.ui.constant.UiConstant
 import com.bcgg.core.ui.theme.AppTheme
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Composable
 fun EditorContainer(
@@ -50,7 +48,8 @@ fun EditorContainer(
     selectedDate: LocalDate,
     onExpandButtonClicked: () -> Unit,
     onDateClick: (LocalDate) -> Unit,
-    onDestinationChanged: (oldDestination: Destination, newDestination: Destination) -> Unit
+    onDestinationChanged: (oldDestination: Destination, newDestination: Destination) -> Unit,
+    onDestinationRemoved: (Destination) -> Unit
 ) {
     val localConfigutaion = LocalConfiguration.current
 
@@ -82,7 +81,7 @@ fun EditorContainer(
         ) {
             EditorDate(
                 selectedDate = selectedDate,
-                dates = schedule.destinations.map { it.comeTime.toLocalDate() }.toSet(),
+                dates = schedule.destinations.map { it.date }.toSet(),
                 expanded = expanded,
                 onDateClick = onDateClick
             )
@@ -96,9 +95,11 @@ fun EditorContainer(
         }
 
         AnimatedVisibility(visible = expanded) {
-            EditorExpanded(destinations = schedule.getFilteredDestinations(selectedDate)) { old, new ->
-                onDestinationChanged(old, new)
-            }
+            EditorExpanded(
+                destinations = schedule.getFilteredDestinations(selectedDate),
+                onDestinationChange = onDestinationChanged,
+                onDestinationRemove = onDestinationRemoved
+            )
         }
     }
 }
@@ -123,21 +124,21 @@ private fun EditorContainerPreview() {
                 name = "한기대",
                 address = "충남 천안시 동남구 충절로 1600",
                 stayTimeHour = 2,
-                comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(10, 0)),
+                date = LocalDate.now(),
                 type = Destination.Type.Travel
             ),
             Destination(
                 name = "터미널",
                 address = "몰루",
                 stayTimeHour = 2,
-                comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(13, 0)),
+                date = LocalDate.now(),
                 type = Destination.Type.Travel
             ),
             Destination(
                 name = "천안역",
                 address = "몰루",
                 stayTimeHour = 2,
-                comeTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
+                date = LocalDate.now(),
                 type = Destination.Type.Travel
             )
         ),
@@ -162,7 +163,8 @@ private fun EditorContainerPreview() {
                     onDateClick = {
                         selectedDate = it
                     },
-                    onDestinationChanged = { _, _ -> }
+                    onDestinationChanged = { _, _ -> },
+                    onDestinationRemoved = {}
                 )
             }
         ) {

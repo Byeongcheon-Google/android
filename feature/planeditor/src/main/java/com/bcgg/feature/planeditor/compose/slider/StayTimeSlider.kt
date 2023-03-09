@@ -11,18 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bcgg.feature.planeditor.constant.Constant
-import com.bcgg.feature.planeditor.util.calculateStayTimeSliderRightThreshold
-import java.time.LocalTime
 
 @Composable
 fun StayTimeSlider(
-    comeTime: LocalTime,
     stayTimeHour: Int,
-    availableTime: ClosedRange<LocalTime>,
-    unlimited: Boolean,
     onStayTimeChange: (Int) -> Unit
 ) {
-    val maxStayTimeHour = availableTime.endInclusive.plusHours(1).hour - comeTime.hour
 
     Box(
         contentAlignment = Alignment.Center
@@ -33,13 +27,6 @@ fun StayTimeSlider(
                 .padding(horizontal = 8.dp)
         ) {
             SliderTrack()
-            if (!unlimited) {
-                SliderRightThresholdTrack(
-                    fraction = calculateStayTimeSliderRightThreshold(
-                        maxStayTimeHour
-                    )
-                )
-            }
         }
 
         Slider(
@@ -47,11 +34,7 @@ fun StayTimeSlider(
             valueRange = Constant.MIN_STAY_TIME.toFloat()..Constant.MAX_STAY_TIME.toFloat(),
             steps = Constant.MAX_STAY_TIME,
             onValueChange = {
-                var newValue = it.toInt()
-
-                if (!unlimited && newValue > maxStayTimeHour) newValue = maxStayTimeHour
-
-                onStayTimeChange(newValue)
+                onStayTimeChange(it.toInt())
             },
             colors = SliderDefaults.colors(
                 activeTrackColor = Color.Transparent,

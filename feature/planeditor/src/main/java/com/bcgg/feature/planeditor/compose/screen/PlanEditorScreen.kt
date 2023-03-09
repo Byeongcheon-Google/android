@@ -235,7 +235,7 @@ fun PlanEditorScreen(
                                 viewModel.requestExpandSearchContainer()
                             },
                             destinations = uiState.schedule.destinations.filter {
-                                it.comeTime.toLocalDate() == uiState.selectedDate
+                                it.date == uiState.selectedDate
                             },
                             selectedSearchResultPosition = uiState.selectedSearchPosition,
                             lazyListState = lazyListState
@@ -254,6 +254,9 @@ fun PlanEditorScreen(
                         },
                         onDestinationChanged = { oldDestination, newDestination ->
                             viewModel.updateDestination(oldDestination, newDestination)
+                        },
+                        onDestinationRemoved = {
+                            viewModel.removeItem(it)
                         }
                     )
                 }
