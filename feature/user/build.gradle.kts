@@ -16,8 +16,10 @@ android {
 
 dependencies {
     implementation(
+        project(":core:data"),
+        project(":core:data-security"),
         project(":core:domain"),
         project(":core:ui"),
-        project(":core:util")
+        project(":core:util"),
     )
 }

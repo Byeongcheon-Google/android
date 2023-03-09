@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="login_screen_input_hint_email">이메일</string>
+    <string name="login_screen_input_hint_id">아이디</string>
     <string name="login_screen_input_hint_password">비밀번호</string>
     <string name="login_screen_button_login">로그인</string>
     <string name="login_screen_text_signup">회원가입</string>
     <string name="login_screen_text_find_password">비밀번호 찾기</string>
+    <string name="signup_screen_title">회원가입</string>
+    <string name="signup_screen_signup_button_text">회원가입</string>
+    <string name="signup_screen_input_hint_id">아이디</string>
+    <string name="signup_screen_check_id_text">아이디 중복 확인</string>
+    <string name="signup_screen_input_hint_password_confirm">비밀번호 확인</string>
+    <string name="signup_screen_input_hint_password">비밀번호</string>
+    <string name="signup_screen_id_is_duplicated">이미 가입된 아이디입니다.</string>
+    <string name="signup_screen_id_is_not_duplicated">사용 가능한 아이디입니다</string>
 </resources>

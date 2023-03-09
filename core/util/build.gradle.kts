@@ -9,3 +9,9 @@ android {
 
     configureKotlinAndroid(this)
 }
+
+dependencies {
+    implementation(
+        Libraries.Kotlin.COROUTINE_CORE
+    )
+}

@@ -44,10 +44,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val loginUiState by viewModel.loginUiState.collectAsState()
+
+    EdgeToEdge()
+
     LoginScreen(
         uiState = loginUiState,
-        onEmailChange = {
-            viewModel.setEmail(it)
+        onIdChange = {
+            viewModel.setId(it)
         },
         onPasswordChange = { viewModel.setPassword(it) },
         onLoginButtonClick = { viewModel.login() },
@@ -59,7 +62,7 @@ fun LoginScreen(viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,
-    onEmailChange: (String) -> Unit,
+    onIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
     onSignUpButtonClick: () -> Unit,
@@ -75,7 +78,6 @@ fun LoginScreen(
     }
 
     AppTheme {
-        EdgeToEdge()
 
         Surface(
             modifier = Modifier.fillMaxSize()
@@ -89,11 +91,11 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
             ) {
                 BcggUserLoginTextField(
-                    value = uiState.email,
+                    value = uiState.id,
                     onValueChange = {
-                        onEmailChange(it)
+                        onIdChange(it)
                     },
-                    hint = stringResource(R.string.login_screen_input_hint_email),
+                    hint = stringResource(R.string.login_screen_input_hint_id),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
                 )
                 BcggUserLoginTextField(
@@ -142,8 +144,8 @@ internal fun LoginScreenPreview() {
 
     LoginScreen(
         uiState = uiState,
-        onEmailChange = {
-            uiState = uiState.copy(email = it)
+        onIdChange = {
+            uiState = uiState.copy(id = it)
         },
         onPasswordChange = {
             uiState = uiState.copy(password = it)

@@ -15,6 +15,9 @@ object Versions {
     const val PAGING_COMPOSE = "1.0.0-alpha17"
     const val DATASTORE = "1.0.0"
 
+    // Kotlin
+    const val COROUTINE_CORE = "1.6.4"
+
     // KTX
     const val CORE = "1.9.0"
     const val LIFECYCLE_RUNTIME = "2.5.1"
@@ -73,6 +76,10 @@ object Libraries {
         const val PAGING_COMPOSE = "androidx.paging:paging-compose:${Versions.PAGING_COMPOSE}"
 
         const val DATASTORE = "androidx.datastore:datastore-preferences:${Versions.DATASTORE}"
+    }
+
+    object Kotlin {
+        const val COROUTINE_CORE = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.COROUTINE_CORE}"
     }
 
     object Ktx {

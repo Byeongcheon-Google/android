@@ -1,7 +1,6 @@
 package com.bcgg.core.security.util
 
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.regex.Pattern
 
 @Suppress("MagicNumber")
