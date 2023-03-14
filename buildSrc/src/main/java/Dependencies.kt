@@ -7,7 +7,7 @@ object Versions {
     // AndroidX
     const val APP_COMPAT = "1.6.0"
     const val MATERIAL = "1.8.0"
-    const val MATERIAL3 = "1.0.1"
+    const val MATERIAL3 = "1.1.0-alpha04"
     const val COMPOSE_UI = "1.3.3"
     const val ACTIVITY_COMPOSE = "1.6.1"
     const val LIFECYCLE = "2.5.1"

@@ -20,6 +20,7 @@ dependencies {
     implementation(
         project(":core:ui"),
         project(":feature:planeditor"),
+        project(":feature:planmanage"),
         project(":feature:user")
     )
 

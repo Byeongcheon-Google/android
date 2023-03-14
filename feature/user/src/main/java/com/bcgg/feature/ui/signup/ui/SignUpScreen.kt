@@ -206,7 +206,7 @@ fun SignUpScreen(
 internal fun SignUpScreenPreview() {
     SignUpScreen(
         uiState = SignUpUiState(),
-        isLoading = true,
+        isLoading = false,
         onIdChange = {},
         onPasswordChange = {},
         onPasswordConfirmChange = {},
