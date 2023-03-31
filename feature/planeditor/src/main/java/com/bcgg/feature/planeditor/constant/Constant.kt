@@ -16,10 +16,6 @@ object Constant {
 
     const val SEARCH_DEBOUNCE = 100L
 
-    const val SEOUL_LAT = 37.532600
-    const val SEOUL_LNG = 127.024612
-    const val DEFAULT_ZOOM = 11.0
-    const val SEARCH_ZOOM = 16.0
     const val MAP_CAMERA_ANIMATION_DURATION = 500L
     const val MAP_SELECTED_MARKER_Z_INDEX = 100
     const val MAP_MARKER_Z_INDEX = 0

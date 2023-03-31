@@ -41,7 +41,7 @@ import com.bcgg.core.ui.icon.icons.Remove
 import com.bcgg.core.ui.preview.PreviewContainer
 import com.bcgg.core.ui.theme.divider
 import com.bcgg.feature.planeditor.R
-import com.bcgg.feature.planeditor.compose.clock.ClockIcon
+import com.bcgg.core.ui.component.ClockIcon
 import com.bcgg.feature.planeditor.compose.slider.StayTimeSlider
 import com.bcgg.feature.planeditor.util.getDestinationTypeIcon
 import java.time.LocalDate
@@ -113,8 +113,9 @@ fun EditorDestinationItem(
                 leadingIcon = {
                     ClockIcon(
                         modifier = Modifier.size(20.dp),
-                        time1 = LocalTime.MIN,
-                        plusHour = destination.stayTimeHour
+                        timeRange = LocalTime.MIN..LocalTime.MIN.plusHours(
+                            destination.stayTimeHour.toLong()
+                        )
                     )
                 }
             )

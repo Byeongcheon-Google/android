@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,16 +14,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,18 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.ui.component.DateItem
 import com.bcgg.core.ui.theme.AppTheme
-import com.bcgg.core.ui.theme.Shapes
-import com.bcgg.core.util.date.monthDayFormatter
-import com.bcgg.core.util.date.weekdayFormatter
-import java.time.DayOfWeek
 import java.time.LocalDate
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -77,7 +66,7 @@ fun EditorDate(
             ) {
                 items(dateLength, key = { it }) {
                     val date = selectedDate.minusDays((dateLength - it).toLong())
-                    EditorDateItem(
+                    DateItem(
                         date = date,
                         isSelected = false,
                         isValid = date in dates,
@@ -87,7 +76,7 @@ fun EditorDate(
                     )
                 }
                 items(1, key = { it + dateLength }) {
-                    EditorDateItem(
+                    DateItem(
                         date = selectedDate,
                         isSelected = true,
                         isValid = selectedDate in dates,
@@ -98,7 +87,7 @@ fun EditorDate(
                 }
                 items(dateLength, key = { it + dateLength + 1 }) {
                     val date = selectedDate.plusDays((it + 1).toLong())
-                    EditorDateItem(
+                    DateItem(
                         date = date,
                         isSelected = false,
                         isValid = date in dates,
@@ -115,7 +104,7 @@ fun EditorDate(
             enter = expandHorizontally() + fadeIn(),
             exit = shrinkHorizontally() + fadeOut()
         ) {
-            EditorDateItem(
+            DateItem(
                 modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 0.dp, bottom = 8.dp),
                 date = selectedDate,
                 isSelected = true,
@@ -129,55 +118,7 @@ fun EditorDate(
     }
 }
 
-@Composable
-fun EditorDateItem(
-    modifier: Modifier = Modifier,
-    date: LocalDate,
-    isSelected: Boolean,
-    isValid: Boolean,
-    onClick: ((LocalDate) -> Unit)? = null
-) {
-    val backgroundColor = when {
-        isSelected -> MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp)
-        isValid -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-        else -> Color.Transparent
-    }
 
-    Column(
-        modifier = modifier
-            .size(52.dp)
-            .clip(Shapes.medium)
-            .background(backgroundColor)
-            .clickable(
-                enabled = onClick != null
-            ) {
-                if (onClick != null) {
-                    onClick(date)
-                }
-            },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        CompositionLocalProvider(
-            LocalContentColor provides when (date.dayOfWeek) {
-                DayOfWeek.SUNDAY -> MaterialTheme.colorScheme.error
-                DayOfWeek.SATURDAY -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.onSurface
-            }
-        ) {
-            Text(
-                modifier = Modifier.alpha(if (isValid) 1f else 0.5f),
-                text = date.format(monthDayFormatter),
-                style = MaterialTheme.typography.labelMedium,
-            )
-            Text(
-                modifier = Modifier.alpha(if (isValid) 1f else 0.5f),
-                text = date.format(weekdayFormatter),
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-    }
-}
 
 @Preview
 @Composable
@@ -189,7 +130,7 @@ fun EditorDateItemPreview() {
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface),
                 ) {
                     listOf(false to false, false to true, true to false, true to true).map {
-                        EditorDateItem(
+                        DateItem(
                             date = LocalDate.now(),
                             isSelected = it.first,
                             isValid = it.second,

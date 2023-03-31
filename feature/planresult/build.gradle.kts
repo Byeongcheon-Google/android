@@ -1,5 +1,5 @@
 
-import gradleconfig.configureGmsLocation
+import gradleconfig.configureCompose
 import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureNaverMapCompose
@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.bcgg.feature.planeditor"
+    namespace = "com.bcgg.feature.planresult"
 
     configureKotlinAndroid(this)
     configureNaverMapCompose(this)
@@ -17,7 +17,6 @@ android {
 }
 
 dependencies {
-    implementation(Libraries.AndroidX.PAGING_COMPOSE)
 
     implementation(
         project(":core:domain"),

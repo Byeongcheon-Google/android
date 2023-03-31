@@ -1,5 +1,6 @@
 package com.bcgg.feature.planmanage.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -98,7 +99,7 @@ fun PlanManageScreen(
 }
 
 @Composable
-@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 internal fun PlanManageScreenPreview() {
     val snackbarHostState = remember {
         SnackbarHostState()

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.bcgg.feature.planeditor"
+    namespace = "com.bcgg.feature.planmanage"
 
     configureKotlinAndroid(this)
     configureCompose(this)

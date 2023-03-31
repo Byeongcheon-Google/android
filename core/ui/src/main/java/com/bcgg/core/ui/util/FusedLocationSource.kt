@@ -1,4 +1,4 @@
-package com.bcgg.feature.planeditor.util
+package com.bcgg.core.ui.util
 
 import android.Manifest
 import android.annotation.SuppressLint

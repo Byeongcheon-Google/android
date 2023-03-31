@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration_format_hour">시간</string>
+    <string name="duration_format_less_than_minute">1분 미만</string>
+    <string name="duration_format_minute">분</string>
+    <string name="duration_format_default_postfix">소요</string>
+</resources>

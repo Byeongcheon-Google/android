@@ -1,4 +1,4 @@
-package com.bcgg.feature.planeditor.compose.clock
+package com.bcgg.core.ui.component
 
 import android.graphics.Paint
 import android.graphics.RectF
@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.ui.constant.ClockConstant.HOUR_DIVIDER
+import com.bcgg.core.ui.constant.ClockConstant.MINUTE_DIVIDER
 import com.bcgg.core.ui.preview.PreviewContainer
-import com.bcgg.feature.planeditor.constant.Constant.HOUR_DIVIDER
-import com.bcgg.feature.planeditor.constant.Constant.MINUTE_DIVIDER
 import java.time.LocalTime
 import kotlin.math.cos
 import kotlin.math.sin
@@ -31,20 +31,20 @@ import kotlin.random.nextInt
 @Composable
 fun ClockIcon(
     modifier: Modifier = Modifier,
-    time1: LocalTime,
-    plusHour: Int? = null
+    start: LocalTime,
+    endInclusive: LocalTime? = null
 ) {
     val backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f).toArgb()
     val handleColor = MaterialTheme.colorScheme.secondary.toArgb()
     val arcColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f).toArgb()
 
     val time1Degree by animateFloatAsState(
-        targetValue = -90 + time1.hour * HOUR_DIVIDER + time1.minute * MINUTE_DIVIDER
+        targetValue = -90 + start.hour * HOUR_DIVIDER + start.minute * MINUTE_DIVIDER
     )
 
     val time2Degree by animateFloatAsState(
-        targetValue = plusHour?.let {
-            time1Degree + it * HOUR_DIVIDER
+        targetValue = endInclusive?.let { endInclusive ->
+            -90 + endInclusive.hour * HOUR_DIVIDER + endInclusive.minute * MINUTE_DIVIDER
         } ?: Float.NaN
     )
 
@@ -101,17 +101,15 @@ fun ClockIcon(
     }
 }
 
+@Composable
+fun ClockIcon(
+    modifier: Modifier = Modifier,
+    timeRange: ClosedRange<LocalTime>
+) = ClockIcon(modifier, timeRange.start, timeRange.endInclusive)
+
 @Preview
 @Composable
 private fun ClockPreview() {
-
-    var plusHour by remember { mutableStateOf(3) }
-
-    LaunchedEffect(key1 = true) {
-        while (true) {
-            plusHour = Random.nextInt(1..16)
-        }
-    }
 
     PreviewContainer {
         Row {
@@ -119,21 +117,21 @@ private fun ClockPreview() {
                 modifier = Modifier
                     .padding(8.dp)
                     .size(24.dp),
-                time1 = LocalTime.now()
+                start = LocalTime.now()
             )
             ClockIcon(
                 modifier = Modifier
                     .padding(8.dp)
                     .size(24.dp),
-                time1 = LocalTime.of(9, 0),
-                plusHour = 4
+                start = LocalTime.of(9, 0),
+                endInclusive = LocalTime.of(12, 30)
             )
             ClockIcon(
                 modifier = Modifier
                     .padding(8.dp)
                     .size(24.dp),
-                time1 = LocalTime.of(9, 0),
-                plusHour = plusHour
+                start = LocalTime.of(9, 0),
+                endInclusive = LocalTime.of(12, 30)
             )
         }
     }

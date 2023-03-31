@@ -21,6 +21,7 @@ dependencies {
         project(":core:ui"),
         project(":feature:planeditor"),
         project(":feature:planmanage"),
+        project(":feature:planresult"),
         project(":feature:user")
     )
 
