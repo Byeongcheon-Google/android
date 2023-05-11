@@ -48,6 +48,7 @@ fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *>)
 
         implementation(
             Libraries.Ktx.CORE,
+            Libraries.Kotlin.DATETIME
         )
 
         testImplementation(

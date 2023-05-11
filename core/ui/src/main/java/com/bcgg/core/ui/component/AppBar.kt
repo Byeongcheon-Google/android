@@ -1,5 +1,6 @@
 package com.bcgg.core.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -167,4 +168,18 @@ internal fun RoundedAppBarPreviewSample() {
             )
         }
     }
+}
+
+@Composable
+fun BackButton(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit
+) {
+    Icon(
+        modifier = modifier
+            .clickable(onClick = onBackClick)
+            .padding(16.dp),
+        imageVector = Icons.Arrowleft,
+        contentDescription = ""
+    )
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.ui.preview.PreviewContainer
 import java.time.LocalDate
@@ -75,21 +76,21 @@ private fun EditorCompressedPreview() {
                     address = "충남 천안시 동남구 충절로 1600",
                     stayTimeHour = 2,
                     date = LocalDate.now(),
-                    type = Destination.Type.Travel
+                    classification = Classification.Travel
                 ),
                 Destination(
                     name = "터미널",
                     address = "몰루",
                     stayTimeHour = 2,
                     date = LocalDate.now(),
-                    type = Destination.Type.Travel
+                    classification = Classification.Travel
                 ),
                 Destination(
                     name = "천안역",
                     address = "몰루",
                     stayTimeHour = 2,
-                    date = LocalDate.now(),
-                    type = Destination.Type.Travel
+                            date = LocalDate.now(),
+                    classification = Classification.Travel
                 )
             )
 

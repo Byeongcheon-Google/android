@@ -2,6 +2,7 @@
 import gradleconfig.configureCompose
 import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
+import gradleconfig.configureKotlinXSerialization
 import gradleconfig.configureNaverMapCompose
 
 plugins {
@@ -14,6 +15,7 @@ android {
     configureKotlinAndroid(this)
     configureNaverMapCompose(this)
     configureHilt(this)
+    configureKotlinXSerialization()
 }
 
 dependencies {

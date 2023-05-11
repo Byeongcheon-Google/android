@@ -17,6 +17,7 @@ object Versions {
 
     // Kotlin
     const val COROUTINE_CORE = "1.6.4"
+    const val DATETIME = "0.4.0"
 
     // KTX
     const val CORE = "1.9.0"
@@ -80,6 +81,7 @@ object Libraries {
 
     object Kotlin {
         const val COROUTINE_CORE = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.COROUTINE_CORE}"
+        const val DATETIME = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.DATETIME}"
     }
 
     object Ktx {

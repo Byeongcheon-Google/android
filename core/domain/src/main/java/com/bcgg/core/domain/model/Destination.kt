@@ -9,9 +9,5 @@ data class Destination(
     val lng: Double = Double.NaN,
     val stayTimeHour: Int,
     val date: LocalDate,
-    val type: Type
-) {
-    enum class Type {
-        Travel, House, Food
-    }
-}
+    val classification: Classification
+)

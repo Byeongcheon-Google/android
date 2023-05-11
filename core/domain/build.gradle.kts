@@ -1,6 +1,7 @@
 
 import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
+import gradleconfig.configureKotlinXSerialization
 
 plugins {
     id("com.android.library")
@@ -11,6 +12,7 @@ android {
 
     configureKotlinAndroid(this)
     configureHilt(this)
+    configureKotlinXSerialization()
 }
 
 dependencies {

@@ -2,6 +2,7 @@ package com.bcgg.feature.planeditor.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.MapSearchResult
 import com.bcgg.core.domain.repository.MapPlaceRepository
@@ -64,7 +65,7 @@ class PlanEditorViewModel @Inject constructor(
             lat = mapSearchResult.lat,
             lng = mapSearchResult.lng,
             stayTimeHour = Constant.MIN_STAY_TIME,
-            type = Destination.Type.Travel,
+            classification = Classification.Travel,
             date = uiState.value.selectedDate
         )
 

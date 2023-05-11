@@ -2,6 +2,9 @@ package com.bcgg.core.ui.util
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -26,3 +29,5 @@ fun EdgeToEdge() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 }
+
+val statusBarPaddingValues @Composable get() = WindowInsets.systemBars.asPaddingValues()
