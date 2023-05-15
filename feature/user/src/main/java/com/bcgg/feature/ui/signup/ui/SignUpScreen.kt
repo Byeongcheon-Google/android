@@ -135,10 +135,10 @@ fun SignUpScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(it)
                     .fillMaxSize()
                     .padding(16.dp)
-                    .imePadding(),
+                    .imePadding()
+                    .padding(it),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 BcggUserLoginTextField(
