@@ -1,6 +1,5 @@
 // Dependencies.kt
 object Versions {
-
     const val KOTLIN_VERSION = "1.7.20"
     const val AGP_VERSION = "7.4.1"
 
@@ -13,6 +12,7 @@ object Versions {
     const val LIFECYCLE = "2.5.1"
     const val PAGING = "3.1.1"
     const val PAGING_COMPOSE = "1.0.0-alpha17"
+    const val NAVIGATION_COMPOSE = "2.5.3"
     const val DATASTORE = "1.0.0"
 
     // Kotlin
@@ -75,6 +75,7 @@ object Libraries {
 
         const val PAGING_RUNTIME = "androidx.paging:paging-runtime:${Versions.PAGING}"
         const val PAGING_COMPOSE = "androidx.paging:paging-compose:${Versions.PAGING_COMPOSE}"
+        const val NAVIGATION_COMPOSE = "androidx.navigation:navigation-compose:${Versions.NAVIGATION_COMPOSE}"
 
         const val DATASTORE = "androidx.datastore:datastore-preferences:${Versions.DATASTORE}"
     }

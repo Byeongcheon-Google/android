@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import com.bcgg.core.ui.provider.LocalActivity
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.util.EdgeToEdge
+import com.bcgg.feature.planmanage.ui.PlanManageScreen
 import com.bcgg.feature.planresult.compose.PlanResultScreen
 import com.bcgg.feature.planresult.state.PlanResultItemUiState
 import com.bcgg.feature.planresult.util.getSample
@@ -35,11 +36,13 @@ class MainActivity : ComponentActivity() {
             var selectedPlanResultItemUiState by remember { mutableStateOf<PlanResultItemUiState?>(null) }
             EdgeToEdge()
             CompositionLocalProvider(LocalActivity provides this) {
-                PlanResultScreen(
-                    planName = "강릉속초여행",
-                    planResultItemUiStates = getSample(this@MainActivity),
-                    selectedPlanResultItemUiState = selectedPlanResultItemUiState,
-                    onSelectedPlanResultItem = { selectedPlanResultItemUiState = it }
+                PlanManageScreen(
+                    snackBarHostState = ,
+                    plans = ,
+                    onAddButtonClick = { /*TODO*/ },
+                    onPlanItemClick = ,
+                    onPlanItemRemove = ,
+                    onPlanItemRemoveUndo = 
                 )
             }
         }

@@ -31,7 +31,8 @@ fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *>) {
             Libraries.AndroidX.MATERIAL3,
             Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
             Libraries.AndroidX.LIFECYCLE_VIEWMODEL_COMPOSE,
-            Libraries.AndroidX.ACTIVITY_COMPOSE
+            Libraries.AndroidX.ACTIVITY_COMPOSE,
+            Libraries.AndroidX.NAVIGATION_COMPOSE
         )
 
         debugImplementation(
