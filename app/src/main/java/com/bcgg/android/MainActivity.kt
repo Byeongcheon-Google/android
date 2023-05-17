@@ -35,6 +35,8 @@ import com.bcgg.feature.ui.signup.navigation.SignUpScreenNavigation
 import com.bcgg.feature.ui.login.ui.LoginScreen
 import com.bcgg.feature.ui.signup.ui.SignUpScreen
 import com.bcgg.feature.ui.signup.ui.SignUpTopAppBar
+import com.bcgg.splash.compose.SplashScreen
+import com.bcgg.splash.navigation.SplashScreenNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,8 +57,22 @@ class MainActivity : ComponentActivity() {
                 AppTheme {
                     NavHost(
                         navController = navController,
-                        startDestination = LoginScreenNavigation.id
+                        startDestination = SplashScreenNavigation.id
                     ) {
+                        composable(SplashScreenNavigation.id) {
+                            SplashScreen(
+                                onAutoLoginSuccess = {
+                                    navController.navigate(PlanManageScreenNavigation.id) {
+                                        popUpTo(SplashScreenNavigation.id)
+                                    }
+                                },
+                                onAutoLoginFailure = {
+                                    navController.navigate(LoginScreenNavigation.id) {
+                                        popUpTo(SplashScreenNavigation.id)
+                                    }
+                                }
+                            )
+                        }
                         composable(LoginScreenNavigation.id) {
                             LoginScreen(
                                 snackbarHostState = snackbarHostState,
@@ -72,7 +88,7 @@ class MainActivity : ComponentActivity() {
                                 signUpCompletedId = signupCompleteId,
                                 onLoginCompleted = {
                                     navController.navigate(PlanManageScreenNavigation.id) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
+                                        popUpTo(LoginScreenNavigation.id) {
                                             inclusive = true
                                         }
                                     }

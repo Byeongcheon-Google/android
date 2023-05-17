@@ -13,7 +13,8 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 @Suppress("MagicNumber")
-object SecurityUtil {
+object
+ecurityUtil {
     private const val provider = "AndroidKeyStore"
     private const val cipherString = "AES/GCM/NoPadding"
     private const val charsetString = "UTF-8"

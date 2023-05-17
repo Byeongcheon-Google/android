@@ -52,6 +52,9 @@ object Versions {
 
     //Desugaring
     const val CORE_LIBRARY_DESUGRAING = "2.0.0"
+
+    //Hawk
+    const val HAWK = "2.0.1"
 }
 
 object Libraries {
@@ -131,5 +134,9 @@ object Libraries {
 
     object Gms {
         const val GMS_LOCATION = "com.google.android.gms:play-services-location:${Versions.GMS_LOCATION}"
+    }
+
+    object Hawk {
+        const val HAWK = "com.orhanobut:hawk:${Versions.HAWK}"
     }
 }

@@ -13,12 +13,12 @@ android {
     configureKotlinAndroid(this)
     configureRetrofit2()
     configureHilt(this)
-    configureDataStore()
 }
 
 dependencies {
     implementation(
         project(":core:util"),
-        project(":core:network")
+        project(":core:network"),
+        Libraries.Hawk.HAWK
     )
 }

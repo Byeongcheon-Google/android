@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object UserDataSourceModule {
+object DataSourceModule {
 
     @Provides
     @Singleton
