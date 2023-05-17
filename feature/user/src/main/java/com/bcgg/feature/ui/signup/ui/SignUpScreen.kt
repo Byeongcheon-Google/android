@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.bcgg.core.domain.model.state.UserPasswordValidationState
 import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
 import com.bcgg.core.ui.component.ProgressDialog
@@ -82,7 +83,7 @@ fun SignUpScreen(
     EdgeToEdge()
     Scaffold(
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.imePadding())
         },
         topBar = {
             SignUpTopAppBar(onBack)
@@ -187,6 +188,17 @@ internal fun SignUpScreen(
                     visualTransformation = PasswordVisualTransformation()
                 )
 
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = when (uiState.passwordState) {
+                        UserPasswordValidationState.NoPassword -> "8자 이상의 비밀번호를 입력해 주세요"
+                        UserPasswordValidationState.OK -> ""
+                        UserPasswordValidationState.TooShort -> "8자 이상의 비밀번호를 입력해 주세요"
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+
                 BcggUserLoginTextField(
                     value = uiState.passwordConfirm,
                     onValueChange = onPasswordConfirmChange,
@@ -197,7 +209,7 @@ internal fun SignUpScreen(
                     visualTransformation = PasswordVisualTransformation()
                 )
 
-                if (!uiState.isPasswordMatch) {
+                if (uiState.passwordConfirm.isNotBlank() && !uiState.isPasswordMatch) {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         text = stringResource(R.string.signup_screen_password_is_not_match),

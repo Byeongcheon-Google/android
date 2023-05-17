@@ -40,13 +40,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
+import com.bcgg.core.ui.component.ProgressDialog
 import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
 import com.bcgg.feature.ui.login.state.LoginUiState
 import com.bcgg.feature.ui.login.viewmodel.LoginViewModel
 import com.bcgg.feature.user.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,10 +60,27 @@ fun LoginScreen(
     snackbarHostState: SnackbarHostState,
     onSignUpButtonClick: () -> Unit,
     onFindPasswordButtonClick: () -> Unit,
-    signUpCompletedId: String? = null
+    signUpCompletedId: String? = null,
+    onLoginCompleted: () -> Unit
 ) {
     val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val isLoading by loginViewModel.isLoading.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(Unit) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            launch {
+                loginViewModel.errorMessage.collectLatest {
+                    snackbarHostState.showSnackbar(it)
+                }
+            }
+            launch {
+                loginViewModel.loginCompletedEvent.collectLatest {
+                    onLoginCompleted()
+                }
+            }
+        }
+    }
 
     LaunchedEffect(signUpCompletedId) {
         if(signUpCompletedId == null) return@LaunchedEffect
@@ -67,6 +88,8 @@ fun LoginScreen(
         loginViewModel.setId(signUpCompletedId)
         snackbarHostState.showSnackbar("회원가입을 완료했습니다.")
     }
+    
+    ProgressDialog(show = isLoading)
 
     LoginScreen(
         modifier = modifier.padding(LocalScaffoldPaddingValues.current),
@@ -96,7 +119,7 @@ internal fun LoginScreen(
 ) {
     Scaffold(
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.imePadding())
         }
     ) {
         Column(

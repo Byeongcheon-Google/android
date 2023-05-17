@@ -66,7 +66,10 @@ class MainActivity : ComponentActivity() {
                                 onFindPasswordButtonClick = {
 
                                 },
-                                signUpCompletedId = signupCompleteId
+                                signUpCompletedId = signupCompleteId,
+                                onLoginCompleted = {
+
+                                }
                             )
                         }
                         composable(SignUpScreenNavigation.id) {

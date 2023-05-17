@@ -3,6 +3,7 @@ package com.bcgg.feature.ui.signup.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.domain.usecase.user.SignUpUseCase
+import com.bcgg.core.domain.usecase.user.UserPasswordValidationUseCase
 import com.bcgg.core.ui.viewmodel.BaseViewModel
 import com.bcgg.core.util.ext.collectOnFailure
 import com.bcgg.core.util.ext.collectOnSuccess
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val userPasswordValidationUseCase: UserPasswordValidationUseCase,
     private val signUpUseCase: SignUpUseCase
 ) : BaseViewModel() {
     private val _signUpUiState = MutableStateFlow(SignUpUiState())
@@ -37,7 +39,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun updatePasswordText(password: String) {
-        _signUpUiState.value = signUpUiState.value.copy(password = password)
+        _signUpUiState.value = signUpUiState.value.copy(
+            password = password,
+            passwordState = userPasswordValidationUseCase(password)
+        )
     }
 
     fun updatePasswordConfirmText(passwordConfirm: String) {

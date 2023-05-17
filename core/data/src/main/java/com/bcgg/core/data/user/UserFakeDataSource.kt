@@ -5,6 +5,10 @@ import kotlinx.coroutines.delay
 
 class UserFakeDataSource : UserDataSource {
     override suspend fun login(id: String, password: String): TokenResponse {
+        delay(FAKE_HTTP_DELAY)
+        if(id == "fail") throw RuntimeException("아이디를 확인해 주세요")
+        if(password == "failfail") throw RuntimeException("비밀번호를 확인해 주세요")
+
         return TokenResponse(
             accessToken = "fake access token",
             refreshToken = "fake refresh token"
