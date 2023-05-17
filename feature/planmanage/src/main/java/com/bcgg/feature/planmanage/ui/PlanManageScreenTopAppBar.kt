@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 fun PlanManageScreenTopAppBar() {
     TopAppBar(
         title = {
-            Text("플랜 관리")
+            Text("여행 계획")
         }
     )
 }

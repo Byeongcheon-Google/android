@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
@@ -47,7 +48,7 @@ import java.time.LocalDateTime
 fun PlanManageScreen(
     modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState,
-    viewModel: PlanManageViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: PlanManageViewModel = hiltViewModel(),
     onNewPlan: () -> Unit,
     onEditPlan: (planId: Int) -> Unit,
 ) {
@@ -84,26 +85,39 @@ fun PlanManageScreen(
         }
     }
 
-    LazyColumn(
-        modifier = modifier
+    Scaffold(
+        topBar = {
+            PlanManageScreenTopAppBar()
+        },
+        floatingActionButton = {
+            PlanManageScreenFab(onNewPlan)
+        }
     ) {
-        val plans = uiState.value.plans
+        if(uiState.value.plans.isEmpty()) {
+            EmptyPlans()
+        } else {
+            LazyColumn(
+                modifier = modifier.padding(it)
+            ) {
+                val plans = uiState.value.plans
 
-        items(plans.size, key = { index -> plans[index].id }) { position ->
-            plans[position].let {
-                PlanManageItem(
-                    modifier = Modifier.animateItemPlacement(),
-                    item = it,
-                    onClick = { viewModel.onPlanItemClick(position, it) },
-                    onDelete = {
-                        viewModel.onPlanItemRemove(position, it)
+                items(plans.size, key = { index -> plans[index].id }) { position ->
+                    plans[position].let {
+                        PlanManageItem(
+                            modifier = Modifier.animateItemPlacement(),
+                            item = it,
+                            onClick = { viewModel.onPlanItemClick(position, it) },
+                            onDelete = {
+                                viewModel.onPlanItemRemove(position, it)
+                            }
+                        )
+                        if (position < plans.lastIndex) {
+                            Divider(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                color = MaterialTheme.colorScheme.divider
+                            )
+                        }
                     }
-                )
-                if (position < plans.lastIndex) {
-                    Divider(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        color = MaterialTheme.colorScheme.divider
-                    )
                 }
             }
         }

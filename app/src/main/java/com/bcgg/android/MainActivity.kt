@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +28,8 @@ import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
 import com.bcgg.core.ui.provider.LocalActivity
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.util.EdgeToEdge
+import com.bcgg.feature.planmanage.navigation.PlanManageScreenNavigation
+import com.bcgg.feature.planmanage.ui.PlanManageScreen
 import com.bcgg.feature.ui.login.navigation.LoginScreenNavigation
 import com.bcgg.feature.ui.signup.navigation.SignUpScreenNavigation
 import com.bcgg.feature.ui.login.ui.LoginScreen
@@ -68,7 +71,11 @@ class MainActivity : ComponentActivity() {
                                 },
                                 signUpCompletedId = signupCompleteId,
                                 onLoginCompleted = {
-
+                                    navController.navigate(PlanManageScreenNavigation.id) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            inclusive = true
+                                        }
+                                    }
                                 }
                             )
                         }
@@ -81,6 +88,15 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBack = {
                                     navController.popBackStack()
+                                }
+                            )
+                        }
+                        composable(PlanManageScreenNavigation.id) {
+                            PlanManageScreen(
+                                snackBarHostState = snackbarHostState,
+                                onNewPlan = { /*TODO*/ },
+                                onEditPlan = {
+
                                 }
                             )
                         }
