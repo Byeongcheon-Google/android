@@ -32,7 +32,10 @@ fun Project.configureHilt(commonExtension: CommonExtension<*, *, *, *>) {
     }
 
     dependencies {
-        implementation(Libraries.Di.HILT_ANDROID)
+        implementation(
+            Libraries.Di.HILT_ANDROID,
+            Libraries.Di.HILT_COMPOSE_NAVIGATION
+        )
         kapt(Libraries.Di.HILT_ANDROID_COMPILER)
     }
 }

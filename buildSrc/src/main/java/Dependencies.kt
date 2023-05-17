@@ -45,6 +45,7 @@ object Versions {
 
     //DI
     const val HILT_VERSION = "2.44.2"
+    const val HILT_COMPOSE_NAVIGATION_VERSION = "1.0.0"
 
     //Naver Map
     const val NAVER_MAP_COMPOSE = "1.2.3"
@@ -114,6 +115,8 @@ object Libraries {
         const val HILT_ANDROID = "com.google.dagger:hilt-android:${Versions.HILT_VERSION}"
         const val HILT_ANDROID_COMPILER =
             "com.google.dagger:hilt-android-compiler:${Versions.HILT_VERSION}"
+        const val HILT_COMPOSE_NAVIGATION =
+            "androidx.hilt:hilt-navigation-compose:${Versions.HILT_COMPOSE_NAVIGATION_VERSION}"
     }
 
     object NaverMap {

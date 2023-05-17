@@ -13,4 +13,5 @@
     <string name="signup_screen_input_hint_password">비밀번호</string>
     <string name="signup_screen_id_is_duplicated">이미 가입된 아이디입니다.</string>
     <string name="signup_screen_id_is_not_duplicated">사용 가능한 아이디입니다</string>
+    <string name="signup_screen_password_is_not_match">비밀번호가 일치하지 않습니다</string>
 </resources>

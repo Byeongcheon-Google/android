@@ -22,6 +22,6 @@ class UserFakeDataSource : UserDataSource {
     }
 
     companion object {
-        const val FAKE_HTTP_DELAY = 1000L
+        const val FAKE_HTTP_DELAY = 400L
     }
 }

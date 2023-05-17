@@ -2,8 +2,10 @@ package com.bcgg.feature.ui.signup.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,20 +22,26 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
 import com.bcgg.core.ui.component.ProgressDialog
+import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowleft
 import com.bcgg.core.ui.theme.AppTheme
@@ -42,50 +50,69 @@ import com.bcgg.feature.ui.signup.state.SignUpUiState
 import com.bcgg.feature.ui.signup.viewmodel.SignUpViewModel
 import com.bcgg.feature.user.R
 import kotlinx.coroutines.flow.collectLatest
-
-@Composable
-fun SignUpScreen(viewModel: SignUpViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    val signUpUiState by viewModel.signUpUiState.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        viewModel.toastMessage.collectLatest {
-            snackbarHostState.showSnackbar(it)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.signUpCompletedEvent.collectLatest {
-            // 회원가입 완료 시 처리
-        }
-    }
-
-    EdgeToEdge()
-    SignUpScreen(
-        uiState = signUpUiState,
-        isLoading = isLoading,
-        snackBarHostState = snackbarHostState,
-        onIdChange = {
-            viewModel.updateIdText(it)
-        },
-        onPasswordChange = {
-            viewModel.updatePasswordText(it)
-        },
-        onPasswordConfirmChange = {
-            viewModel.updatePasswordConfirmText(it)
-        },
-        onSignUpButtonClick = { viewModel.signUp() },
-        onCheckIdDuplicatedButtonClick = { viewModel.checkIdIsDuplicated() }
-    )
-}
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
+    viewModel: SignUpViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
+    onBack: () -> Unit,
+    onSignupCompleted: (String) -> Unit
+) {
+    val signUpUiState by viewModel.signUpUiState.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(Unit) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            launch {
+                viewModel.errorMessage.collectLatest {
+                    snackbarHostState.showSnackbar(it)
+                }
+            }
+            launch {
+                viewModel.signUpCompletedEvent.collectLatest {
+                    onSignupCompleted(it)
+                }
+            }
+        }
+    }
+
+    EdgeToEdge()
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        topBar = {
+            SignUpTopAppBar(onBack)
+        }
+    ) { paddingValues ->
+        CompositionLocalProvider(LocalScaffoldPaddingValues provides paddingValues) {
+            SignUpScreen(
+                uiState = signUpUiState,
+                isLoading = isLoading,
+                onIdChange = {
+                    viewModel.updateIdText(it)
+                },
+                onPasswordChange = {
+                    viewModel.updatePasswordText(it)
+                },
+                onPasswordConfirmChange = {
+                    viewModel.updatePasswordConfirmText(it)
+                },
+                onSignUpButtonClick = { viewModel.signUp() },
+                onCheckIdDuplicatedButtonClick = { viewModel.checkIdIsDuplicated() }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SignUpScreen(
     uiState: SignUpUiState,
     isLoading: Boolean,
-    snackBarHostState: SnackbarHostState,
     onIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordConfirmChange: (String) -> Unit,
@@ -101,45 +128,17 @@ fun SignUpScreen(
         handleBackPress()
     }
 
-    AppTheme {
-        ProgressDialog(show = isLoading)
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = stringResource(R.string.signup_screen_title)) },
-                    navigationIcon = {
-                        Icon(
-                            modifier = Modifier
-                                .clickable(onClick = onBack)
-                                .padding(16.dp),
-                            imageVector = Icons.Arrowleft,
-                            contentDescription = ""
-                        )
-                    }
-                )
-            },
-            bottomBar = {
-                LargeButton(
-                    modifier = Modifier.padding(16.dp).imePadding(),
-                    onClick = onSignUpButtonClick,
-                    enabled = uiState.id.isNotBlank() &&
-                        uiState.password.isNotBlank() &&
-                        uiState.passwordConfirm.isNotBlank() &&
-                        uiState.isIdDuplicated == false
-                ) {
-                    Text(text = stringResource(R.string.signup_screen_signup_button_text))
-                }
-            }
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .imePadding()
+            .padding(LocalScaffoldPaddingValues.current)
+    ) {
+        Column {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .imePadding()
-                    .padding(it),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 BcggUserLoginTextField(
                     value = uiState.id,
@@ -154,7 +153,7 @@ fun SignUpScreen(
 
                 LargeButton(
                     onClick = onCheckIdDuplicatedButtonClick,
-                    enabled = uiState.isIdDuplicated != true
+                    enabled = uiState.isIdDuplicateCheckEnabled
                 ) {
                     Text(text = stringResource(R.string.signup_screen_check_id_text))
                 }
@@ -197,8 +196,27 @@ fun SignUpScreen(
                     ),
                     visualTransformation = PasswordVisualTransformation()
                 )
+
+                if (!uiState.isPasswordMatch) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(R.string.signup_screen_password_is_not_match),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            LargeButton(
+                modifier = Modifier
+                    .imePadding(),
+                onClick = onSignUpButtonClick,
+                enabled = uiState.isSignUpEnabled
+            ) {
+                Text(text = stringResource(R.string.signup_screen_signup_button_text))
             }
         }
+
+        ProgressDialog(show = isLoading)
     }
 }
 
@@ -212,7 +230,6 @@ internal fun SignUpScreenPreview() {
         onPasswordChange = {},
         onPasswordConfirmChange = {},
         onSignUpButtonClick = { },
-        onCheckIdDuplicatedButtonClick = { },
-        snackBarHostState = SnackbarHostState()
+        onCheckIdDuplicatedButtonClick = { }
     )
 }

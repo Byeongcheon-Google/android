@@ -24,14 +24,16 @@ class SignUpViewModel @Inject constructor(
     private val _signUpUiState = MutableStateFlow(SignUpUiState())
     val signUpUiState = _signUpUiState.asStateFlow()
 
-    private val _toastMessage = MutableSharedFlow<String>()
-    val toastMessage = _toastMessage.asSharedFlow()
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage = _errorMessage.asSharedFlow()
 
-    private val _signUpCompletedEvent = MutableSharedFlow<Unit>()
+    private val _signUpCompletedEvent = MutableSharedFlow<String>()
     val signUpCompletedEvent = _signUpCompletedEvent.asSharedFlow()
 
+    var signUpProceed = false
+
     fun updateIdText(id: String) {
-        _signUpUiState.value = signUpUiState.value.copy(id = id)
+        _signUpUiState.value = signUpUiState.value.copy(id = id, isIdDuplicated = null)
     }
 
     fun updatePasswordText(password: String) {
@@ -54,11 +56,13 @@ class SignUpViewModel @Inject constructor(
                 _signUpUiState.value = signUpUiState.value.copy(
                     isIdDuplicated = null
                 )
-                _toastMessage.emit(it)
+                _errorMessage.emit(it)
             }
     }
 
     fun signUp() = viewModelScope.launch {
+        if (signUpProceed) return@launch
+        signUpProceed = true
         signUpUseCase(
             id = signUpUiState.value.id,
             password = signUpUiState.value.password,
@@ -66,10 +70,11 @@ class SignUpViewModel @Inject constructor(
         )
             .withLoading(_isLoading)
             .collectOnSuccess {
-                _signUpCompletedEvent.emit(Unit)
+                _signUpCompletedEvent.emit(signUpUiState.value.id)
             }
             .collectOnFailure {
-                _toastMessage.emit(it)
+                _errorMessage.emit(it)
+                signUpProceed = false
             }
     }
 }
