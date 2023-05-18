@@ -28,6 +28,8 @@ import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
 import com.bcgg.core.ui.provider.LocalActivity
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.util.EdgeToEdge
+import com.bcgg.feature.planeditor.compose.screen.PlanEditorScreen
+import com.bcgg.feature.planeditor.navigation.PlanEditorScreenNavigation
 import com.bcgg.feature.planmanage.navigation.PlanManageScreenNavigation
 import com.bcgg.feature.planmanage.ui.PlanManageScreen
 import com.bcgg.feature.ui.login.navigation.LoginScreenNavigation
@@ -110,9 +112,16 @@ class MainActivity : ComponentActivity() {
                         composable(PlanManageScreenNavigation.id) {
                             PlanManageScreen(
                                 snackBarHostState = snackbarHostState,
-                                onNewPlan = { /*TODO*/ },
+                                onNewPlan = { navController.navigate(PlanEditorScreenNavigation.id) },
                                 onEditPlan = {
 
+                                }
+                            )
+                        }
+                        composable(PlanEditorScreenNavigation.id) {
+                            PlanEditorScreen(
+                                onBack = {
+                                    navController.popBackStack()
                                 }
                             )
                         }

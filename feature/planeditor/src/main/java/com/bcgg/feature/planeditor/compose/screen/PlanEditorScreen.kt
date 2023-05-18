@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bcgg.core.domain.constant.MapConstant.DEFAULT_ZOOM
 import com.bcgg.core.domain.constant.MapConstant.SEARCH_ZOOM
@@ -69,7 +70,7 @@ import com.naver.maps.map.util.MarkerIcons
 fun PlanEditorScreen(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     useNaviType: Boolean = true,
-    viewModel: PlanEditorViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: PlanEditorViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
     val localDensity = LocalDensity.current
