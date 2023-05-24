@@ -64,7 +64,7 @@ fun EditorDate(
                 contentPadding = PaddingValues(all = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(dateLength, key = { it }) {
+                items(dateLength, key = { selectedDate.minusDays((dateLength - it).toLong()) }) {
                     val date = selectedDate.minusDays((dateLength - it).toLong())
                     DateItem(
                         date = date,
@@ -75,7 +75,7 @@ fun EditorDate(
                         }
                     )
                 }
-                items(1, key = { it + dateLength }) {
+                items(1, key = { selectedDate }) {
                     DateItem(
                         date = selectedDate,
                         isSelected = true,
@@ -85,7 +85,7 @@ fun EditorDate(
                         }
                     )
                 }
-                items(dateLength, key = { it + dateLength + 1 }) {
+                items(dateLength, key = { selectedDate.plusDays((it + 1).toLong()) }) {
                     val date = selectedDate.plusDays((it + 1).toLong())
                     DateItem(
                         date = date,
@@ -114,7 +114,7 @@ fun EditorDate(
     }
 
     LaunchedEffect(key1 = selectedDate) {
-        listState.scrollToItem(dateLength, scrollOffset)
+        listState.animateScrollToItem(dateLength, scrollOffset)
     }
 }
 

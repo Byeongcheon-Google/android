@@ -22,7 +22,7 @@ class SplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            userRepository.checkToken()
+            userRepository.getUserId()
                 .collectOnSuccess { _tokenIsValid.emit(true) }
                 .collectOnFailure { _tokenIsValid.emit(false) }
         }

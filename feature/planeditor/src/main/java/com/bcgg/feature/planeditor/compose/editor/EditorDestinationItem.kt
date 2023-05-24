@@ -32,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Remove
 import com.bcgg.core.ui.preview.PreviewContainer
@@ -44,17 +46,24 @@ import com.bcgg.core.ui.theme.divider
 import com.bcgg.feature.planeditor.R
 import com.bcgg.core.ui.component.ClockIcon
 import com.bcgg.feature.planeditor.compose.slider.StayTimeSlider
-import com.bcgg.feature.planeditor.util.getDestinationTypeIcon
+import com.bcgg.feature.planeditor.util.getClassificationIcon
 import java.time.LocalDate
 import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorDestinationItem(
-    destination: Destination,
+    placeSearchResultWithId: PlaceSearchResultWithId,
+    stayTimeHour: Int,
+    classification: Classification,
     showDivider: Boolean,
-    onChange: (Destination) -> Unit,
-    onRemove: (Destination) -> Unit
+    isStartPosition: Boolean,
+    isEndPosition: Boolean,
+    onStayTimeChange: (Int) -> Unit,
+    onClassificationChange: (Classification) -> Unit,
+    onRemove: (PlaceSearchResultWithId) -> Unit,
+    onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
+    onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
 ) {
     var selectedChip: SelectedChip? by rememberSaveable {
         mutableStateOf(null)
@@ -78,14 +87,14 @@ fun EditorDestinationItem(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = destination.name,
+                text = placeSearchResultWithId.placeSearchResult.name,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
 
         Text(
-            text = destination.address,
+            text = placeSearchResultWithId.placeSearchResult.address,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -107,7 +116,7 @@ fun EditorDestinationItem(
                     Text(
                         text = stringResource(
                             id = R.string.editor_destination_item_stay_hour,
-                            destination.stayTimeHour
+                            stayTimeHour
                         )
                     )
                 },
@@ -115,7 +124,7 @@ fun EditorDestinationItem(
                     ClockIcon(
                         modifier = Modifier.size(20.dp),
                         timeRange = LocalTime.MIN..LocalTime.MIN.plusHours(
-                            destination.stayTimeHour.toLong()
+                            stayTimeHour.toLong()
                         )
                     )
                 }
@@ -132,14 +141,65 @@ fun EditorDestinationItem(
                 label = {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        imageVector = getDestinationTypeIcon(destination = destination),
+                        imageVector = getClassificationIcon(classification),
                         contentDescription = ""
                     )
                 }
             )
+
+
             ElevatedAssistChip(
                 onClick = {
-                    onRemove(destination)
+                    onSelectStartPosition(placeSearchResultWithId)
+                },
+                label = {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(id = R.drawable.start),
+                        contentDescription = "출발 여행지",
+                        tint = if(isStartPosition) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if(isStartPosition) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    }
+                )
+            )
+            ElevatedAssistChip(
+                onClick = {
+                    onSelectEndPosition(placeSearchResultWithId)
+                },
+                label = {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(id = R.drawable.end),
+                        contentDescription = "마지막 여행지",
+                        tint = if(isEndPosition) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if(isEndPosition) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    }
+                )
+            )
+
+            ElevatedAssistChip(
+                onClick = {
+                    onRemove(placeSearchResultWithId)
                 },
                 label = {
                     Icon(
@@ -154,12 +214,10 @@ fun EditorDestinationItem(
 
         EditorDestinationItemStayTimeOption(
             show = selectedChip == SelectedChip.StayTime,
-            stayTimeHour = destination.stayTimeHour,
+            stayTimeHour = stayTimeHour,
             onStayTimeChange = {
-                onChange(
-                    destination.copy(
-                        stayTimeHour = it
-                    )
+                onStayTimeChange(
+                    it
                 )
             }
         )
@@ -229,19 +287,6 @@ private fun EditorDestinationItemPreview() {
     }
 
     PreviewContainer {
-        LazyColumn {
-            items(destinations.size) { position ->
-                EditorDestinationItem(
-                    destination = destinations[position],
-                    showDivider = position != destinations.lastIndex,
-                    onChange = { newDestination ->
-                        destinations = destinations.mapIndexed { index, oldDestination ->
-                            if (index == position) newDestination else oldDestination
-                        }
-                    },
-                    onRemove = {}
-                )
-            }
-        }
+
     }
 }

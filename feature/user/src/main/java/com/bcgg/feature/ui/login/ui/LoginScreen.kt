@@ -45,7 +45,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
 import com.bcgg.core.ui.component.ProgressDialog
-import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
+import com.bcgg.core.ui.provider.LocalScaffoldPaddingValues
 import com.bcgg.feature.ui.login.state.LoginUiState
 import com.bcgg.feature.ui.login.viewmodel.LoginViewModel
 import com.bcgg.feature.user.R

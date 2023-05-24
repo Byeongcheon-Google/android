@@ -1,6 +1,7 @@
 package com.bcgg.splash.compose
 
 import android.window.SplashScreen
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,12 +43,16 @@ fun SplashScreen(
     val tokenIsValid by splashViewModel.tokenIsValid.collectAsState()
 
     LaunchedEffect(tokenIsValid) {
-        if(tokenIsValid == true) onAutoLoginSuccess()
-        if(tokenIsValid == false) onAutoLoginFailure()
+        if (tokenIsValid == true)
+            onAutoLoginSuccess()
+        if (tokenIsValid == false)
+            onAutoLoginFailure()
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -1,4 +1,4 @@
-package com.bcgg.core.ui.compositionlocal
+package com.bcgg.core.ui.provider
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.compositionLocalOf

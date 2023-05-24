@@ -2,8 +2,6 @@ package com.bcgg.feature.ui.signup.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,19 +12,16 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -42,10 +37,7 @@ import com.bcgg.core.domain.model.state.UserPasswordValidationState
 import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
 import com.bcgg.core.ui.component.ProgressDialog
-import com.bcgg.core.ui.compositionlocal.LocalScaffoldPaddingValues
-import com.bcgg.core.ui.icon.Icons
-import com.bcgg.core.ui.icon.icons.Arrowleft
-import com.bcgg.core.ui.theme.AppTheme
+import com.bcgg.core.ui.provider.LocalScaffoldPaddingValues
 import com.bcgg.core.ui.util.EdgeToEdge
 import com.bcgg.feature.ui.signup.state.SignUpUiState
 import com.bcgg.feature.ui.signup.viewmodel.SignUpViewModel

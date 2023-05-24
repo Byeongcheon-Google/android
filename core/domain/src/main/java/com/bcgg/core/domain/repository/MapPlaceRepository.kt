@@ -6,7 +6,7 @@ import androidx.paging.map
 import com.bcgg.core.datamap.constant.KakaoMapConstant
 import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
 import com.bcgg.core.datamap.source.paging.KakaoMapSearchPagingSource
-import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class MapPlaceRepository @Inject constructor(
     }.flow
         .map {
             it.map {
-                MapSearchResult(
+                PlaceSearchResult(
                     id = it.id,
                     name = it.name,
                     address = it.address,

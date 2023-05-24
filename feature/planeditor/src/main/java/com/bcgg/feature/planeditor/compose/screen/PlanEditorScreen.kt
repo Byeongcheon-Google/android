@@ -14,11 +14,10 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,8 +63,8 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.util.MarkerIcons
 
-@SuppressLint("RememberReturnType")
-@OptIn(ExperimentalNaverMapApi::class, ExperimentalMaterial3Api::class)
+/*@SuppressLint("RememberReturnType")
+@OptIn(ExperimentalNaverMapApi::class)
 @Composable
 fun PlanEditorScreen(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -84,7 +83,7 @@ fun PlanEditorScreen(
     var mapTopPadding by remember { mutableStateOf(0.dp) }
     var mapBottomPadding by remember { mutableStateOf(0.dp) }
     val lazyListState = rememberLazyListState()
-    val searchResult = uiState.mapSearchResult?.collectAsLazyPagingItems()
+    val searchResult = uiState.placeSearchResult?.collectAsLazyPagingItems()
 
     if (uiState.snackbarState != null) {
         LaunchedEffect(uiState.snackbarState) {
@@ -125,7 +124,6 @@ fun PlanEditorScreen(
 
     fun handleBackPress() {
         when {
-            uiState.expanded != null -> viewModel.requestShrinkContainer()
             else -> onBack()
         }
     }
@@ -139,7 +137,6 @@ fun PlanEditorScreen(
     AppTheme {
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            contentWindowInsets = WindowInsets(0.dp)
         ) { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
                 NaverMap(
@@ -162,31 +159,7 @@ fun PlanEditorScreen(
                         isLocationButtonEnabled = true,
                     )
                 ) {
-                    searchResult?.itemSnapshotList?.mapIndexed { index, result ->
-                        if (result != null) {
-                            val isSelected = index == uiState.selectedSearchPosition
 
-                            Marker(
-                                state = MarkerState(position = LatLng(result.lat, result.lng)),
-                                captionText = result.name,
-                                onClick = {
-                                    viewModel.selectSearchResult(index)
-                                    false
-                                },
-                                icon = MarkerIcons.BLACK,
-                                iconTintColor = if (isSelected) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.secondary
-                                },
-                                zIndex = if (isSelected) {
-                                    MAP_SELECTED_MARKER_Z_INDEX
-                                } else {
-                                    MAP_MARKER_Z_INDEX
-                                }
-                            )
-                        }
-                    }
                 }
 
                 SearchBar(
@@ -221,23 +194,17 @@ fun PlanEditorScreen(
                 ) {
                     AnimatedVisibility(visible = uiState.isShowSearchContainer) {
                         MapSearchResultContainer(
-                            mapSearchResults = searchResult!!,
+                            placeSearchResults = searchResult!!,
                             onAddButtonClick = {
                                 viewModel.addItem(it)
-                            },
-                            onRemoveButtonClick = {
-                                viewModel.removeItem(it)
                             },
                             onItemClick = { position, _ ->
                                 viewModel.selectSearchResult(position)
                             },
                             expanded = uiState.expanded == UiState.Expanded.SearchResult,
                             onRequestExpandButtonClicked = {
-                                viewModel.requestExpandSearchContainer()
                             },
-                            destinations = uiState.schedule.destinations.filter {
-                                it.date == uiState.selectedDate
-                            },
+                            addedPlaceSearchResult = listOf(),
                             selectedSearchResultPosition = uiState.selectedSearchPosition,
                             lazyListState = lazyListState
                         )
@@ -248,16 +215,13 @@ fun PlanEditorScreen(
                         schedule = uiState.schedule,
                         selectedDate = uiState.selectedDate,
                         onExpandButtonClicked = {
-                            viewModel.requestExpandEditorContainer()
                         },
                         onDateClick = {
                             viewModel.changeSelectedDate(it)
                         },
                         onDestinationChanged = { oldDestination, newDestination ->
-                            viewModel.updateDestination(oldDestination, newDestination)
                         },
                         onDestinationRemoved = {
-                            viewModel.removeItem(it)
                         }
                     )
                 }
@@ -271,3 +235,4 @@ fun PlanEditorScreen(
 private fun EditorScreenPreview() {
     PlanEditorScreen()
 }
+*/

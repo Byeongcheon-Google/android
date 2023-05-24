@@ -6,6 +6,7 @@ object Versions {
     // AndroidX
     const val APP_COMPAT = "1.6.0"
     const val MATERIAL = "1.8.0"
+    const val COMPOSE_MATERIAL = "1.3.1"
     const val MATERIAL3 = "1.1.0-alpha04"
     const val COMPOSE_UI = "1.3.3"
     const val ACTIVITY_COMPOSE = "1.6.1"
@@ -61,6 +62,7 @@ object Libraries {
     object AndroidX {
         const val APP_COMPAT = "androidx.appcompat:appcompat:${Versions.APP_COMPAT}"
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
+        const val MATERIAL_COMPOSE = "androidx.compose.material:material:${Versions.COMPOSE_MATERIAL}"
         const val MATERIAL3 = "androidx.compose.material3:material3:${Versions.MATERIAL3}"
         const val MATERIAL3_WINDOW_SIZE_CLASS =
             "androidx.compose.material3:material3-window-size-class:${Versions.MATERIAL3}"

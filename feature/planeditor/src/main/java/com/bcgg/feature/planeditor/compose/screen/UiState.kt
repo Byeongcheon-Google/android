@@ -2,25 +2,21 @@ package com.bcgg.feature.planeditor.compose.screen
 
 import androidx.paging.PagingData
 import com.bcgg.core.domain.model.Destination
-import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import com.bcgg.core.domain.model.Schedule
 import com.bcgg.core.domain.model.newSchedule
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 data class UiState(
-    val expanded: Expanded? = null,
-    val search: String = "",
-    val isSearching: Boolean = false,
-    val searchButtonEnabled: Boolean = false,
     val schedule: Schedule = newSchedule(),
-    val mapSearchResult: Flow<PagingData<MapSearchResult>>? = null,
+    val placeSearchResult: Flow<PagingData<PlaceSearchResult>>? = null,
     val selectedSearchPosition: Int = -1,
     val selectedDate: LocalDate = LocalDate.now(),
     val snackbarState: SnackbarState? = null
 ) {
-    val isShowSearchContainer get() = mapSearchResult != null
-    val hasNoSearchResult get() = mapSearchResult == null
+    val isShowSearchContainer get() = placeSearchResult != null
+    val hasNoSearchResult get() = placeSearchResult == null
 
     enum class Expanded {
         ScheduleEdit, SearchResult
@@ -31,14 +27,14 @@ data class UiState(
     }
 }
 
-fun Iterable<Destination>.contains(mapSearchResult: MapSearchResult): Boolean {
+fun Iterable<Destination>.contains(placeSearchResult: PlaceSearchResult): Boolean {
     return this.any {
-        it.lat == mapSearchResult.lat && it.lng == mapSearchResult.lng
+        it.lat == placeSearchResult.lat && it.lng == placeSearchResult.lng
     }
 }
 
-fun Iterable<Destination>.find(mapSearchResult: MapSearchResult): Destination? {
+fun Iterable<Destination>.find(placeSearchResult: PlaceSearchResult): Destination? {
     return this.find {
-        it.lat == mapSearchResult.lat && it.lng == mapSearchResult.lng
+        it.lat == placeSearchResult.lat && it.lng == placeSearchResult.lng
     }
 }

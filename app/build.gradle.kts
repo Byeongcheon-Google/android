@@ -5,6 +5,7 @@ import gradleconfig.configureNaverMapCompose
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -14,6 +15,16 @@ android {
     configureKotlinAndroid(this)
     configureNaverMapCompose(this)
     configureHilt(this)
+    buildFeatures {
+        viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -25,7 +36,4 @@ dependencies {
         project(":feature:planresult"),
         project(":feature:user")
     )
-
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.activity:activity-compose:1.6.1")
 }

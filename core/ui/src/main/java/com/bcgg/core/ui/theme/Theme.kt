@@ -13,11 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.ui.component.LargeButton
+import com.bcgg.core.ui.provider.LocalMarkerColors
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -94,12 +96,20 @@ fun AppTheme(
         DarkColors
     }
 
-    MaterialTheme(
-        colorScheme = colors,
-        typography = PretendardTypography,
-        shapes = Shapes,
-        content = content
-    )
+    val markerColors = if (!useDarkTheme) {
+        lightMarkerColors
+    } else {
+        darkMarkerColors
+    }
+
+    CompositionLocalProvider(LocalMarkerColors provides markerColors) {
+        MaterialTheme(
+            colorScheme = colors,
+            typography = PretendardTypography,
+            shapes = Shapes,
+            content = content
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,7 +130,9 @@ fun AppThemePreview() {
             }
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(it)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
             ) {
                 Text(
                     modifier = Modifier

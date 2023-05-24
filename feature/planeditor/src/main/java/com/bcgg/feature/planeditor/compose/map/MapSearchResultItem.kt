@@ -21,17 +21,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import com.bcgg.core.ui.theme.AppTheme
 
 @Composable
 fun MapSearchResultItem(
-    mapSearchResult: MapSearchResult,
+    placeSearchResult: PlaceSearchResult,
     isAdded: Boolean,
     selected: Boolean,
-    onAddButtonClick: (MapSearchResult) -> Unit,
-    onRemoveButtonClick: (MapSearchResult) -> Unit,
-    onItemClick: (MapSearchResult) -> Unit
+    onAddButtonClick: (PlaceSearchResult) -> Unit,
+    onItemClick: (PlaceSearchResult) -> Unit
 ) {
     val backgroundColor by animateColorAsState(
         targetValue = if (selected) {
@@ -45,7 +44,7 @@ fun MapSearchResultItem(
         modifier = Modifier
             .background(color = backgroundColor)
             .clickable {
-                onItemClick(mapSearchResult)
+                onItemClick(placeSearchResult)
             }
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
@@ -55,13 +54,13 @@ fun MapSearchResultItem(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = mapSearchResult.name,
+                text = placeSearchResult.name,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         Text(
-            text = mapSearchResult.address,
+            text = placeSearchResult.address,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -69,21 +68,17 @@ fun MapSearchResultItem(
         Row(
             modifier = Modifier.padding(top = 6.dp)
         ) {
-            if (isAdded) {
-                OutlinedButton(
-                    modifier = Modifier.heightIn(min = 32.dp),
-                    onClick = { onRemoveButtonClick(mapSearchResult) },
-                ) {
-                    Text(text = "삭제", style = MaterialTheme.typography.bodySmall)
-                }
-            } else {
-                FilledTonalButton(
-                    modifier = Modifier.heightIn(min = 32.dp),
-                    onClick = { onAddButtonClick(mapSearchResult) },
-                ) {
-                    Text(text = "추가", style = MaterialTheme.typography.bodySmall)
-                }
+            FilledTonalButton(
+                modifier = Modifier.heightIn(min = 32.dp),
+                onClick = { onAddButtonClick(placeSearchResult) },
+                enabled = !isAdded
+            ) {
+                Text(
+                    text = if (isAdded) "추가됨" else "추가",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
+
         }
     }
 }
@@ -103,13 +98,12 @@ private fun MapSearchResultItemPreview() {
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
                     MapSearchResultItem(
-                        mapSearchResult = MapSearchResult(
+                        placeSearchResult = PlaceSearchResult(
                             name = "성심당 DCC점",
                             address = "대전 유성구 엑스포로 107"
                         ),
                         isAdded = it.second,
                         onAddButtonClick = {},
-                        onRemoveButtonClick = {},
                         selected = true
                     ) {
                     }

@@ -1,122 +1,349 @@
 package com.bcgg.feature.planeditor.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
-import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import com.bcgg.core.domain.repository.MapPlaceRepository
+import com.bcgg.core.domain.repository.UserRepository
+import com.bcgg.core.ui.viewmodel.BaseViewModel
+import com.bcgg.core.util.ext.collectOnFailure
+import com.bcgg.core.util.ext.collectOnSuccess
 import com.bcgg.core.util.ext.removed
 import com.bcgg.feature.planeditor.compose.screen.UiState
 import com.bcgg.feature.planeditor.compose.screen.find
-import com.bcgg.feature.planeditor.constant.Constant
+import com.bcgg.feature.planeditor.compose.state.OptionsUiState
+import com.bcgg.feature.planeditor.compose.state.PlanEditorMapUiState
+import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
+import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import java.lang.StringBuilder
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class PlanEditorViewModel @Inject constructor(
-    private val mapPlaceRepository: MapPlaceRepository
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState
+    private val mapPlaceRepository: MapPlaceRepository,
+    private val userRepository: UserRepository
+) : BaseViewModel() {
+    private val _mapUiState = MutableStateFlow(PlanEditorMapUiState())
+    val mapUiState = _mapUiState.asStateFlow()
 
-    var mapLat: Double = Double.NaN
-    var mapLng: Double = Double.NaN
+    private val _optionsUiState = MutableStateFlow(OptionsUiState())
+    val optionsUiState = _optionsUiState.asStateFlow()
 
-    fun updateSearchText(text: String) {
-        _uiState.value = uiState.value.copy(search = text, searchButtonEnabled = text.isNotBlank())
-    }
+    private val _optionsUiStatePerDate =
+        MutableStateFlow(mapOf<LocalDate, PlanEditorOptionsUiStatePerDate>())
+    val optionsUiStatePerDate = _optionsUiStatePerDate.asStateFlow()
 
-    fun search(query: String, latLng: LatLng) = viewModelScope.launch {
-        _uiState.value = uiState.value.copy(isSearching = true)
-        val mapSearchResult = mapPlaceRepository.getPlace(query, latLng.longitude, latLng.latitude)
-        _uiState.value = uiState.value.copy(
-            mapSearchResult = mapSearchResult,
-            isSearching = false,
-            expanded = UiState.Expanded.SearchResult
-        )
-    }
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage = _errorMessage.asSharedFlow()
 
-    fun requestExpandSearchContainer() {
-        _uiState.value = uiState.value.copy(expanded = UiState.Expanded.SearchResult)
-    }
+    private val _showConfirmDialogEvent = MutableSharedFlow<String>()
+    val showConfirmDialogEvent = _showConfirmDialogEvent.asSharedFlow()
 
-    fun requestExpandEditorContainer() {
-        _uiState.value = uiState.value.copy(expanded = UiState.Expanded.ScheduleEdit)
-    }
+    init {
+        viewModelScope.launch {
+            val lat = 36.763718
+            val lon = 127.2819405
 
-    fun requestShrinkContainer() {
-        _uiState.value = uiState.value.copy(expanded = null)
-    }
+            var amount = 0.0
 
-    fun changeSelectedDate(selectedDate: LocalDate) {
-        _uiState.value = uiState.value.copy(selectedDate = selectedDate)
-    }
+            while (true) {
+                _mapUiState.value = _mapUiState.value.copy(
+                    otherMapPositions = listOf(1 to 1, 1 to -1, -1 to 1, -1 to -1).map {
+                        PlanEditorMapUiState.OtherMapPosition(
+                            userId = it.toString(),
+                            lat = lat + amount * it.first,
+                            lon = lon + amount * it.second
+                        )
+                    }
+                )
 
-    fun addItem(mapSearchResult: MapSearchResult) {
-        val destination = Destination(
-            name = mapSearchResult.name,
-            address = mapSearchResult.address,
-            lat = mapSearchResult.lat,
-            lng = mapSearchResult.lng,
-            stayTimeHour = Constant.MIN_STAY_TIME,
-            classification = Classification.Travel,
-            date = uiState.value.selectedDate
-        )
+                amount += 0.00001
 
-        _uiState.value = uiState.value.copy(
-            schedule = uiState.value.schedule.copy(
-                destinations = uiState.value.schedule.destinations + destination
-            )
-        )
-    }
-
-    fun removeItem(mapSearchResult: MapSearchResult) {
-        val destinations =
-            uiState.value.schedule.destinations.filter {
-                it.date == uiState.value.selectedDate
+                delay(1000)
             }
-
-        val removeDestination = destinations.find(mapSearchResult)
-
-        if (removeDestination != null) {
-            removeItem(removeDestination)
         }
     }
 
-    fun removeItem(destination: Destination) {
-        _uiState.value = uiState.value.copy(
-            schedule = uiState.value.schedule.copy(
-                destinations = uiState.value.schedule.destinations.removed(destination)
-            )
-        )
+    fun updateSearchText(text: String) {
+        _mapUiState.value = _mapUiState.value.copy(search = text)
     }
 
-    fun updateDestination(oldDestination: Destination, newDestination: Destination) {
-        _uiState.value = uiState.value.copy(
-            schedule = uiState.value.schedule.copy(
-                destinations = uiState.value.schedule.destinations.map {
-                    if (it == oldDestination) newDestination else it
+    fun search(query: String, latLng: LatLng) {
+        _mapUiState.value = _mapUiState.value.copy(isSearching = true)
+        viewModelScope.launch {
+            try {
+                val mapSearchResult =
+                    mapPlaceRepository.getPlace(query, latLng.longitude, latLng.latitude)
+                _mapUiState.value = _mapUiState.value.copy(
+                    placeSearchResult = mapSearchResult,
+                    expanded = true
+                )
+                mapSearchResult.collectLatest {
+                    _mapUiState.value = _mapUiState.value.copy(
+                        isSearching = false
+                    )
+                    return@collectLatest
                 }
-            )
-        )
-    }
-
-    fun switchSnackbarState(snackbarState: UiState.SnackbarState?) {
-        _uiState.value = uiState.value.copy(snackbarState = snackbarState)
+            } catch (e: Exception) {
+                _errorMessage.emit(e.message ?: "Unknown error")
+            } finally {
+                _mapUiState.value = _mapUiState.value.copy(isSearching = false)
+            }
+        }
     }
 
     fun selectSearchResult(position: Int) {
-        _uiState.value = uiState.value.copy(selectedSearchPosition = position)
+        _mapUiState.value = _mapUiState.value.copy(selectedSearchPosition = -1)
+        _mapUiState.value = _mapUiState.value.copy(selectedSearchPosition = position)
     }
 
-    fun setMapLatLng(lat: Double, lng: Double) {
-        this.mapLat = lat
-        this.mapLng = lng
+    fun expandSearchResult() {
+        _mapUiState.value = _mapUiState.value.copy(expanded = true)
+    }
+
+    fun shrinkSearchResult() {
+        _mapUiState.value = _mapUiState.value.copy(expanded = false)
+    }
+
+    fun changeSelectedDate(selectedDate: LocalDate) {
+        _optionsUiState.value = _optionsUiState.value.copy(selectedDate = selectedDate)
+        _mapUiState.value = _mapUiState.value.copy(
+            selectedDate = selectedDate,
+            addedSearchResults = _optionsUiStatePerDate
+                .value[selectedDate]
+                ?.searchResultMaps
+                ?.map { it.placeSearchResult }
+                ?: emptyList()
+        )
+    }
+
+    fun setName(name: String) {
+        _optionsUiState.value = _optionsUiState.value.copy(name = name)
+    }
+
+    fun updateStartTime(localDate: LocalDate, startTime: LocalTime) = viewModelScope.launch {
+        val newValue =
+            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+
+        if(newValue.endHopeTime < startTime) {
+            _errorMessage.emit(
+                "종료 예정시간보다 늦은 시간을 선택할 수 없습니다."
+            )
+            return@launch
+        }
+
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[localDate] = newValue.copy(startTime = startTime)
+
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun updateEndHopeTime(localDate: LocalDate, endHopeTime: LocalTime) = viewModelScope.launch {
+        val newValue =
+            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+
+        if(newValue.startTime > endHopeTime) {
+            _errorMessage.emit(
+                "시작 시간보다 빠른 시간을 선택할 수 없습니다."
+            )
+            return@launch
+        }
+
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[localDate] = newValue.copy(endHopeTime = endHopeTime)
+
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun updateMealTimes(localDate: LocalDate, mealTimes: List<LocalTime>) = viewModelScope.launch {
+        val newValue =
+            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+
+        mealTimes.forEach {
+            if(newValue.startTime > it || newValue.endHopeTime < it) {
+                _errorMessage.emit(
+                    "식사 시간은 시작 시간과 종료 시간 사이로 설정해야 합니다."
+                )
+                return@launch
+            }
+        }
+
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[localDate] = newValue.copy(mealTimes = mealTimes)
+
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun updateStartPlace(localDate: LocalDate, startPlace: PlaceSearchResultWithId) {
+        val newValue =
+            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[localDate] = newValue.copy(startPlaceSearchResult = startPlace)
+
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun updateEndPlace(localDate: LocalDate, endPlace: PlaceSearchResultWithId) {
+        val newValue =
+            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[localDate] = newValue.copy(endPlaceSearchResult = endPlace)
+
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun addItem(placeSearchResult: PlaceSearchResult) =
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.getUserId()
+                .collectOnSuccess { userId ->
+                    val localDate = mapUiState.value.selectedDate
+                    val newValue =
+                        _optionsUiStatePerDate.value[localDate]
+                            ?: initialPlanEditorOptionsUiStatePerDate
+
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    if(newValue.searchResultMaps.size >= 10) {
+                        _errorMessage.emit("하루에 최대 10개의 여행지만 추가할 수 있습니다.")
+                        return@collectOnSuccess
+                    }
+                    val newList = newValue.searchResultMaps.plusElement(
+                        PlaceSearchResultWithId(userId, placeSearchResult)
+                    )
+                    newMap[localDate] = newValue.copy(
+                        searchResultMaps = newList,
+                        startPlaceSearchResult = if(newValue.startPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.startPlaceSearchResult,
+                        endPlaceSearchResult = if(newValue.endPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.endPlaceSearchResult
+                    )
+
+                    _optionsUiStatePerDate.value = newMap
+                    _mapUiState.value = _mapUiState.value.copy(
+                        addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
+                            ?: emptyList()
+                    )
+                }
+                .collectOnFailure {
+                    _errorMessage.emit(it)
+                }
+            _isLoading.value = false
+        }
+
+    fun removeItem(placeSearchResult: PlaceSearchResultWithId) =
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.getUserId()
+                .collectOnSuccess { userId ->
+                    val localDate = mapUiState.value.selectedDate
+                    val newValue =
+                        _optionsUiStatePerDate.value[localDate]
+                            ?: initialPlanEditorOptionsUiStatePerDate
+
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    val newList = newValue.searchResultMaps.filter {
+                        it.placeSearchResult != placeSearchResult.placeSearchResult
+                    }
+                    val newStartPlace = when {
+                        newList.contains(newValue.startPlaceSearchResult) -> newValue.startPlaceSearchResult
+                        newList.isNotEmpty() -> newList.first()
+                        else -> null
+                    }
+                    val newEndPlace = when {
+                        newList.contains(newValue.endPlaceSearchResult) -> newValue.endPlaceSearchResult
+                        newList.isNotEmpty() -> newList.last()
+                        else -> null
+                    }
+                    newMap[localDate] = newValue.copy(
+                        searchResultMaps = newList,
+                        startPlaceSearchResult = newStartPlace,
+                        endPlaceSearchResult = newEndPlace
+                    )
+
+                    _optionsUiStatePerDate.value = newMap
+                    _mapUiState.value = _mapUiState.value.copy(
+                        addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
+                            ?: emptyList()
+                    )
+                }
+                .collectOnFailure {
+                    _errorMessage.emit(it)
+                }
+            _isLoading.value = false
+        }
+
+    fun changeStayTime(placeSearchResult: PlaceSearchResultWithId, stayTime: Int) {
+        if (_optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] == null) return
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[_optionsUiState.value.selectedDate] =
+            newMap[_optionsUiState.value.selectedDate]!!.copy(
+                searchResultMaps = newMap[_optionsUiState.value.selectedDate]!!.searchResultMaps.map {
+                    if (it.placeSearchResult == placeSearchResult.placeSearchResult)
+                        return@map it.copy(stayTimeHour = stayTime)
+
+                    it
+                }
+            )
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun changeClassification(
+        placeSearchResult: PlaceSearchResultWithId,
+        classification: Classification
+    ) {
+        if (_optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] == null) return
+        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+        newMap[_optionsUiState.value.selectedDate] =
+            newMap[_optionsUiState.value.selectedDate]!!.copy(
+                searchResultMaps = newMap[_optionsUiState.value.selectedDate]!!.searchResultMaps.map {
+                    if (it.placeSearchResult == placeSearchResult.placeSearchResult)
+                        return@map it.copy(classification = classification)
+
+                    it
+                }
+            )
+        _optionsUiStatePerDate.value = newMap
+    }
+
+    fun showConfirmDialog() {
+        val message = StringBuilder("\n")
+
+        _optionsUiStatePerDate.value
+            .filterValues {
+                it.searchResultMaps.isNotEmpty()
+            }
+            .toList()
+            .sortedBy {
+                it.first
+            }
+            .forEach { (date, _) ->
+                message.append(date.format(DateTimeFormatter.ISO_LOCAL_DATE))
+                message.append("\n")
+            }
+
+        message.append("\n")
+        message.append("해당 날짜의 여행 계획표를 만드려면 확인 버튼을 누르세요.")
+
+        viewModelScope.launch {
+            _showConfirmDialogEvent.emit(
+                message.toString()
+            )
+        }
     }
 }

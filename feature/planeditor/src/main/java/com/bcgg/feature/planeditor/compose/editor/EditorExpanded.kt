@@ -1,28 +1,56 @@
 package com.bcgg.feature.planeditor.compose.editor
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
-import com.bcgg.core.domain.model.Destination
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 
-@Composable
-fun EditorExpanded(
-    destinations: List<Destination>,
-    onDestinationChange: (oldDestination: Destination, newDestination: Destination) -> Unit,
-    onDestinationRemove: (Destination) -> Unit
+fun LazyListScope.editorExpanded(
+    planEditorOptionsUiStatePerDate: PlanEditorOptionsUiStatePerDate,
+    onStayTimeChange: (PlaceSearchResultWithId, Int) -> Unit,
+    onClassificationChange: (PlaceSearchResultWithId, Classification) -> Unit,
+    onPlaceSearchResultRemoved: (PlaceSearchResultWithId) -> Unit,
+    onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
+    onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(destinations.size) { position ->
-            EditorDestinationItem(
-                destination = destinations[position],
-                showDivider = position != destinations.lastIndex,
-                onChange = { newDestination ->
-                    onDestinationChange(destinations[position], newDestination)
-                },
-                onRemove = onDestinationRemove
+    val items = planEditorOptionsUiStatePerDate.searchResultMaps
+    items(items.size) { position ->
+        EditorDestinationItem(
+            placeSearchResultWithId = items[position],
+            stayTimeHour = items[position].stayTimeHour,
+            classification = items[position].classification,
+            showDivider = items.lastIndex != position,
+            onStayTimeChange = {
+                onStayTimeChange(items[position], it)
+            },
+            onClassificationChange = {
+                onClassificationChange(items[position], it)
+            },
+            onRemove = onPlaceSearchResultRemoved,
+            isStartPosition = items[position].placeSearchResult == planEditorOptionsUiStatePerDate.startPlaceSearchResult?.placeSearchResult,
+            isEndPosition = items[position].placeSearchResult == planEditorOptionsUiStatePerDate.endPlaceSearchResult?.placeSearchResult,
+            onSelectStartPosition = onSelectStartPosition,
+            onSelectEndPosition = onSelectEndPosition
+        )
+    }
+
+    if (items.isEmpty()) {
+        item {
+            Text(
+                text = "지도 화면에서 여행지를 추가해 주세요",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                textAlign = TextAlign.Center
             )
         }
     }

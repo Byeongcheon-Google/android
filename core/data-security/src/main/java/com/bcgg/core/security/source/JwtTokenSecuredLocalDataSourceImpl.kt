@@ -7,6 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.lang.RuntimeException
 
 class JwtTokenSecuredLocalDataSourceImpl(
     @ApplicationContext private val context: Context
@@ -16,8 +17,8 @@ class JwtTokenSecuredLocalDataSourceImpl(
         Hawk.init(context).build()
     }
 
-    override fun getJwtToken(): Flow<JwtToken> = flow {
-        emit(Hawk.get(TOKEN_PREFS_KEY))
+    override fun getJwtToken(): Flow<JwtToken?> = flow {
+        emit(Hawk.get<JwtToken?>(TOKEN_PREFS_KEY))
     }
 
     override suspend fun saveJwtToken(token: JwtToken) {

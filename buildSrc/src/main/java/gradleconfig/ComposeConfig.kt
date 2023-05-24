@@ -28,6 +28,7 @@ fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *>) {
             composeBom,
             Libraries.AndroidX.COMPOSE_UI,
             Libraries.AndroidX.COMPOSE_UI_PREVIEW,
+            Libraries.AndroidX.MATERIAL_COMPOSE,
             Libraries.AndroidX.MATERIAL3,
             Libraries.AndroidX.MATERIAL3_WINDOW_SIZE_CLASS,
             Libraries.AndroidX.LIFECYCLE_VIEWMODEL_COMPOSE,

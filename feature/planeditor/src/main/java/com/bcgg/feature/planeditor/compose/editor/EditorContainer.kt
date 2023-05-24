@@ -1,106 +1,165 @@
 package com.bcgg.feature.planeditor.compose.editor
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.Schedule
-import com.bcgg.core.ui.constant.UiConstant
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.ui.icon.Icons
+import com.bcgg.core.ui.icon.icons.Arrowleft
 import com.bcgg.core.ui.theme.AppTheme
+import com.bcgg.feature.planeditor.compose.mealtime.mealTimes
+import com.bcgg.feature.planeditor.compose.picker.TimePicker
+import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
+import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
 import java.time.LocalDate
+import java.time.LocalTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorContainer(
     modifier: Modifier = Modifier,
-    expanded: Boolean,
-    schedule: Schedule,
+    planName: String,
+    planEditorOptionsUiStatePerDates: Map<LocalDate, PlanEditorOptionsUiStatePerDate>,
     selectedDate: LocalDate,
-    onExpandButtonClicked: () -> Unit,
     onDateClick: (LocalDate) -> Unit,
-    onDestinationChanged: (oldDestination: Destination, newDestination: Destination) -> Unit,
-    onDestinationRemoved: (Destination) -> Unit
+    onStayTimeChange: (PlaceSearchResultWithId, Int) -> Unit,
+    onClassificationChange: (PlaceSearchResultWithId, Classification) -> Unit,
+    onPlaceSearchResultRemoved: (PlaceSearchResultWithId) -> Unit,
+    onPlanNameChange: (String) -> Unit,
+    onStartTimeChange: (LocalTime) -> Unit,
+    onEndHopeTimeChange: (LocalTime) -> Unit,
+    onMealTimeChange: (List<LocalTime>) -> Unit,
+    onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
+    onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
 ) {
-    val localConfigutaion = LocalConfiguration.current
+    val enabledDates = planEditorOptionsUiStatePerDates.keys
+    val planEditorOptionsUiStatePerDate =
+        planEditorOptionsUiStatePerDates[selectedDate] ?: initialPlanEditorOptionsUiStatePerDate
 
-    val height by animateDpAsState(
-        targetValue =
-        if (expanded)
-            (localConfigutaion.screenHeightDp * 0.45).dp
-        else 68.dp
-    )
-    val scrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(selectedDate) {
+        lazyListState.animateScrollBy(0f)
+    }
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = UiConstant.SEMI_TRANSPARENT_AMOUNT))
-            .height(height)
-            .scrollable(
-                state = scrollState,
-                orientation = Orientation.Vertical
-            )
-            .clickable(enabled = !expanded, onClick = onExpandButtonClicked),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
-        Row(
-            modifier = Modifier.height(68.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            EditorDate(
-                selectedDate = selectedDate,
-                dates = schedule.destinations.map { it.date }.toSet(),
-                expanded = expanded,
-                onDateClick = onDateClick
-            )
-            AnimatedVisibility(
-                visible = !expanded,
-                enter = expandHorizontally() + fadeIn(),
-                exit = shrinkHorizontally() + fadeOut()
-            ) {
-                EditorCompressed(destinations = schedule.getFilteredDestinations(selectedDate))
+        TopAppBar(
+            title = {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = planName,
+                    onValueChange = {
+                        onPlanNameChange(it)
+                    },
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface),
+                )
+            },
+            navigationIcon = {
+                IconButton(
+                    enabled = true,
+                    onClick = { }
+                ) {
+                    Icon(
+                        imageVector = Icons.Arrowleft,
+                        contentDescription = ""
+                    )
+                }
             }
-        }
+        )
 
-        AnimatedVisibility(visible = expanded) {
-            EditorExpanded(
-                destinations = schedule.getFilteredDestinations(selectedDate),
-                onDestinationChange = onDestinationChanged,
-                onDestinationRemove = onDestinationRemoved
+        EditorDate(
+            selectedDate = selectedDate,
+            dates = enabledDates,
+            expanded = true,
+            onDateClick = onDateClick
+        )
+
+        LazyColumn(
+            state = lazyListState
+        ) {
+            item {
+                TimePicker(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .fillMaxWidth(),
+                    label = "시작 시간",
+                    value = planEditorOptionsUiStatePerDate.startTime,
+                    onValueChange = onStartTimeChange
+                )
+
+                TimePicker(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .fillMaxWidth(),
+                    label = "종료 예정 시간",
+                    value = planEditorOptionsUiStatePerDate.endHopeTime,
+                    onValueChange = onEndHopeTimeChange
+                )
+            }
+
+            mealTimes(
+                mealTimes = planEditorOptionsUiStatePerDate.mealTimes,
+                onChange = onMealTimeChange
             )
+
+            item {
+                Text(
+                    text = "선택한 여행지 (${planEditorOptionsUiStatePerDate.searchResultMaps.size}/10)",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            editorExpanded(
+                planEditorOptionsUiStatePerDate = planEditorOptionsUiStatePerDate,
+                onStayTimeChange = onStayTimeChange,
+                onClassificationChange = onClassificationChange,
+                onPlaceSearchResultRemoved = onPlaceSearchResultRemoved,
+                onSelectStartPosition = onSelectStartPosition,
+                onSelectEndPosition = onSelectEndPosition
+            )
+            
+            item { 
+                Spacer(modifier = Modifier.height(60.dp))
+            }
         }
     }
 }
@@ -152,21 +211,18 @@ private fun EditorContainerPreview() {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.secondary,
             bottomBar = {
-                EditorContainer(
+                /*EditorContainer(
                     modifier = Modifier
                         .padding(horizontal = 16.dp),
-                    expanded = expanded,
-                    schedule = sample,
+                    planName = "test",
                     selectedDate = selectedDate,
-                    onExpandButtonClicked = {
-                        expanded = true
-                    },
                     onDateClick = {
                         selectedDate = it
                     },
                     onDestinationChanged = { _, _ -> },
-                    onDestinationRemoved = {}
-                )
+                    onDestinationRemoved = {},
+                    planEditorOptionsUiStatePerDates = mapOf()
+                )*/
             }
         ) {
             Column(modifier = Modifier.padding(it)) {

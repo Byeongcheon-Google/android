@@ -5,14 +5,11 @@ import com.bcgg.core.data.user.UserDataSource
 import com.bcgg.core.domain.mapper.user.toJwtToken
 import com.bcgg.core.security.model.JwtToken
 import com.bcgg.core.security.source.JwtTokenSecuredLocalDataSource
-import com.bcgg.core.security.source.JwtTokenSecuredLocalDataSourceImpl
 import com.bcgg.core.util.Result
 import com.bcgg.core.util.toFailure
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -30,6 +27,16 @@ class UserRepository @Inject constructor(
         }
     }
 
+    fun getUserId(): Flow<Result<String>> = flow {
+        emit(
+            try {
+                Result.Success(userAuthDataSource.getUserId())
+            } catch (t: Throwable) {
+                t.toFailure()
+            }
+        )
+    }
+
     fun signUp(id: String, passwordHashed: String): Flow<Result<Unit>> = flow {
         try {
             userDataSource.signUp(id, passwordHashed)
@@ -44,14 +51,6 @@ class UserRepository @Inject constructor(
             emit(Result.Success(userDataSource.isIdDuplicated(id)))
         } catch (t: Throwable) {
             emit(t.toFailure())
-        }
-    }
-
-    fun checkToken(): Flow<Result<Unit>> = jwtTokenSecuredLocalDataSource.getJwtToken().map {
-        try {
-            Result.Success(userAuthDataSource.checkTokenIsValid(it.accessToken))
-        } catch (t: Throwable) {
-            t.toFailure()
         }
     }
 }

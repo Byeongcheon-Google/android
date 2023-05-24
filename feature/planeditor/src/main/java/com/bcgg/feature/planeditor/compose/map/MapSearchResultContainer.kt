@@ -21,8 +21,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +28,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.bcgg.core.domain.model.Destination
-import com.bcgg.core.domain.model.MapSearchResult
+import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import com.bcgg.core.ui.constant.UiConstant
 import com.bcgg.core.ui.theme.divider
 import com.bcgg.feature.planeditor.compose.screen.contains
@@ -38,14 +36,13 @@ import com.bcgg.feature.planeditor.compose.screen.contains
 @Composable
 fun MapSearchResultContainer(
     modifier: Modifier = Modifier,
-    mapSearchResults: LazyPagingItems<MapSearchResult>,
-    destinations: List<Destination>,
+    placeSearchResults: LazyPagingItems<PlaceSearchResult>,
+    addedPlaceSearchResult: List<PlaceSearchResult>,
     selectedSearchResultPosition: Int,
     expanded: Boolean = true,
     lazyListState: LazyListState = rememberLazyListState(),
-    onAddButtonClick: (MapSearchResult) -> Unit,
-    onRemoveButtonClick: (MapSearchResult) -> Unit,
-    onItemClick: (Int, MapSearchResult) -> Unit,
+    onAddButtonClick: (PlaceSearchResult) -> Unit,
+    onItemClick: (Int, PlaceSearchResult) -> Unit,
     onRequestExpandButtonClicked: () -> Unit
 ) {
     val localConfiguration = LocalConfiguration.current
@@ -60,7 +57,7 @@ fun MapSearchResultContainer(
             .heightIn(min = 40.dp, max = (localConfiguration.screenHeightDp * 0.4).dp),
         contentAlignment = Alignment.Center
     ) {
-        if (mapSearchResults.itemCount == 0) {
+        if (placeSearchResults.itemCount == 0) {
             Text(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),
@@ -78,21 +75,20 @@ fun MapSearchResultContainer(
                     modifier = Modifier.fillMaxSize(),
                     state = lazyListState
                 ) {
-                    items(mapSearchResults.itemCount) { position ->
-                        val result = mapSearchResults[position]
+                    items(placeSearchResults.itemCount) { position ->
+                        val result = placeSearchResults[position]
 
                         if (result != null) {
                             MapSearchResultItem(
-                                mapSearchResult = result,
-                                isAdded = destinations.contains(result),
+                                placeSearchResult = result,
+                                isAdded = addedPlaceSearchResult.contains(result),
                                 onAddButtonClick = onAddButtonClick,
-                                onRemoveButtonClick = onRemoveButtonClick,
                                 selected = position == selectedSearchResultPosition,
                                 onItemClick = {
                                     onItemClick(position, it)
                                 }
                             )
-                            if (position != mapSearchResults.itemCount - 1) {
+                            if (position != placeSearchResults.itemCount - 1) {
                                 Divider(color = MaterialTheme.colorScheme.divider)
                             }
                         }
