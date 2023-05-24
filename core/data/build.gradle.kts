@@ -2,6 +2,7 @@
 import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureRetrofit2
+import gradleconfig.configureStomp
 
 plugins {
     id("com.android.library")
@@ -12,6 +13,7 @@ android {
 
     configureKotlinAndroid(this)
     configureRetrofit2()
+    configureStomp()
     configureHilt(this)
 }
 

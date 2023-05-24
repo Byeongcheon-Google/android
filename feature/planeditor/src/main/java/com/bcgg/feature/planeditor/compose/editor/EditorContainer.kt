@@ -1,5 +1,6 @@
 package com.bcgg.feature.planeditor.compose.editor
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.Schedule
+import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowleft
@@ -42,6 +43,7 @@ import com.bcgg.feature.planeditor.compose.mealtime.mealTimes
 import com.bcgg.feature.planeditor.compose.picker.TimePicker
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
+import com.bcgg.feature.planeditor.compose.wss.ActiveUsers
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -50,6 +52,7 @@ import java.time.LocalTime
 fun EditorContainer(
     modifier: Modifier = Modifier,
     planName: String,
+    activeUsers: List<User>,
     planEditorOptionsUiStatePerDates: Map<LocalDate, PlanEditorOptionsUiStatePerDate>,
     selectedDate: LocalDate,
     onDateClick: (LocalDate) -> Unit,
@@ -62,6 +65,7 @@ fun EditorContainer(
     onMealTimeChange: (List<LocalTime>) -> Unit,
     onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
     onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
+    onUserClick: () -> Unit
 ) {
     val enabledDates = planEditorOptionsUiStatePerDates.keys
     val planEditorOptionsUiStatePerDate =
@@ -101,6 +105,14 @@ fun EditorContainer(
                         contentDescription = ""
                     )
                 }
+            },
+            actions = {
+                ActiveUsers(
+                    modifier = Modifier
+                        .clickable(onClick = onUserClick)
+                        .padding(8.dp),
+                    activeUsers = activeUsers
+                )
             }
         )
 
@@ -156,8 +168,8 @@ fun EditorContainer(
                 onSelectStartPosition = onSelectStartPosition,
                 onSelectEndPosition = onSelectEndPosition
             )
-            
-            item { 
+
+            item {
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }

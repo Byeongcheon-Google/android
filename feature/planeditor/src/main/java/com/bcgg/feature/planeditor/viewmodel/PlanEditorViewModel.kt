@@ -1,33 +1,32 @@
 package com.bcgg.feature.planeditor.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.bcgg.core.data.response.chat.ChatMessageType
 import com.bcgg.core.domain.model.Classification
-import com.bcgg.core.domain.model.Destination
+import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.domain.repository.ChatRepository
 import com.bcgg.core.domain.repository.MapPlaceRepository
 import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.ui.viewmodel.BaseViewModel
 import com.bcgg.core.util.ext.collectOnFailure
 import com.bcgg.core.util.ext.collectOnSuccess
-import com.bcgg.core.util.ext.removed
-import com.bcgg.feature.planeditor.compose.screen.UiState
-import com.bcgg.feature.planeditor.compose.screen.find
 import com.bcgg.feature.planeditor.compose.state.OptionsUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorMapUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.lang.StringBuilder
 import java.time.LocalDate
 import java.time.LocalTime
@@ -37,8 +36,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PlanEditorViewModel @Inject constructor(
     private val mapPlaceRepository: MapPlaceRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val chatRepository: ChatRepository
 ) : BaseViewModel() {
+
+    private var _user: User? = null
+
     private val _mapUiState = MutableStateFlow(PlanEditorMapUiState())
     val mapUiState = _mapUiState.asStateFlow()
 
@@ -55,29 +58,41 @@ class PlanEditorViewModel @Inject constructor(
     private val _showConfirmDialogEvent = MutableSharedFlow<String>()
     val showConfirmDialogEvent = _showConfirmDialogEvent.asSharedFlow()
 
+    private val _showInviteDialogEvent = MutableSharedFlow<Unit>()
+    val showInviteeDialogEvent = _showInviteDialogEvent.asSharedFlow()
+
     init {
         viewModelScope.launch {
-            val lat = 36.763718
-            val lon = 127.2819405
+            chatRepository.topic.collectLatest {
+                if (it.sender == getUser().userId) return@collectLatest
+                val value = it.getValue() ?: return@collectLatest
 
-            var amount = 0.0
-
-            while (true) {
-                _mapUiState.value = _mapUiState.value.copy(
-                    otherMapPositions = listOf(1 to 1, 1 to -1, -1 to 1, -1 to -1).map {
-                        PlanEditorMapUiState.OtherMapPosition(
-                            userId = it.toString(),
-                            lat = lat + amount * it.first,
-                            lon = lon + amount * it.second
-                        )
+                when (it.getChatMessageType()) {
+                    ChatMessageType.Title -> {
+                        _optionsUiState.value = _optionsUiState.value.copy(name = value)
                     }
-                )
-
-                amount += 0.00001
-
-                delay(1000)
+                    ChatMessageType.ViewingLocation -> {
+                        val newMap = _mapUiState.value.otherMapPositions.toMutableMap()
+                        newMap[it.sender] = Json.decodeFromString(value)
+                        _mapUiState.value = _mapUiState.value.copy(otherMapPositions = newMap)
+                    }
+                }
             }
         }
+
+        viewModelScope.launch {
+            userRepository.getUser().collectOnSuccess {
+                _optionsUiState.value = _optionsUiState.value.copy(activeUsers = listOf(it))
+            }.collectOnFailure {
+                _errorMessage.emit("사용자 정보를 가져오지 못했습니다")
+            }
+        }
+    }
+
+    private suspend fun getUser(): User {
+        if (_user == null) userRepository.getUser().collectOnSuccess { _user = it }
+            .collectOnFailure { _errorMessage.emit("사용자 정보를 가져오는 중 오류가 발생했습니다.") }
+        return _user!!
     }
 
     fun updateSearchText(text: String) {
@@ -133,15 +148,16 @@ class PlanEditorViewModel @Inject constructor(
         )
     }
 
-    fun setName(name: String) {
+    fun setName(name: String) = viewModelScope.launch {
         _optionsUiState.value = _optionsUiState.value.copy(name = name)
+        chatRepository.updateTitle(name)
     }
 
     fun updateStartTime(localDate: LocalDate, startTime: LocalTime) = viewModelScope.launch {
         val newValue =
             _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
 
-        if(newValue.endHopeTime < startTime) {
+        if (newValue.endHopeTime < startTime) {
             _errorMessage.emit(
                 "종료 예정시간보다 늦은 시간을 선택할 수 없습니다."
             )
@@ -158,7 +174,7 @@ class PlanEditorViewModel @Inject constructor(
         val newValue =
             _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
 
-        if(newValue.startTime > endHopeTime) {
+        if (newValue.startTime > endHopeTime) {
             _errorMessage.emit(
                 "시작 시간보다 빠른 시간을 선택할 수 없습니다."
             )
@@ -176,7 +192,7 @@ class PlanEditorViewModel @Inject constructor(
             _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
 
         mealTimes.forEach {
-            if(newValue.startTime > it || newValue.endHopeTime < it) {
+            if (newValue.startTime > it || newValue.endHopeTime < it) {
                 _errorMessage.emit(
                     "식사 시간은 시작 시간과 종료 시간 사이로 설정해야 합니다."
                 )
@@ -213,15 +229,15 @@ class PlanEditorViewModel @Inject constructor(
     fun addItem(placeSearchResult: PlaceSearchResult) =
         viewModelScope.launch {
             _isLoading.value = true
-            userRepository.getUserId()
-                .collectOnSuccess { userId ->
+            userRepository.getUser()
+                .collectOnSuccess { (userId) ->
                     val localDate = mapUiState.value.selectedDate
                     val newValue =
                         _optionsUiStatePerDate.value[localDate]
                             ?: initialPlanEditorOptionsUiStatePerDate
 
                     val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                    if(newValue.searchResultMaps.size >= 10) {
+                    if (newValue.searchResultMaps.size >= 10) {
                         _errorMessage.emit("하루에 최대 10개의 여행지만 추가할 수 있습니다.")
                         return@collectOnSuccess
                     }
@@ -230,8 +246,8 @@ class PlanEditorViewModel @Inject constructor(
                     )
                     newMap[localDate] = newValue.copy(
                         searchResultMaps = newList,
-                        startPlaceSearchResult = if(newValue.startPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.startPlaceSearchResult,
-                        endPlaceSearchResult = if(newValue.endPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.endPlaceSearchResult
+                        startPlaceSearchResult = if (newValue.startPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.startPlaceSearchResult,
+                        endPlaceSearchResult = if (newValue.endPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.endPlaceSearchResult
                     )
 
                     _optionsUiStatePerDate.value = newMap
@@ -249,7 +265,7 @@ class PlanEditorViewModel @Inject constructor(
     fun removeItem(placeSearchResult: PlaceSearchResultWithId) =
         viewModelScope.launch {
             _isLoading.value = true
-            userRepository.getUserId()
+            userRepository.getUser()
                 .collectOnSuccess { userId ->
                     val localDate = mapUiState.value.selectedDate
                     val newValue =
@@ -345,5 +361,13 @@ class PlanEditorViewModel @Inject constructor(
                 message.toString()
             )
         }
+    }
+
+    fun showInviteDialog() = viewModelScope.launch {
+        _showInviteDialogEvent.emit(Unit)
+    }
+
+    fun sendViewingPosition(lat: Double, lng: Double) = viewModelScope.launch {
+        chatRepository.updateViewingPosition(lat, lng)
     }
 }

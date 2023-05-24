@@ -3,6 +3,7 @@ package com.bcgg.feature.planeditor.activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -28,11 +29,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldColors
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.runtime.CompositionLocal
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -58,6 +65,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bcgg.core.ui.component.ProgressDialog
+import com.bcgg.core.ui.provider.LocalFragmentManager
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.util.EdgeToEdge
 import com.bcgg.feature.planeditor.R
@@ -71,7 +79,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PlanEditorActivity : ComponentActivity() {
+class PlanEditorActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,42 +95,7 @@ class PlanEditorActivity : ComponentActivity() {
             val isLoading by planEditorViewModel.isLoading.collectAsState()
             val optionsUiState by planEditorViewModel.optionsUiState.collectAsState()
             var confirmDialogMessage by rememberSaveable { mutableStateOf<String?>(null) }
-
-            AnimatedVisibility(visible = confirmDialogMessage != null, exit = ExitTransition.None) {
-                AlertDialog(onDismissRequest = { confirmDialogMessage = null }) {
-                    if (confirmDialogMessage != null)
-                        Column(
-                            modifier = Modifier
-                                .clip(MaterialTheme.shapes.large)
-                                .background(MaterialTheme.colorScheme.background)
-                                .padding(horizontal = 24.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(top = 16.dp),
-                                text = optionsUiState.name,
-                                style = MaterialTheme.typography.headlineSmall
-                            )
-                            Text(text = confirmDialogMessage ?: "")
-
-                            Row(
-                                modifier = Modifier.padding(top = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Spacer(modifier = Modifier.weight(1f))
-                                TextButton(
-                                    modifier = Modifier.padding(8.dp),
-                                    onClick = { confirmDialogMessage = null }) {
-                                    Text("취소")
-                                }
-                                TextButton(
-                                    modifier = Modifier.padding(8.dp),
-                                    onClick = { /*TODO*/ }) {
-                                    Text("확인")
-                                }
-                            }
-                        }
-                }
-            }
+            var showInviteDialog by rememberSaveable { mutableStateOf(false) }
 
             LaunchedEffect(key1 = Unit) {
                 lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
@@ -136,14 +109,95 @@ class PlanEditorActivity : ComponentActivity() {
                             confirmDialogMessage = it
                         }
                     }
+                    launch {
+                        planEditorViewModel.showInviteeDialogEvent.collectLatest {
+                            showInviteDialog = true
+                        }
+                    }
                 }
             }
-
-            ProgressDialog(show = isLoading)
 
             EdgeToEdge()
 
             AppTheme {
+                ProgressDialog(show = isLoading)
+
+                AnimatedVisibility(visible = confirmDialogMessage != null, exit = ExitTransition.None) {
+                    AlertDialog(onDismissRequest = { confirmDialogMessage = null }) {
+                        if (confirmDialogMessage != null)
+                            Column(
+                                modifier = Modifier
+                                    .clip(MaterialTheme.shapes.large)
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    text = optionsUiState.name,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(text = confirmDialogMessage ?: "", color = MaterialTheme.colorScheme.onSurface)
+
+                                Row(
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    TextButton(
+                                        modifier = Modifier.padding(8.dp),
+                                        onClick = { confirmDialogMessage = null }) {
+                                        Text("취소", color = MaterialTheme.colorScheme.secondary)
+                                    }
+                                    TextButton(
+                                        modifier = Modifier.padding(8.dp),
+                                        onClick = { /*TODO*/ }) {
+                                        Text("확인", color = MaterialTheme.colorScheme.secondary)
+                                    }
+                                }
+                            }
+                    }
+                }
+
+                AnimatedVisibility(visible = showInviteDialog, exit = ExitTransition.None) {
+                    AlertDialog(onDismissRequest = { showInviteDialog = false }) {
+                        Column(
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.large)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                        ) {
+                            var textFieldValue by rememberSaveable {
+                                mutableStateOf("")
+                            }
+                            TextField(
+                                modifier = Modifier.padding(top = 16.dp),
+                                value = textFieldValue,
+                                onValueChange = { textFieldValue = it },
+                                label = { Text(text = "사용자 id로 초대", color = MaterialTheme.colorScheme.onSurface) },
+                            )
+
+                            Row(
+                                modifier = Modifier,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Spacer(modifier = Modifier.weight(1f))
+                                TextButton(
+                                    modifier = Modifier.padding(8.dp),
+                                    onClick = { showInviteDialog = false }) {
+                                    Text("취소", color = MaterialTheme.colorScheme.secondary)
+                                }
+                                TextButton(
+                                    modifier = Modifier.padding(8.dp),
+                                    onClick = { /*TODO*/ }) {
+                                    Text("확인", color = MaterialTheme.colorScheme.secondary)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Scaffold(
                     bottomBar = {
                         Surface(
@@ -229,10 +283,12 @@ class PlanEditorActivity : ComponentActivity() {
                         startDestination = PlanEditorOptionsNavigation.id
                     ) {
                         composable(PlanEditorOptionsNavigation.id) {
-                            PlanEditorScreenOptions(
-                                planEditorViewModel = planEditorViewModel,
-                                scaffoldPaddingValues = scaffoldPadding
-                            )
+                            CompositionLocalProvider(LocalFragmentManager provides supportFragmentManager) {
+                                PlanEditorScreenOptions(
+                                    planEditorViewModel = planEditorViewModel,
+                                    scaffoldPaddingValues = scaffoldPadding
+                                )
+                            }
                         }
                         composable(PlanEditorMapNavigation.id) {
                             PlanEditorMapScreen(

@@ -36,6 +36,7 @@ import com.bcgg.feature.planeditor.compose.map.MapSearchResultContainer
 import com.bcgg.feature.planeditor.compose.search.SearchBar
 import com.bcgg.feature.planeditor.constant.Constant
 import com.bcgg.feature.planeditor.constant.Constant.MAP_CAMERA_ANIMATION_DURATION
+import com.bcgg.feature.planeditor.util.toLatLng
 import com.bcgg.feature.planeditor.viewmodel.PlanEditorViewModel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
@@ -53,6 +54,7 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.count
 
 @OptIn(ExperimentalNaverMapApi::class)
@@ -108,6 +110,11 @@ fun PlanEditorMapScreen(
         }
     }
 
+    LaunchedEffect(cameraPositionState.position) {
+        val location = cameraPositionState.position.target
+        planEditorViewModel.sendViewingPosition(location.latitude, location.longitude)
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -132,10 +139,10 @@ fun PlanEditorMapScreen(
                 isLocationButtonEnabled = true,
             )
         ) {
-            uiState.otherMapPositions.mapIndexed { index, (id, lat, lng) ->
+            uiState.otherMapPositions.toList().mapIndexed { index, (userId, location) ->
                 Marker(
-                    state = MarkerState(position = LatLng(lat, lng)),
-                    captionText = id,
+                    state = MarkerState(position = location.toLatLng()),
+                    captionText = userId,
                     icon = OverlayImage.fromResource(R.drawable.marker_user_position),
                     iconTintColor = markerColors[index]
                 )

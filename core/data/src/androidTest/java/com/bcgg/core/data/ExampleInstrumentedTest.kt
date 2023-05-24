@@ -2,9 +2,11 @@ package com.bcgg.core.data
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import ua.naiksoftware.stomp.Stomp
 
 /**
  * Instrumented test, which will execute on an Android device.

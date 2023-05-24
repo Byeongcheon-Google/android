@@ -87,6 +87,10 @@ fun PlanEditorScreenOptions(
                 },
                 onSelectEndPosition = {
                     planEditorViewModel.updateEndPlace(uiState.selectedDate, it)
+                },
+                activeUsers = uiState.activeUsers,
+                onUserClick = {
+                    planEditorViewModel.showInviteDialog()
                 }
             )
         }

@@ -11,6 +11,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.bcgg.core.ui.provider.LocalFragmentManager
+import com.bcgg.feature.planeditor.R
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -24,16 +28,21 @@ fun TimePicker(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     pattern: String = "HH:mm",
-    is24HourView: Boolean = true,
 ) {
     val formatter = DateTimeFormatter.ofPattern(pattern)
-    val dialog = TimePickerDialog(
-        LocalContext.current,
-        { _, hour, minute -> onValueChange(LocalTime.of(hour, minute)) },
-        value.hour,
-        value.minute,
-        is24HourView,
-    )
+    val dialog = MaterialTimePicker.Builder()
+        .setTimeFormat(TimeFormat.CLOCK_12H)
+        .setHour(value.hour)
+        .setMinute(value.minute)
+        .setTitleText(label)
+        .build()
+
+    dialog.addOnPositiveButtonClickListener {
+        onValueChange(LocalTime.of(dialog.hour, dialog.minute))
+        dialog.dismiss()
+    }
+
+    val fragmentManager = LocalFragmentManager.current
 
     OutlinedTextField(
         value = value.format(formatter),
@@ -42,7 +51,7 @@ fun TimePicker(
         label = {
             Text(text = label)
         },
-        modifier = modifier.clickable { dialog.show() },
+        modifier = modifier.clickable { dialog.show(fragmentManager, "timepicker") },
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
     )

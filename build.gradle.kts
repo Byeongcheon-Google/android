@@ -7,6 +7,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven(uri("https://jitpack.io"))
     }
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.AGP_VERSION}")

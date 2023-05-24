@@ -86,13 +86,14 @@ fun SearchBar(
             },
             search = search,
             onSearchTextChanged = onSearchTextChanged,
-            placeholderText = "지역, 장소 검색"
+            placeholderText = "지역, 장소 검색",
+            onSearch = onSearch
         )
 
         DateItem(
             modifier = Modifier.alpha(0.9f).padding(end = 16.dp, top = 16.dp),
             date = selectedDate,
-            isSelected = true,
+            isSelected = false,
             isValid = false
         )
     }

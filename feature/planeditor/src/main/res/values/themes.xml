@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomTimePicker" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#ff1460A5</item> <!-- colorAccent here seems to work just fine? -->
+
+        <item name="android:timePickerMode">clock</item>
+        <item name="android:headerBackground">#ffFDFCFF</item>
+        <item name="android:headerTimeTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item> <!-- TimePicker Time *TextAppearance* -->
+        <item name="android:numbersTextColor">#ff000000</item>
+        <item name="android:numbersSelectorColor">#ff001C38</item>
+        <item name="android:numbersBackgroundColor">#ffdddddd</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+</resources>

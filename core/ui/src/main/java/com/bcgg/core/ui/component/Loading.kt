@@ -24,7 +24,7 @@ fun ProgressDialog(show: Boolean) {
         ) {
             Box(
                 modifier = Modifier.background(
-                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.surface,
                     shape = MaterialTheme.shapes.medium
                 ),
                 contentAlignment = Alignment.Center
@@ -38,7 +38,7 @@ fun ProgressDialog(show: Boolean) {
 @Preview
 @Composable
 internal fun ProgressDialogPreview() {
-    AppTheme {
+    AppTheme(useDarkTheme = true) {
         ProgressDialog(show = true)
     }
 }

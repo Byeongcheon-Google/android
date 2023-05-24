@@ -1,6 +1,7 @@
 package com.bcgg.android.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,12 +28,14 @@ import com.bcgg.feature.planeditor.navigation.PlanEditorScreenNavigation
 import com.bcgg.feature.planmanage.navigation.PlanManageScreenNavigation
 import com.bcgg.feature.planmanage.ui.PlanManageScreen
 import com.bcgg.feature.ui.login.navigation.LoginScreenNavigation
-import com.bcgg.feature.ui.signup.navigation.SignUpScreenNavigation
 import com.bcgg.feature.ui.login.ui.LoginScreen
+import com.bcgg.feature.ui.signup.navigation.SignUpScreenNavigation
 import com.bcgg.feature.ui.signup.ui.SignUpScreen
 import com.bcgg.splash.compose.SplashScreen
 import com.bcgg.splash.navigation.SplashScreenNavigation
 import dagger.hilt.android.AndroidEntryPoint
+import ua.naiksoftware.stomp.Stomp
+import ua.naiksoftware.stomp.dto.LifecycleEvent
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

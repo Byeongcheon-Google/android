@@ -2,6 +2,7 @@ import gradleconfig.configureApplication
 import gradleconfig.configureHilt
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureNaverMapCompose
+import gradleconfig.configureStomp
 
 plugins {
     id("com.android.application")
@@ -15,9 +16,7 @@ android {
     configureKotlinAndroid(this)
     configureNaverMapCompose(this)
     configureHilt(this)
-    buildFeatures {
-        viewBinding = true
-    }
+    configureStomp()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

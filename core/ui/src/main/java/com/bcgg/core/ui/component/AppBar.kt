@@ -73,6 +73,7 @@ fun SearchAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    onSearch: (String) -> Unit,
     search: String,
     placeholderText: String,
     onSearchTextChanged: (String) -> Unit
@@ -106,7 +107,10 @@ fun SearchAppBar(
             },
             keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onDone = { keyboardController?.hide() }
+                onDone = {
+                    keyboardController?.hide()
+                    onSearch(search)
+                }
             )
         )
     }
@@ -164,7 +168,8 @@ internal fun RoundedAppBarPreviewSample() {
                 },
                 search = search,
                 onSearchTextChanged = { search = it },
-                placeholderText = "Search"
+                placeholderText = "Search",
+                onSearch = {}
             )
         }
     }

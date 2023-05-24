@@ -15,12 +15,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Travelplangeneratorandroid"
-        tools:targetApi="31" >
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="com.bcgg.feature.planeditor.activity.PlanEditorActivity"
             android:exported="false"
             android:label="@string/title_activity_plan_editor"
-            android:theme="@style/Theme.Travelplangeneratorandroid" />
+            android:theme="@style/AppTheme" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

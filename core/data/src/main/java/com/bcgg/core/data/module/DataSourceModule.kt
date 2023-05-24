@@ -1,11 +1,14 @@
 package com.bcgg.core.data.module
 
-import com.bcgg.core.data.user.UserDataSource
-import com.bcgg.core.data.user.UserFakeDataSource
+import android.util.Log
+import com.bcgg.core.data.source.chat.ChatRoomDataSource
+import com.bcgg.core.data.source.user.UserDataSource
+import com.bcgg.core.data.source.user.UserFakeDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import ua.naiksoftware.stomp.Stomp
 import javax.inject.Singleton
 
 @Module

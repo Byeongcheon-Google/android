@@ -1,9 +1,9 @@
 package com.bcgg.core.data.module
 
-import com.bcgg.core.data.user.UserAuthDataSource
-import com.bcgg.core.data.user.UserDataSource
-import com.bcgg.core.data.user.UserFakeAuthDataSource
-import com.bcgg.core.data.user.UserFakeDataSource
+import com.bcgg.core.data.source.user.UserAuthDataSource
+import com.bcgg.core.data.source.user.UserDataSource
+import com.bcgg.core.data.source.user.UserFakeAuthDataSource
+import com.bcgg.core.data.source.user.UserFakeDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,6 +1,7 @@
 package com.bcgg.feature.planeditor.compose.state
 
 import androidx.compose.runtime.Stable
+import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import java.time.LocalDate
 import java.time.LocalTime
@@ -8,7 +9,8 @@ import java.time.LocalTime
 @Stable
 data class OptionsUiState(
     val name: String = "새 여행 계획",
-    val selectedDate: LocalDate = LocalDate.now()
+    val selectedDate: LocalDate = LocalDate.now(),
+    val activeUsers: List<User> = emptyList()
 )
 
 @Stable

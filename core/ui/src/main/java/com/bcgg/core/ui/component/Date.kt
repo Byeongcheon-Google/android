@@ -34,7 +34,7 @@ fun DateItem(
     val backgroundColor = when {
         isSelected -> MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp)
         isValid -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-        else -> Color.Transparent
+        else -> MaterialTheme.colorScheme.surface
     }
 
     Column(

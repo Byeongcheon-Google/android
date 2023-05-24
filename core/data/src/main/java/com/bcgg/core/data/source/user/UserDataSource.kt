@@ -1,4 +1,4 @@
-package com.bcgg.core.data.user
+package com.bcgg.core.data.source.user
 
 import com.bcgg.core.data.response.TokenResponse
 

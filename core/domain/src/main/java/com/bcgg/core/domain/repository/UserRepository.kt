@@ -1,15 +1,15 @@
 package com.bcgg.core.domain.repository
 
-import com.bcgg.core.data.user.UserAuthDataSource
-import com.bcgg.core.data.user.UserDataSource
+import com.bcgg.core.data.source.user.UserAuthDataSource
+import com.bcgg.core.data.source.user.UserDataSource
 import com.bcgg.core.domain.mapper.user.toJwtToken
+import com.bcgg.core.domain.model.User
 import com.bcgg.core.security.model.JwtToken
 import com.bcgg.core.security.source.JwtTokenSecuredLocalDataSource
 import com.bcgg.core.util.Result
 import com.bcgg.core.util.toFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -27,10 +27,14 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun getUserId(): Flow<Result<String>> = flow {
+    fun getUser(): Flow<Result<User>> = flow {
         emit(
             try {
-                Result.Success(userAuthDataSource.getUserId())
+                Result.Success(
+                    User(
+                        userId = userAuthDataSource.getUserId()
+                    )
+                )
             } catch (t: Throwable) {
                 t.toFailure()
             }
