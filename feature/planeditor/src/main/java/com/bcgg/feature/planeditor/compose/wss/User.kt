@@ -17,7 +17,6 @@ import com.bcgg.feature.planeditor.R
 @Composable
 fun WssUser(
     modifier: Modifier = Modifier,
-    user: User,
     colorPosition: Int = -1,
 ) {
     val foregroundColor =
@@ -44,7 +43,7 @@ fun WssUser(
     Icon(
         modifier = modifier.clip(CircleShape).background(backgroundColor).border(width = 0.35.dp, color = strokeColor, shape = CircleShape),
         painter = painterResource(id = R.drawable.person),
-        contentDescription = user.userId,
+        contentDescription = "",
         tint = foregroundColor
     )
 }

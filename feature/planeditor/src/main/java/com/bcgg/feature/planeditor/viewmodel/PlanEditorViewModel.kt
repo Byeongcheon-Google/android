@@ -17,6 +17,7 @@ import com.bcgg.feature.planeditor.compose.state.OptionsUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorMapUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
+import com.bcgg.feature.planeditor.util.collectCount
 import com.bcgg.feature.planeditor.util.collectEndPlace
 import com.bcgg.feature.planeditor.util.collectEndTime
 import com.bcgg.feature.planeditor.util.collectMealTimes
@@ -133,17 +134,11 @@ class PlanEditorViewModel @Inject constructor(
                     newMap[date] = newValue.copy(endPlaceSearchResult = endPlace)
 
                     _optionsUiStatePerDate.value = newMap
+                }.collectCount(viewModelScope) {
+                    _optionsUiState.value = _optionsUiState.value.copy(activeUserCount = it)
                 }.catch {
                     Log.e("Stomp sub", it.message ?: "Unknown Error")
                 }
-        }
-
-        viewModelScope.launch {
-            userRepository.getUser().collectOnSuccess {
-                _optionsUiState.value = _optionsUiState.value.copy(activeUsers = listOf(it))
-            }.collectOnFailure {
-                _errorMessage.emit("사용자 정보를 가져오지 못했습니다")
-            }
         }
     }
 

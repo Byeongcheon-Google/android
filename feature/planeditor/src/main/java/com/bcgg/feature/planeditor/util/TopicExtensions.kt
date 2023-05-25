@@ -200,3 +200,20 @@ inline fun Flow<ChatMessage>.collectEndPlace(
 
     return this
 }
+
+inline fun Flow<ChatMessage>.collectCount(
+    coroutineScope: CoroutineScope,
+    crossinline action: suspend (userCount: Int) -> Unit
+): Flow<ChatMessage> {
+    coroutineScope.launch {
+        collectLatest { chatMessage ->
+            if (chatMessage.command == ChatMessageCommand.INFO) {
+                action(
+                    chatMessage.message.toIntOrNull() ?: 1
+                )
+            }
+        }
+    }
+
+    return this
+}

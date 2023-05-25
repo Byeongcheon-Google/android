@@ -10,7 +10,7 @@ import java.time.LocalTime
 data class OptionsUiState(
     val name: String = "새 여행 계획",
     val selectedDate: LocalDate = LocalDate.now(),
-    val activeUsers: List<User> = emptyList()
+    val activeUserCount: Int = 1
 )
 
 @Stable

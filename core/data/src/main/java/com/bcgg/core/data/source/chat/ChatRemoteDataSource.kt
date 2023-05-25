@@ -33,7 +33,7 @@ class ChatRemoteDataSource @Inject constructor(
     private val coroutineScope: CoroutineScope
 ) {
 
-    private val ROOM_ID = "7682954f-c008-4113-a39a-e503dffa694a"
+    private val ROOM_ID = "d99c4446-81a1-47fd-aa09-a09c9d4455a8"
     private var userId: String? = null
     private val stompClientLifecycle = stompClient.lifecycle().asFlow()
     val topic =

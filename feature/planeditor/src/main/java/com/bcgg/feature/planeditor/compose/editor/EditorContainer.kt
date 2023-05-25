@@ -52,7 +52,7 @@ import java.time.LocalTime
 fun EditorContainer(
     modifier: Modifier = Modifier,
     planName: String,
-    activeUsers: List<User>,
+    activeUserCount: Int,
     planEditorOptionsUiStatePerDates: Map<LocalDate, PlanEditorOptionsUiStatePerDate>,
     selectedDate: LocalDate,
     onDateClick: (LocalDate) -> Unit,
@@ -111,7 +111,7 @@ fun EditorContainer(
                     modifier = Modifier
                         .clickable(onClick = onUserClick)
                         .padding(8.dp),
-                    activeUsers = activeUsers
+                    activeUserCount = activeUserCount
                 )
             }
         )

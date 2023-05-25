@@ -15,5 +15,5 @@ object StompModule {
     @Provides
     @Singleton
     fun provideStompClient(): StompClient =
-        Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.0.30:8080/ws-stomp/websocket")
+        Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://192.168.0.33:8081/ws-stomp/websocket")
 }
