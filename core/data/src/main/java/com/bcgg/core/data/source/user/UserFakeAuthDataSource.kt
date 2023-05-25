@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 class UserFakeAuthDataSource : UserAuthDataSource {
     override suspend fun getUserId() : String {
         delay(500)
-        return "jws"
+        return "ljy"
         throw Exception("test")
     }
 }

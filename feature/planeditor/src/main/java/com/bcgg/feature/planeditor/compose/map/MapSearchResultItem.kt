@@ -100,7 +100,8 @@ private fun MapSearchResultItemPreview() {
                     MapSearchResultItem(
                         placeSearchResult = PlaceSearchResult(
                             name = "성심당 DCC점",
-                            address = "대전 유성구 엑스포로 107"
+                            address = "대전 유성구 엑스포로 107",
+                            id = "asdf"
                         ),
                         isAdded = it.second,
                         onAddButtonClick = {},

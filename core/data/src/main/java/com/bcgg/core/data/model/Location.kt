@@ -1,4 +1,4 @@
-package com.bcgg.core.domain.model
+package com.bcgg.core.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -2,8 +2,7 @@ package com.bcgg.feature.planeditor.compose.state
 
 import androidx.compose.runtime.Stable
 import androidx.paging.PagingData
-import com.bcgg.core.domain.model.Location
-import com.bcgg.core.domain.model.User
+import com.bcgg.core.data.model.Location
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate

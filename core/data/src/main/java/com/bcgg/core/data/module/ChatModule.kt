@@ -10,6 +10,7 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineScope
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 import java.util.concurrent.*
@@ -23,6 +24,7 @@ object ChatModule {
     @ViewModelScoped
     fun provideChatDataSource(
         stompClient: StompClient,
-        userAuthDataSource: UserAuthDataSource
-    ): ChatRemoteDataSource = ChatRemoteDataSource(stompClient, userAuthDataSource)
+        userAuthDataSource: UserAuthDataSource,
+        coroutineScope: CoroutineScope,
+    ): ChatRemoteDataSource = ChatRemoteDataSource(stompClient, userAuthDataSource, coroutineScope)
 }

@@ -1,7 +1,8 @@
 package com.bcgg.feature.planeditor.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.bcgg.core.data.response.chat.ChatMessageType
+import com.bcgg.core.data.response.chat.ChatMessageCommand
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
@@ -16,13 +17,21 @@ import com.bcgg.feature.planeditor.compose.state.OptionsUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorMapUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
+import com.bcgg.feature.planeditor.util.collectEndPlace
+import com.bcgg.feature.planeditor.util.collectEndTime
+import com.bcgg.feature.planeditor.util.collectMealTimes
+import com.bcgg.feature.planeditor.util.collectPoints
+import com.bcgg.feature.planeditor.util.collectStartPlace
+import com.bcgg.feature.planeditor.util.collectStartTime
+import com.bcgg.feature.planeditor.util.collectTitle
+import com.bcgg.feature.planeditor.util.collectViewingPosition
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -63,21 +72,70 @@ class PlanEditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            chatRepository.topic.collectLatest {
-                if (it.sender == getUser().userId) return@collectLatest
-                val value = it.getValue() ?: return@collectLatest
+            chatRepository.topic
+                .collectTitle(getUser(), viewModelScope) { _, value ->
+                    _optionsUiState.value = _optionsUiState.value.copy(name = value)
+                }.collectViewingPosition(getUser(), viewModelScope) { userId, position ->
+                    val newMap = _mapUiState.value.otherMapPositions.toMutableMap()
+                    newMap[userId] = position
+                    _mapUiState.value = _mapUiState.value.copy(otherMapPositions = newMap)
+                }.collectStartTime(getUser(), viewModelScope) { userId, date, startTime ->
+                    val newValue =
+                        _optionsUiStatePerDate.value[date] ?: initialPlanEditorOptionsUiStatePerDate
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(startTime = startTime)
+                    _optionsUiStatePerDate.value = newMap
+                }.collectEndTime(getUser(), viewModelScope) { userId, date, endTime ->
+                    val newValue =
+                        _optionsUiStatePerDate.value[date] ?: initialPlanEditorOptionsUiStatePerDate
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(endHopeTime = endTime)
 
-                when (it.getChatMessageType()) {
-                    ChatMessageType.Title -> {
-                        _optionsUiState.value = _optionsUiState.value.copy(name = value)
-                    }
-                    ChatMessageType.ViewingLocation -> {
-                        val newMap = _mapUiState.value.otherMapPositions.toMutableMap()
-                        newMap[it.sender] = Json.decodeFromString(value)
-                        _mapUiState.value = _mapUiState.value.copy(otherMapPositions = newMap)
-                    }
+                    _optionsUiStatePerDate.value = newMap
+                }.collectMealTimes(getUser(), viewModelScope) { userId, date, mealTimes ->
+                    val newValue =
+                        _optionsUiStatePerDate.value[date] ?: initialPlanEditorOptionsUiStatePerDate
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(mealTimes = mealTimes)
+
+                    _optionsUiStatePerDate.value = newMap
+                }.collectPoints(getUser(), viewModelScope) { userId, date, points ->
+                    val newValue =
+                        _optionsUiStatePerDate.value[date]
+                            ?: initialPlanEditorOptionsUiStatePerDate
+
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(
+                        searchResultMaps = points.take(10),
+                        startPlaceSearchResult = if (newValue.startPlaceSearchResult == null && points.isNotEmpty()) points.first() else newValue.startPlaceSearchResult,
+                        endPlaceSearchResult = if (newValue.endPlaceSearchResult == null && points.isNotEmpty()) points.first() else newValue.endPlaceSearchResult
+                    )
+
+                    _optionsUiStatePerDate.value = newMap
+                    _mapUiState.value = _mapUiState.value.copy(
+                        addedSearchResults = newMap[date]?.searchResultMaps?.map { it.placeSearchResult }
+                            ?: emptyList()
+                    )
+                }.collectStartPlace(getUser(), viewModelScope) { userId, date, startPlace ->
+                    val newValue =
+                        _optionsUiStatePerDate.value[date] ?: initialPlanEditorOptionsUiStatePerDate
+
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(startPlaceSearchResult = startPlace)
+
+                    _optionsUiStatePerDate.value = newMap
+                }.collectEndPlace(getUser(), viewModelScope) { userId, date, endPlace ->
+
+                    val newValue =
+                        _optionsUiStatePerDate.value[date] ?: initialPlanEditorOptionsUiStatePerDate
+
+                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                    newMap[date] = newValue.copy(endPlaceSearchResult = endPlace)
+
+                    _optionsUiStatePerDate.value = newMap
+                }.catch {
+                    Log.e("Stomp sub", it.message ?: "Unknown Error")
                 }
-            }
         }
 
         viewModelScope.launch {
@@ -168,6 +226,7 @@ class PlanEditorViewModel @Inject constructor(
         newMap[localDate] = newValue.copy(startTime = startTime)
 
         _optionsUiStatePerDate.value = newMap
+        chatRepository.updateStartTime(localDate, startTime)
     }
 
     fun updateEndHopeTime(localDate: LocalDate, endHopeTime: LocalTime) = viewModelScope.launch {
@@ -185,6 +244,7 @@ class PlanEditorViewModel @Inject constructor(
         newMap[localDate] = newValue.copy(endHopeTime = endHopeTime)
 
         _optionsUiStatePerDate.value = newMap
+        chatRepository.updateEndTime(localDate, endHopeTime)
     }
 
     fun updateMealTimes(localDate: LocalDate, mealTimes: List<LocalTime>) = viewModelScope.launch {
@@ -204,27 +264,32 @@ class PlanEditorViewModel @Inject constructor(
         newMap[localDate] = newValue.copy(mealTimes = mealTimes)
 
         _optionsUiStatePerDate.value = newMap
+        chatRepository.updateMealTimes(localDate, mealTimes)
     }
 
-    fun updateStartPlace(localDate: LocalDate, startPlace: PlaceSearchResultWithId) {
-        val newValue =
-            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+    fun updateStartPlace(localDate: LocalDate, startPlace: PlaceSearchResultWithId) =
+        viewModelScope.launch {
+            val newValue =
+                _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
 
-        val newMap = _optionsUiStatePerDate.value.toMutableMap()
-        newMap[localDate] = newValue.copy(startPlaceSearchResult = startPlace)
+            val newMap = _optionsUiStatePerDate.value.toMutableMap()
+            newMap[localDate] = newValue.copy(startPlaceSearchResult = startPlace)
 
-        _optionsUiStatePerDate.value = newMap
-    }
+            _optionsUiStatePerDate.value = newMap
+            chatRepository.updateStartPlace(localDate, startPlace)
+        }
 
-    fun updateEndPlace(localDate: LocalDate, endPlace: PlaceSearchResultWithId) {
-        val newValue =
-            _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
+    fun updateEndPlace(localDate: LocalDate, endPlace: PlaceSearchResultWithId) =
+        viewModelScope.launch {
+            val newValue =
+                _optionsUiStatePerDate.value[localDate] ?: initialPlanEditorOptionsUiStatePerDate
 
-        val newMap = _optionsUiStatePerDate.value.toMutableMap()
-        newMap[localDate] = newValue.copy(endPlaceSearchResult = endPlace)
+            val newMap = _optionsUiStatePerDate.value.toMutableMap()
+            newMap[localDate] = newValue.copy(endPlaceSearchResult = endPlace)
 
-        _optionsUiStatePerDate.value = newMap
-    }
+            _optionsUiStatePerDate.value = newMap
+            chatRepository.updateEndPlace(localDate, endPlace)
+        }
 
     fun addItem(placeSearchResult: PlaceSearchResult) =
         viewModelScope.launch {
@@ -242,7 +307,7 @@ class PlanEditorViewModel @Inject constructor(
                         return@collectOnSuccess
                     }
                     val newList = newValue.searchResultMaps.plusElement(
-                        PlaceSearchResultWithId(userId, placeSearchResult)
+                        PlaceSearchResultWithId(userId, placeSearchResult, stayTimeHour = 1)
                     )
                     newMap[localDate] = newValue.copy(
                         searchResultMaps = newList,
@@ -255,6 +320,7 @@ class PlanEditorViewModel @Inject constructor(
                         addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
                             ?: emptyList()
                     )
+                    chatRepository.updatePoints(localDate, newList)
                 }
                 .collectOnFailure {
                     _errorMessage.emit(it)
@@ -297,6 +363,7 @@ class PlanEditorViewModel @Inject constructor(
                         addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
                             ?: emptyList()
                     )
+                    chatRepository.updatePoints(localDate, newList)
                 }
                 .collectOnFailure {
                     _errorMessage.emit(it)
@@ -304,20 +371,23 @@ class PlanEditorViewModel @Inject constructor(
             _isLoading.value = false
         }
 
-    fun changeStayTime(placeSearchResult: PlaceSearchResultWithId, stayTime: Int) {
-        if (_optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] == null) return
-        val newMap = _optionsUiStatePerDate.value.toMutableMap()
-        newMap[_optionsUiState.value.selectedDate] =
-            newMap[_optionsUiState.value.selectedDate]!!.copy(
-                searchResultMaps = newMap[_optionsUiState.value.selectedDate]!!.searchResultMaps.map {
-                    if (it.placeSearchResult == placeSearchResult.placeSearchResult)
-                        return@map it.copy(stayTimeHour = stayTime)
+    fun changeStayTime(placeSearchResult: PlaceSearchResultWithId, stayTime: Int) =
+        viewModelScope.launch {
+            if (_optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] == null) return@launch
+            val newMap = _optionsUiStatePerDate.value.toMutableMap()
+            val newList = newMap[_optionsUiState.value.selectedDate]!!.searchResultMaps.map {
+                if (it.placeSearchResult == placeSearchResult.placeSearchResult)
+                    return@map it.copy(stayTimeHour = stayTime)
 
-                    it
-                }
-            )
-        _optionsUiStatePerDate.value = newMap
-    }
+                it
+            }
+            newMap[_optionsUiState.value.selectedDate] =
+                newMap[_optionsUiState.value.selectedDate]!!.copy(
+                    searchResultMaps = newList
+                )
+            _optionsUiStatePerDate.value = newMap
+            chatRepository.updatePoints(_optionsUiState.value.selectedDate, newList)
+        }
 
     fun changeClassification(
         placeSearchResult: PlaceSearchResultWithId,
