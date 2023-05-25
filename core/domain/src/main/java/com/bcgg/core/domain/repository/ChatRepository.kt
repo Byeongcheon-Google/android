@@ -76,14 +76,23 @@ class ChatRepository @Inject constructor(
         )
     }
 
-    suspend fun updateStartPlace(date: LocalDate, startPlace: PlaceSearchResultWithId) {
+    fun updatePointsLazy(date: LocalDate, points: List<PlaceSearchResultWithId>) {
+        chatRemoteDataSource.sendMessage(
+            ChatMessageCommand.POINTS,
+            json.encodeToString(
+                ChatPoints(date.toKotlinLocalDate(), points)
+            )
+        )
+    }
+
+    suspend fun updateStartPlace(date: LocalDate, startPlace: PlaceSearchResultWithId?) {
         chatRemoteDataSource.sendMessageWithoutBackPressure(
             ChatMessageCommand.STARTPLACE,
             json.encodeToString(ChatStartPlace(date.toKotlinLocalDate(), startPlace))
         )
     }
 
-    suspend fun updateEndPlace(date: LocalDate, endPlace: PlaceSearchResultWithId) {
+    suspend fun updateEndPlace(date: LocalDate, endPlace: PlaceSearchResultWithId?) {
         chatRemoteDataSource.sendMessageWithoutBackPressure(
             ChatMessageCommand.ENDPLACE,
             json.encodeToString(ChatEndPlace(date.toKotlinLocalDate(), endPlace))

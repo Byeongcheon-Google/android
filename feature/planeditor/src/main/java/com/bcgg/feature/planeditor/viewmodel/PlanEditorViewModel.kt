@@ -364,6 +364,8 @@ class PlanEditorViewModel @Inject constructor(
                             ?: emptyList()
                     )
                     chatRepository.updatePoints(localDate, newList)
+                    chatRepository.updateStartPlace(localDate, newStartPlace)
+                    chatRepository.updateEndPlace(localDate, newEndPlace)
                 }
                 .collectOnFailure {
                     _errorMessage.emit(it)
@@ -386,7 +388,7 @@ class PlanEditorViewModel @Inject constructor(
                     searchResultMaps = newList
                 )
             _optionsUiStatePerDate.value = newMap
-            chatRepository.updatePoints(_optionsUiState.value.selectedDate, newList)
+            chatRepository.updatePointsLazy(_optionsUiState.value.selectedDate, newList)
         }
 
     fun changeClassification(

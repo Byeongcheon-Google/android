@@ -158,7 +158,7 @@ inline fun Flow<ChatMessage>.collectPoints(
 inline fun Flow<ChatMessage>.collectStartPlace(
     user: User,
     coroutineScope: CoroutineScope,
-    crossinline action: suspend (userId: String, date: LocalDate, startPlace: PlaceSearchResultWithId) -> Unit
+    crossinline action: suspend (userId: String, date: LocalDate, startPlace: PlaceSearchResultWithId?) -> Unit
 ): Flow<ChatMessage> {
     coroutineScope.launch {
         collectLatest { chatMessage ->
@@ -181,7 +181,7 @@ inline fun Flow<ChatMessage>.collectStartPlace(
 inline fun Flow<ChatMessage>.collectEndPlace(
     user: User,
     coroutineScope: CoroutineScope,
-    crossinline action: suspend (userId: String, date: LocalDate, endPlace: PlaceSearchResultWithId) -> Unit
+    crossinline action: suspend (userId: String, date: LocalDate, endPlace: PlaceSearchResultWithId?) -> Unit
 ): Flow<ChatMessage> {
     coroutineScope.launch {
         collectLatest { chatMessage ->

@@ -11,5 +11,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ChatEndPlace(
     @SerialName("date") @Serializable(with = LocalDateIso8601Serializer::class) val date: LocalDate,
-    @SerialName("endPlace") val endPlace: PlaceSearchResultWithId
+    @SerialName("endPlace") val endPlace: PlaceSearchResultWithId?
 )
