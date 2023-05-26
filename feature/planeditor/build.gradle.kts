@@ -25,6 +25,7 @@ dependencies {
         project(":core:data"),
         project(":core:domain"),
         project(":core:ui"),
-        project(":core:util")
+        project(":core:util"),
+        "com.google.accompanist:accompanist-webview:0.29.1-alpha"
     )
 }

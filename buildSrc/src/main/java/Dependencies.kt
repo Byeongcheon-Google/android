@@ -15,6 +15,7 @@ object Versions {
     const val PAGING_COMPOSE = "1.0.0-alpha17"
     const val NAVIGATION_COMPOSE = "2.5.3"
     const val DATASTORE = "1.0.0"
+    const val ACCOMPANIST_WEBVIEW = "0.31.2-alpha"
 
     // Kotlin
     const val COROUTINE_CORE = "1.6.4"
@@ -84,6 +85,8 @@ object Libraries {
         const val NAVIGATION_COMPOSE = "androidx.navigation:navigation-compose:${Versions.NAVIGATION_COMPOSE}"
 
         const val DATASTORE = "androidx.datastore:datastore-preferences:${Versions.DATASTORE}"
+
+        const val ACCOMPANIST_WEBVIEW = "com.google.accompanist:accompanist-webview:${Versions.ACCOMPANIST_WEBVIEW}>"
     }
 
     object Kotlin {
