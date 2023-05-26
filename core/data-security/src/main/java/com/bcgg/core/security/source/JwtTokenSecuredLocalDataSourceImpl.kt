@@ -17,15 +17,16 @@ class JwtTokenSecuredLocalDataSourceImpl(
         Hawk.init(context).build()
     }
 
-    override fun getJwtToken(): Flow<JwtToken?> = flow {
-        emit(Hawk.get<JwtToken?>(TOKEN_PREFS_KEY))
+    override fun saveAccessToken(accessToken: String) {
+        Hawk.put(TOKEN_PREFS_KEY, accessToken)
     }
 
-    override suspend fun saveJwtToken(token: JwtToken) {
-        Hawk.put(TOKEN_PREFS_KEY, token)
+    override fun getAccessToken(): String? = Hawk.get<String>(TOKEN_PREFS_KEY)
+    override fun removeAccessToken() {
+        Hawk.delete(TOKEN_PREFS_KEY)
     }
 
     companion object {
-        private val TOKEN_PREFS_KEY = "token"
+        private const val TOKEN_PREFS_KEY = "token"
     }
 }

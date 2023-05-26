@@ -3,8 +3,7 @@ package com.bcgg.splash.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.ui.viewmodel.BaseViewModel
-import com.bcgg.core.util.ext.collectOnFailure
-import com.bcgg.core.util.ext.collectOnSuccess
+import com.bcgg.core.util.ext.collectLatest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,8 +20,14 @@ class SplashViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             userRepository.getUser()
-                .collectOnSuccess { _tokenIsValid.emit(true) }
-                .collectOnFailure { _tokenIsValid.emit(false) }
+                .collectLatest(
+                    onSuccess = {
+                        _tokenIsValid.emit(true)
+                    },
+                    onFailure = {
+                        _tokenIsValid.emit(false)
+                    }
+                )
         }
     }
 }

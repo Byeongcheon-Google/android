@@ -1,22 +1,17 @@
 package com.bcgg.core.data.source.chat
 
 import android.util.Log
-import com.bcgg.core.data.response.chat.ChatMessage
-import com.bcgg.core.data.response.chat.ChatMessageCommand
+import com.bcgg.core.data.model.ChatMessage
+import com.bcgg.core.data.model.ChatMessageCommand
 import com.bcgg.core.data.source.user.UserAuthDataSource
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.rx2.await
-import kotlinx.coroutines.yield
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

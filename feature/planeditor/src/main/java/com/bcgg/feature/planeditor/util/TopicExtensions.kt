@@ -1,8 +1,8 @@
 package com.bcgg.feature.planeditor.util
 
 import com.bcgg.core.data.model.Location
-import com.bcgg.core.data.response.chat.ChatMessage
-import com.bcgg.core.data.response.chat.ChatMessageCommand
+import com.bcgg.core.data.model.ChatMessage
+import com.bcgg.core.data.model.ChatMessageCommand
 import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.chat.ChatEndPlace
 import com.bcgg.core.domain.model.editor.chat.ChatEndTime

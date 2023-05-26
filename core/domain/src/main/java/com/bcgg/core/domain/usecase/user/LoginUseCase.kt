@@ -9,7 +9,7 @@ import javax.inject.Inject
 class LoginUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(id: String, password: String): Flow<Result<Unit>> {
-        return userRepository.signUp(id, password.toSHA256())
+    operator fun invoke(id: String, password: String): Flow<Result<String>> {
+        return userRepository.login(id, password.toSHA256())
     }
 }

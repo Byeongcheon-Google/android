@@ -13,8 +13,9 @@ fun Project.configureRetrofit2() {
         implementation(
             Libraries.Networking.RETROFIT,
             Libraries.Networking.RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER,
+            Libraries.Networking.RETROFIT_SCALAR_CONVERTER,
             Libraries.Networking.OKHTTP,
-            Libraries.Networking.OKHTTP_LOGGING_INTERCEPTOR,
+            Libraries.Networking.OKHTTP_LOGGING_INTERCEPTOR
         )
     }
 }

@@ -2,7 +2,6 @@ package com.bcgg.feature.planeditor.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.bcgg.core.data.response.chat.ChatMessageCommand
 import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
@@ -11,8 +10,7 @@ import com.bcgg.core.domain.repository.ChatRepository
 import com.bcgg.core.domain.repository.MapPlaceRepository
 import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.ui.viewmodel.BaseViewModel
-import com.bcgg.core.util.ext.collectOnFailure
-import com.bcgg.core.util.ext.collectOnSuccess
+import com.bcgg.core.util.ext.collectLatest
 import com.bcgg.feature.planeditor.compose.state.OptionsUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorMapUiState
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
@@ -34,9 +32,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import java.lang.StringBuilder
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -139,17 +134,26 @@ class PlanEditorViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.getUser().collectOnSuccess {
-                _optionsUiState.value = _optionsUiState.value.copy(activeUsers = listOf(it))
-            }.collectOnFailure {
-                _errorMessage.emit("사용자 정보를 가져오지 못했습니다")
-            }
+            userRepository.getUser()
+                .collectLatest(
+                    onSuccess = {
+                        _optionsUiState.value = _optionsUiState.value.copy(activeUsers = listOf(it))
+                    }, onFailure = {
+                        _errorMessage.emit("사용자 정보를 가져오지 못했습니다")
+                    }
+                )
         }
     }
 
     private suspend fun getUser(): User {
-        if (_user == null) userRepository.getUser().collectOnSuccess { _user = it }
-            .collectOnFailure { _errorMessage.emit("사용자 정보를 가져오는 중 오류가 발생했습니다.") }
+        if (_user == null) userRepository.getUser()
+            .collectLatest(
+                onSuccess = {
+                    _user = it
+                }, onFailure = {
+                    _errorMessage.emit("사용자 정보를 가져오는 중 오류가 발생했습니다.")
+                }
+            )
         return _user!!
     }
 
@@ -295,36 +299,37 @@ class PlanEditorViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             userRepository.getUser()
-                .collectOnSuccess { (userId) ->
-                    val localDate = mapUiState.value.selectedDate
-                    val newValue =
-                        _optionsUiStatePerDate.value[localDate]
-                            ?: initialPlanEditorOptionsUiStatePerDate
+                .collectLatest(
+                    onSuccess = { (userId) ->
+                        val localDate = mapUiState.value.selectedDate
+                        val newValue =
+                            _optionsUiStatePerDate.value[localDate]
+                                ?: initialPlanEditorOptionsUiStatePerDate
 
-                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                    if (newValue.searchResultMaps.size >= 10) {
-                        _errorMessage.emit("하루에 최대 10개의 여행지만 추가할 수 있습니다.")
-                        return@collectOnSuccess
+                        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                        if (newValue.searchResultMaps.size >= 10) {
+                            _errorMessage.emit("하루에 최대 10개의 여행지만 추가할 수 있습니다.")
+                            return@collectLatest
+                        }
+                        val newList = newValue.searchResultMaps.plusElement(
+                            PlaceSearchResultWithId(userId, placeSearchResult, stayTimeHour = 1)
+                        )
+                        newMap[localDate] = newValue.copy(
+                            searchResultMaps = newList,
+                            startPlaceSearchResult = if (newValue.startPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.startPlaceSearchResult,
+                            endPlaceSearchResult = if (newValue.endPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.endPlaceSearchResult
+                        )
+
+                        _optionsUiStatePerDate.value = newMap
+                        _mapUiState.value = _mapUiState.value.copy(
+                            addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
+                                ?: emptyList()
+                        )
+                        chatRepository.updatePoints(localDate, newList)
+                    }, onFailure = {
+                        _errorMessage.emit(it)
                     }
-                    val newList = newValue.searchResultMaps.plusElement(
-                        PlaceSearchResultWithId(userId, placeSearchResult, stayTimeHour = 1)
-                    )
-                    newMap[localDate] = newValue.copy(
-                        searchResultMaps = newList,
-                        startPlaceSearchResult = if (newValue.startPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.startPlaceSearchResult,
-                        endPlaceSearchResult = if (newValue.endPlaceSearchResult == null && newList.isNotEmpty()) newList.first() else newValue.endPlaceSearchResult
-                    )
-
-                    _optionsUiStatePerDate.value = newMap
-                    _mapUiState.value = _mapUiState.value.copy(
-                        addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
-                            ?: emptyList()
-                    )
-                    chatRepository.updatePoints(localDate, newList)
-                }
-                .collectOnFailure {
-                    _errorMessage.emit(it)
-                }
+                )
             _isLoading.value = false
         }
 
@@ -332,44 +337,46 @@ class PlanEditorViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             userRepository.getUser()
-                .collectOnSuccess { userId ->
-                    val localDate = mapUiState.value.selectedDate
-                    val newValue =
-                        _optionsUiStatePerDate.value[localDate]
-                            ?: initialPlanEditorOptionsUiStatePerDate
+                .collectLatest(
+                    onSuccess = { userId ->
+                        val localDate = mapUiState.value.selectedDate
+                        val newValue =
+                            _optionsUiStatePerDate.value[localDate]
+                                ?: initialPlanEditorOptionsUiStatePerDate
 
-                    val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                    val newList = newValue.searchResultMaps.filter {
-                        it.placeSearchResult != placeSearchResult.placeSearchResult
-                    }
-                    val newStartPlace = when {
-                        newList.contains(newValue.startPlaceSearchResult) -> newValue.startPlaceSearchResult
-                        newList.isNotEmpty() -> newList.first()
-                        else -> null
-                    }
-                    val newEndPlace = when {
-                        newList.contains(newValue.endPlaceSearchResult) -> newValue.endPlaceSearchResult
-                        newList.isNotEmpty() -> newList.last()
-                        else -> null
-                    }
-                    newMap[localDate] = newValue.copy(
-                        searchResultMaps = newList,
-                        startPlaceSearchResult = newStartPlace,
-                        endPlaceSearchResult = newEndPlace
-                    )
+                        val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                        val newList = newValue.searchResultMaps.filter {
+                            it.placeSearchResult != placeSearchResult.placeSearchResult
+                        }
+                        val newStartPlace = when {
+                            newList.contains(newValue.startPlaceSearchResult) -> newValue.startPlaceSearchResult
+                            newList.isNotEmpty() -> newList.first()
+                            else -> null
+                        }
+                        val newEndPlace = when {
+                            newList.contains(newValue.endPlaceSearchResult) -> newValue.endPlaceSearchResult
+                            newList.isNotEmpty() -> newList.last()
+                            else -> null
+                        }
+                        newMap[localDate] = newValue.copy(
+                            searchResultMaps = newList,
+                            startPlaceSearchResult = newStartPlace,
+                            endPlaceSearchResult = newEndPlace
+                        )
 
-                    _optionsUiStatePerDate.value = newMap
-                    _mapUiState.value = _mapUiState.value.copy(
-                        addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
-                            ?: emptyList()
-                    )
-                    chatRepository.updatePoints(localDate, newList)
-                    chatRepository.updateStartPlace(localDate, newStartPlace)
-                    chatRepository.updateEndPlace(localDate, newEndPlace)
-                }
-                .collectOnFailure {
-                    _errorMessage.emit(it)
-                }
+                        _optionsUiStatePerDate.value = newMap
+                        _mapUiState.value = _mapUiState.value.copy(
+                            addedSearchResults = newMap[localDate]?.searchResultMaps?.map { it.placeSearchResult }
+                                ?: emptyList()
+                        )
+                        chatRepository.updatePoints(localDate, newList)
+                        chatRepository.updateStartPlace(localDate, newStartPlace)
+                        chatRepository.updateEndPlace(localDate, newEndPlace)
+                    },
+                    onFailure = {
+                        _errorMessage.emit(it)
+                    }
+                )
             _isLoading.value = false
         }
 
