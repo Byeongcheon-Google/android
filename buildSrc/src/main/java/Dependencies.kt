@@ -41,7 +41,7 @@ object Versions {
 
     //Networking
     const val RETROFIT = "2.9.0"
-    const val RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER = "0.8.0"
+    const val RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER = "1.0.0"
     const val OKHTTP = "4.10.0"
 
     //DI
@@ -112,6 +112,7 @@ object Libraries {
         const val RETROFIT = "com.squareup.retrofit2:retrofit:${Versions.RETROFIT}"
         const val RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER =
             "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:${Versions.RETROFIT_KOTLINX_SERIALIZABLE_CONVERTER}"
+        const val RETROFIT_SCALAR_CONVERTER = "com.squareup.retrofit2:converter-scalars:2.5.0"
         const val OKHTTP = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP}"
         const val OKHTTP_LOGGING_INTERCEPTOR = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP}"
     }

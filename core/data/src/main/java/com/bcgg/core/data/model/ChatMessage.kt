@@ -1,4 +1,4 @@
-package com.bcgg.core.data.response.chat
+package com.bcgg.core.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

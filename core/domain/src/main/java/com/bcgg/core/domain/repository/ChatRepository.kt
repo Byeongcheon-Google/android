@@ -1,7 +1,7 @@
 package com.bcgg.core.domain.repository
 
 import com.bcgg.core.data.model.Location
-import com.bcgg.core.data.response.chat.ChatMessageCommand
+import com.bcgg.core.data.model.ChatMessageCommand
 import com.bcgg.core.data.source.chat.ChatRemoteDataSource
 import com.bcgg.core.domain.model.editor.chat.ChatEndPlace
 import com.bcgg.core.domain.model.editor.chat.ChatEndTime

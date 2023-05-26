@@ -46,6 +46,8 @@ import com.bcgg.core.ui.component.BcggUserLoginTextField
 import com.bcgg.core.ui.component.LargeButton
 import com.bcgg.core.ui.component.ProgressDialog
 import com.bcgg.core.ui.provider.LocalScaffoldPaddingValues
+import com.bcgg.core.ui.theme.AppTheme
+import com.bcgg.core.ui.util.EdgeToEdge
 import com.bcgg.feature.ui.login.state.LoginUiState
 import com.bcgg.feature.ui.login.viewmodel.LoginViewModel
 import com.bcgg.feature.user.R
@@ -60,7 +62,6 @@ fun LoginScreen(
     snackbarHostState: SnackbarHostState,
     onSignUpButtonClick: () -> Unit,
     onFindPasswordButtonClick: () -> Unit,
-    signUpCompletedId: String? = null,
     onLoginCompleted: () -> Unit
 ) {
     val loginUiState by loginViewModel.loginUiState.collectAsState()
@@ -70,11 +71,6 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
             launch {
-                loginViewModel.errorMessage.collectLatest {
-                    snackbarHostState.showSnackbar(it)
-                }
-            }
-            launch {
                 loginViewModel.loginCompletedEvent.collectLatest {
                     onLoginCompleted()
                 }
@@ -82,27 +78,24 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(signUpCompletedId) {
-        if(signUpCompletedId == null) return@LaunchedEffect
+    EdgeToEdge()
 
-        loginViewModel.setId(signUpCompletedId)
-        snackbarHostState.showSnackbar("회원가입을 완료했습니다.")
+    AppTheme {
+        ProgressDialog(show = isLoading)
+
+        LoginScreen(
+            modifier = modifier.padding(LocalScaffoldPaddingValues.current),
+            uiState = loginUiState,
+            onIdChange = {
+                loginViewModel.setId(it)
+            },
+            onPasswordChange = { loginViewModel.setPassword(it) },
+            onLoginButtonClick = { loginViewModel.login() },
+            onSignUpButtonClick = onSignUpButtonClick,
+            onFindPasswordButtonClick = onFindPasswordButtonClick,
+            snackbarHostState = snackbarHostState
+        )
     }
-    
-    ProgressDialog(show = isLoading)
-
-    LoginScreen(
-        modifier = modifier.padding(LocalScaffoldPaddingValues.current),
-        uiState = loginUiState,
-        onIdChange = {
-            loginViewModel.setId(it)
-        },
-        onPasswordChange = { loginViewModel.setPassword(it) },
-        onLoginButtonClick = { loginViewModel.login() },
-        onSignUpButtonClick = onSignUpButtonClick,
-        onFindPasswordButtonClick = onFindPasswordButtonClick,
-        snackbarHostState = snackbarHostState
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

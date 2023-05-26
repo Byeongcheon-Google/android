@@ -3,6 +3,8 @@ package com.bcgg.core.networking.module
 import com.bcgg.core.networking.constant.Constant.CONNECT_TIMEOUT_SECOND
 import com.bcgg.core.networking.constant.Constant.READ_TIMEOUT_SECOND
 import com.bcgg.core.networking.constant.Constant.WRITE_TIMEOUT_SECOND
+import com.bcgg.core.networking.qualifiers.Auth
+import com.bcgg.core.networking.qualifiers.NoAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,18 +29,5 @@ object OkHttpClientModule {
             writeTimeout(WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
             addInterceptor(httpLoggingInterceptor)
         }
-    }
-
-    @Provides
-    @Singleton
-    fun provideDefaultOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient {
-        return OkHttpClient.Builder().apply {
-            connectTimeout(CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
-            readTimeout(READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
-            writeTimeout(WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
-            addInterceptor(httpLoggingInterceptor)
-        }.build()
     }
 }

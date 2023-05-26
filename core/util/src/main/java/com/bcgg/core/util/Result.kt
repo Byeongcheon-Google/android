@@ -1,5 +1,7 @@
 package com.bcgg.core.util
 
+import retrofit2.HttpException
+
 sealed class Result<T> {
     class Success<T>(val data: T) : Result<T>()
     class Failure<T>(val errorMessage: String) : Result<T>()

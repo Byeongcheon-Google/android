@@ -23,22 +23,31 @@
             android:label="@string/title_activity_plan_editor"
             android:theme="@style/AppTheme" />
 
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="${naver_maps_client_id}" />
+        <activity
+            android:name=".activity.PlanManageActivity"
+            android:exported="false"
+            android:label="PlanManageActivity" />
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.SignupActivity"
+            android:exported="false"
+            android:label="SignupActivity" />
+
+        <activity
+            android:name=".activity.LoginActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Travelplangeneratorandroid"
-            android:windowSoftInputMode="adjustResize" >
+            android:label="LoginActivity" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="${naver_maps_client_id}" />
     </application>
 
 </manifest>

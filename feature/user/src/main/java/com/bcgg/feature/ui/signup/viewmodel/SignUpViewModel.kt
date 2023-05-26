@@ -5,9 +5,7 @@ import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.domain.usecase.user.SignUpUseCase
 import com.bcgg.core.domain.usecase.user.UserPasswordValidationUseCase
 import com.bcgg.core.ui.viewmodel.BaseViewModel
-import com.bcgg.core.util.ext.collectOnFailure
-import com.bcgg.core.util.ext.collectOnSuccess
-import com.bcgg.core.util.ext.withLoading
+import com.bcgg.core.util.ext.collectLatest
 import com.bcgg.feature.ui.signup.state.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,37 +47,42 @@ class SignUpViewModel @Inject constructor(
         _signUpUiState.value = signUpUiState.value.copy(passwordConfirm = passwordConfirm)
     }
 
-    fun checkIdIsDuplicated() = viewModelScope.launch {
+    fun checkIdIsDuplicated() = viewModelScope.launchWithLoading {
         userRepository.isIdDuplicated(signUpUiState.value.id)
-            .withLoading(_isLoading)
-            .collectOnSuccess {
-                _signUpUiState.value = signUpUiState.value.copy(
-                    isIdDuplicated = it
-                )
-            }
-            .collectOnFailure {
-                _signUpUiState.value = signUpUiState.value.copy(
-                    isIdDuplicated = null
-                )
-                _errorMessage.emit(it)
-            }
+            .collectLatest(
+                onSuccess = {
+                    _signUpUiState.value = signUpUiState.value.copy(
+                        isIdDuplicated = it
+                    )
+                },
+                onFailure = {
+                    _signUpUiState.value = signUpUiState.value.copy(
+                        isIdDuplicated = null
+                    )
+                    _errorMessage.emit(it)
+                }
+            )
     }
 
-    fun signUp() = viewModelScope.launch {
-        if (signUpProceed) return@launch
+    fun signUp() {
+        if (signUpProceed) return
         signUpProceed = true
-        signUpUseCase(
-            id = signUpUiState.value.id,
-            password = signUpUiState.value.password,
-            passwordConfirm = signUpUiState.value.passwordConfirm
-        )
-            .withLoading(_isLoading)
-            .collectOnSuccess {
-                _signUpCompletedEvent.emit(signUpUiState.value.id)
-            }
-            .collectOnFailure {
-                _errorMessage.emit(it)
-                signUpProceed = false
-            }
+        viewModelScope.launchWithLoading {
+            signUpUseCase(
+                id = signUpUiState.value.id,
+                password = signUpUiState.value.password,
+                passwordConfirm = signUpUiState.value.passwordConfirm
+            )
+                .collectLatest(
+                    onSuccess = {
+                        _signUpCompletedEvent.emit(signUpUiState.value.id)
+                        signUpProceed = false
+                    },
+                    onFailure = {
+                        _errorMessage.emit(it)
+                        signUpProceed = false
+                    }
+                )
+        }
     }
 }

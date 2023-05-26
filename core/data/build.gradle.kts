@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation(
         project(":core:util"),
-        project(":core:network")
+        project(":core:network"),
+        project(":core:data-security")
     )
 }
