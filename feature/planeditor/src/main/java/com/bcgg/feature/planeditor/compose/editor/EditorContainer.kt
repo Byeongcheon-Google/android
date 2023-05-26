@@ -57,7 +57,6 @@ fun EditorContainer(
     selectedDate: LocalDate,
     onDateClick: (LocalDate) -> Unit,
     onStayTimeChange: (PlaceSearchResultWithId, Int) -> Unit,
-    onClassificationChange: (PlaceSearchResultWithId, Classification) -> Unit,
     onPlaceSearchResultRemoved: (PlaceSearchResultWithId) -> Unit,
     onPlanNameChange: (String) -> Unit,
     onStartTimeChange: (LocalTime) -> Unit,
@@ -163,7 +162,6 @@ fun EditorContainer(
             editorExpanded(
                 planEditorOptionsUiStatePerDate = planEditorOptionsUiStatePerDate,
                 onStayTimeChange = onStayTimeChange,
-                onClassificationChange = onClassificationChange,
                 onPlaceSearchResultRemoved = onPlaceSearchResultRemoved,
                 onSelectStartPosition = onSelectStartPosition,
                 onSelectEndPosition = onSelectEndPosition

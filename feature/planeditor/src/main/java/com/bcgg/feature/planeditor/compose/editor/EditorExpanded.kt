@@ -15,7 +15,6 @@ import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 fun LazyListScope.editorExpanded(
     planEditorOptionsUiStatePerDate: PlanEditorOptionsUiStatePerDate,
     onStayTimeChange: (PlaceSearchResultWithId, Int) -> Unit,
-    onClassificationChange: (PlaceSearchResultWithId, Classification) -> Unit,
     onPlaceSearchResultRemoved: (PlaceSearchResultWithId) -> Unit,
     onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
     onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
@@ -25,13 +24,10 @@ fun LazyListScope.editorExpanded(
         EditorDestinationItem(
             placeSearchResultWithId = items[position],
             stayTimeHour = items[position].stayTimeHour,
-            classification = items[position].classification,
+            classification = items[position].placeSearchResult.classification,
             showDivider = items.lastIndex != position,
             onStayTimeChange = {
                 onStayTimeChange(items[position], it)
-            },
-            onClassificationChange = {
-                onClassificationChange(items[position], it)
             },
             onRemove = onPlaceSearchResultRemoved,
             isStartPosition = items[position].placeSearchResult == planEditorOptionsUiStatePerDate.startPlaceSearchResult?.placeSearchResult,

@@ -60,7 +60,6 @@ fun EditorDestinationItem(
     isStartPosition: Boolean,
     isEndPosition: Boolean,
     onStayTimeChange: (Int) -> Unit,
-    onClassificationChange: (Classification) -> Unit,
     onRemove: (PlaceSearchResultWithId) -> Unit,
     onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
     onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,

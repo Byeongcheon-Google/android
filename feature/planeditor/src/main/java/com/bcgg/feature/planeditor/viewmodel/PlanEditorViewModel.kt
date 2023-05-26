@@ -386,24 +386,6 @@ class PlanEditorViewModel @Inject constructor(
             chatRepository.updatePointsLazy(_optionsUiState.value.selectedDate, newList)
         }
 
-    fun changeClassification(
-        placeSearchResult: PlaceSearchResultWithId,
-        classification: Classification
-    ) {
-        if (_optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] == null) return
-        val newMap = _optionsUiStatePerDate.value.toMutableMap()
-        newMap[_optionsUiState.value.selectedDate] =
-            newMap[_optionsUiState.value.selectedDate]!!.copy(
-                searchResultMaps = newMap[_optionsUiState.value.selectedDate]!!.searchResultMaps.map {
-                    if (it.placeSearchResult == placeSearchResult.placeSearchResult)
-                        return@map it.copy(classification = classification)
-
-                    it
-                }
-            )
-        _optionsUiStatePerDate.value = newMap
-    }
-
     fun showConfirmDialog() {
         val message = StringBuilder("\n")
 

@@ -15,6 +15,7 @@ data class PlaceSearchResult @OptIn(ExperimentalSerializationApi::class) constru
     @SerialName("address") val address: String,
     @EncodeDefault @SerialName("lat") val lat: Double = 0.0,
     @EncodeDefault @SerialName("lng") val lng: Double = 0.0,
+    @EncodeDefault @SerialName("classification") val classification: Classification = Classification.Travel
 )
 
 @Stable
@@ -22,6 +23,5 @@ data class PlaceSearchResult @OptIn(ExperimentalSerializationApi::class) constru
 data class PlaceSearchResultWithId @OptIn(ExperimentalSerializationApi::class) constructor(
     @SerialName("userId") val userId: String,
     @SerialName("placeSearchResult") val placeSearchResult: PlaceSearchResult,
-    @EncodeDefault @SerialName("stayTimeHour") val stayTimeHour: Int = 1,
-    @EncodeDefault @SerialName("classification") val classification: Classification = Classification.Travel
+    @EncodeDefault @SerialName("stayTimeHour") val stayTimeHour: Int = 1
 )

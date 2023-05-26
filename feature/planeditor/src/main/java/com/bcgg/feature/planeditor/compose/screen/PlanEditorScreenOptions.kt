@@ -61,12 +61,6 @@ fun PlanEditorScreenOptions(
                 onStayTimeChange = { placeSearchResultWithId, stayTime ->
                     planEditorViewModel.changeStayTime(placeSearchResultWithId, stayTime)
                 },
-                onClassificationChange = { placeSearchResultWithId, classification ->
-                    planEditorViewModel.changeClassification(
-                        placeSearchResultWithId,
-                        classification
-                    )
-                },
                 onPlaceSearchResultRemoved = {
                     planEditorViewModel.removeItem(it)
                 },
