@@ -1,10 +1,9 @@
 package com.bcgg.core.domain.model.result
 
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject

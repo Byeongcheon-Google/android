@@ -1,7 +1,7 @@
 package com.bcgg.core.domain.model.editor.map
 
 import androidx.compose.runtime.Stable
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Stable
 @Serializable
 data class PlaceSearchResult @OptIn(ExperimentalSerializationApi::class) constructor(
-    @SerialName("id") val id: String,
+    @SerialName("kakaoPlaceId") val kakaoPlaceId: String,
     @SerialName("name") val name: String,
     @SerialName("address") val address: String,
     @EncodeDefault @SerialName("lat") val lat: Double = 0.0,
@@ -21,7 +21,8 @@ data class PlaceSearchResult @OptIn(ExperimentalSerializationApi::class) constru
 @Stable
 @Serializable
 data class PlaceSearchResultWithId @OptIn(ExperimentalSerializationApi::class) constructor(
-    @SerialName("userId") val userId: String,
+    //@SerialName("userId") val userId: String,
+    @SerialName("id") val id: Int,
     @SerialName("placeSearchResult") val placeSearchResult: PlaceSearchResult,
     @EncodeDefault @SerialName("stayTimeHour") val stayTimeHour: Int = 1
 )

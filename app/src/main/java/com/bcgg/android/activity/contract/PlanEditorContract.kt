@@ -1,8 +1,9 @@
-package com.bcgg.feature.planeditor.activity
+package com.bcgg.android.activity.contract
 
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
+import com.bcgg.android.activity.PlanEditorActivity
 
 class PlanEditorContract : ActivityResultContract<Int?, Unit>() {
     override fun createIntent(context: Context, input: Int?): Intent {

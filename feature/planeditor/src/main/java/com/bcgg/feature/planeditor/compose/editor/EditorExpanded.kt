@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 

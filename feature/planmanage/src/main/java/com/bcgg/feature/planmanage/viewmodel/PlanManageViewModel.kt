@@ -1,41 +1,82 @@
 package com.bcgg.feature.planmanage.viewmodel
 
-import androidx.compose.material3.SnackbarHostState
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bcgg.core.ui.util.stateflow.stateFlowOf
+import com.bcgg.core.domain.repository.ScheduleRepository
 import com.bcgg.core.ui.viewmodel.BaseViewModel
+import com.bcgg.core.util.ext.collectLatestWithLoading
 import com.bcgg.core.util.ext.removed
+import com.bcgg.core.util.ext.schedulesDateTimeFormatter
+import com.bcgg.core.util.onFailure
+import com.bcgg.core.util.onSuccess
 import com.bcgg.feature.planmanage.state.PlanItemUiState
 import com.bcgg.feature.planmanage.state.PlanManageScreenUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toJavaLocalDateTime
+import javax.inject.Inject
 
-class PlanManageViewModel : BaseViewModel() {
+@HiltViewModel
+class PlanManageViewModel @Inject constructor(
+    private val scheduleRepository: ScheduleRepository
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(PlanManageScreenUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _planItemRemovedEvent = MutableSharedFlow<Pair<Int, PlanItemUiState>>()
     val planItemRemovedEvent = _planItemRemovedEvent.asSharedFlow()
 
-    private val _planItemClickedEvent = MutableSharedFlow<Pair<Int, PlanItemUiState>>()
+    private val _planItemClickedEvent = MutableSharedFlow<Int>()
     val planItemClickedEvent = _planItemClickedEvent.asSharedFlow()
 
-    private val _addButtonClickedEvent = MutableSharedFlow<Unit>()
-    val addButtonClickedEvent = _addButtonClickedEvent.asSharedFlow()
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage = _errorMessage.asSharedFlow()
+
+    init {
+        getSchedules()
+    }
 
     fun onAddButtonClick() {
         viewModelScope.launch {
-            _addButtonClickedEvent.emit(Unit)
+            scheduleRepository.newSchedule()
+                .collectLatestWithLoading(_isLoading) {
+                    onSuccess {
+                        _planItemClickedEvent.emit(it)
+                    }
+                    onFailure {
+                        _errorMessage.emit(it)
+                    }
+                }
         }
     }
 
-    fun onPlanItemClick(position: Int, planItemUiState: PlanItemUiState) {
+    fun getSchedules() = viewModelScope.launch {
+        scheduleRepository.getSchedules().collectLatestWithLoading(_isLoading) {
+            onSuccess {
+                _uiState.value = _uiState.value.copy(
+                    it.map {
+                        PlanItemUiState(
+                            id = it.id,
+                            title = it.title,
+                            modifiedDateTimeFormatted = schedulesDateTimeFormatter.format(it.modifiedDateTime.toJavaLocalDateTime()),
+                            dateCount = it.dateCount,
+                            destinations = it.destinations
+                        )
+                    }
+                )
+            }
+            onFailure {
+                _errorMessage.emit(it)
+            }
+        }
+    }
+
+    fun onPlanItemClick(planItemUiState: PlanItemUiState) {
         viewModelScope.launchWithLoading {
-            _planItemClickedEvent.emit(position to planItemUiState)
+            _planItemClickedEvent.emit(planItemUiState.id)
         }
     }
 
@@ -60,6 +101,5 @@ class PlanManageViewModel : BaseViewModel() {
                 plans = newList
             )
         }
-
     }
 }

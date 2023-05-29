@@ -1,7 +1,8 @@
 package com.bcgg.core.data.module
 
-import com.bcgg.core.data.qualifier.Backend
 import com.bcgg.core.data.qualifier.BackendUrl
+import com.bcgg.core.data.source.find.PathFinderDataSource
+import com.bcgg.core.data.source.schedule.ScheduleAuthDataSource
 import com.bcgg.core.data.source.user.UserAuthDataSource
 import com.bcgg.core.networking.qualifiers.Auth
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -10,7 +11,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -21,18 +21,22 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AuthDataSourceModule {
 
+
     @Auth
     @Provides
     @Singleton
     fun provideAuthRetrofit(
         @Auth okHttpClient: OkHttpClient,
         @BackendUrl url: String
-    ) : Retrofit{
+    ): Retrofit {
+
+        val json = Json{ignoreUnknownKeys = true}
+
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(url)
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
 
@@ -42,5 +46,21 @@ object AuthDataSourceModule {
         @Auth retrofit: Retrofit
     ): UserAuthDataSource {
         return retrofit.create(UserAuthDataSource::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideScheduleAuthDataSource(
+        @Auth retrofit: Retrofit
+    ): ScheduleAuthDataSource {
+        return retrofit.create(ScheduleAuthDataSource::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePathFinderDataSource(
+        @Auth retrofit: Retrofit
+    ): PathFinderDataSource {
+        return retrofit.create(PathFinderDataSource::class.java)
     }
 }

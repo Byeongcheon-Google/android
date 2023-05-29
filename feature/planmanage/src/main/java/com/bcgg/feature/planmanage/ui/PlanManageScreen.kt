@@ -49,7 +49,6 @@ fun PlanManageScreen(
     modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState,
     viewModel: PlanManageViewModel = hiltViewModel(),
-    onNewPlan: () -> Unit,
     onEditPlan: (planId: Int) -> Unit,
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -73,13 +72,13 @@ fun PlanManageScreen(
                 }
             }
             launch {
-                viewModel.planItemClickedEvent.collectLatest { (position, item) ->
-                    onEditPlan(item.id)
+                viewModel.planItemClickedEvent.collectLatest {
+                    onEditPlan(it)
                 }
             }
             launch {
-                viewModel.addButtonClickedEvent.collectLatest {
-                    onNewPlan()
+                viewModel.errorMessage.collectLatest {
+                    snackBarHostState.showSnackbar(it)
                 }
             }
         }
@@ -90,7 +89,9 @@ fun PlanManageScreen(
             PlanManageScreenTopAppBar()
         },
         floatingActionButton = {
-            PlanManageScreenFab(onNewPlan)
+            PlanManageScreenFab {
+                viewModel.onAddButtonClick()
+            }
         }
     ) {
         if(uiState.value.plans.isEmpty()) {
@@ -106,7 +107,7 @@ fun PlanManageScreen(
                         PlanManageItem(
                             modifier = Modifier.animateItemPlacement(),
                             item = it,
-                            onClick = { viewModel.onPlanItemClick(position, it) },
+                            onClick = { viewModel.onPlanItemClick(it) },
                             onDelete = {
                                 viewModel.onPlanItemRemove(position, it)
                             }

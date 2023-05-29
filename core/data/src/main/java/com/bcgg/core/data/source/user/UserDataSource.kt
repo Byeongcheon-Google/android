@@ -9,12 +9,12 @@ import retrofit2.http.Query
 
 interface UserDataSource {
 
-    @POST("/auth/signin")
+    @POST("/user/login")
     suspend fun login(@Body signInRequest: SignInRequest): String
 
-    @POST("/auth/signup")
+    @POST("/user")
     suspend fun signUp(@Body signUpRequest: SignUpRequest)
 
-    @POST("/auth/duplicate")
-    suspend fun isIdDuplicated(@Query("username") id: String): String
+    @POST("/user/check/{username}")
+    suspend fun isIdDuplicated(@Query("username") id: String): Boolean
 }

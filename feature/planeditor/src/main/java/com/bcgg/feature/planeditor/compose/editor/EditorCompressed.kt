@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.ui.preview.PreviewContainer
 import java.time.LocalDate

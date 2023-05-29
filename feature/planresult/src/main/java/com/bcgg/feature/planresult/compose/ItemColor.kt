@@ -3,7 +3,7 @@ package com.bcgg.feature.planresult.compose
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.bcgg.feature.planresult.state.PlanResultItemUiState
 
 val PlanResultItemUiState.circleColor: Color @Composable get() =

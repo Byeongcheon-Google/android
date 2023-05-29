@@ -8,6 +8,9 @@ import com.bcgg.core.domain.usecase.user.UserIdValidationUseCase
 import com.bcgg.core.domain.usecase.user.UserPasswordValidationUseCase
 import com.bcgg.core.ui.viewmodel.BaseViewModel
 import com.bcgg.core.util.ext.collectLatest
+import com.bcgg.core.util.ext.collectLatestWithLoading
+import com.bcgg.core.util.onFailure
+import com.bcgg.core.util.onSuccess
 import com.bcgg.feature.ui.login.state.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,20 +50,20 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login() {
-        _loginUiState.value = _loginUiState.value.copy(isLoginAvailable = false, isLoading = true)
+        if(isLoading.value) return
         viewModelScope.launch {
             loginUseCase(
                 id = _loginUiState.value.id,
                 password = _loginUiState.value.password
-            )
-                .collectLatest(
-                    onSuccess = {
-                        _loginCompletedEvent.emit(Unit)
-                    }, onFailure = {
-                        _toastMessage.emit(it)
-                        _loginUiState.value = _loginUiState.value.copy(isLoading = false, password = "")
-                    }
-                )
+            ).collectLatestWithLoading(_isLoading) {
+                onSuccess {
+                    _loginCompletedEvent.emit(Unit)
+                }
+                onFailure {
+                    _toastMessage.emit(it)
+                    _loginUiState.value = _loginUiState.value.copy(isLoading = false, password = "")
+                }
+            }
         }
     }
 

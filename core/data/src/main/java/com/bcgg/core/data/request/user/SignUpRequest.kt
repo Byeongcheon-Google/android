@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignUpRequest(
-    @SerialName("username") val username: String,
+    @SerialName("id") val id: String,
     @SerialName("password") val password: String,
-    @SerialName("roles") val roles: List<String>
 )

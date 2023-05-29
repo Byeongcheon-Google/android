@@ -60,9 +60,8 @@ class UserRepository @Inject constructor(
         try {
             userDataSource.signUp(
                 SignUpRequest(
-                    username = id,
-                    password = passwordHashed,
-                    roles = listOf("ROLE_USER")
+                    id = id,
+                    password = passwordHashed
                 )
             )
             emit(Result.Success(Unit))
@@ -75,8 +74,7 @@ class UserRepository @Inject constructor(
 
     fun isIdDuplicated(id: String): Flow<Result<Boolean>> = flow {
         try {
-            userDataSource.isIdDuplicated(id)
-            emit(Result.Success(false))
+            emit(Result.Success(userDataSource.isIdDuplicated(id)))
         } catch (e: HttpException) {
             emit(Result.Success(true))
         } catch (t: Throwable) {

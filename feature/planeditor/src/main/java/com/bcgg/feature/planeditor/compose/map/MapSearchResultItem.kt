@@ -26,11 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
-import com.bcgg.core.ui.provider.LocalActivity
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.feature.planeditor.compose.webview.PlaceSearchResultDetailWebView
 import com.bcgg.feature.planeditor.util.getClassificationIcon
@@ -54,7 +52,7 @@ fun MapSearchResultItem(
     )
     var show by rememberSaveable { mutableStateOf(false) }
     val webViewState =
-        rememberWebViewState(url = "https://place.map.kakao.com/${placeSearchResult.id}")
+        rememberWebViewState(url = "https://place.map.kakao.com/${placeSearchResult.kakaoPlaceId}")
 
     PlaceSearchResultDetailWebView(
         placeSearchResult = placeSearchResult,
@@ -138,7 +136,7 @@ private fun MapSearchResultItemPreview() {
                         placeSearchResult = PlaceSearchResult(
                             name = "성심당 DCC점",
                             address = "대전 유성구 엑스포로 107",
-                            id = "asdf"
+                            kakaoPlaceId = "asdf"
                         ),
                         isAdded = it.second,
                         onAddButtonClick = {},

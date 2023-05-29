@@ -27,7 +27,7 @@ object AuthModule {
         return Interceptor { chain: Interceptor.Chain ->
             val accessToken = jwtTokenSecuredLocalDataSource.getAccessToken() ?: ""
             val newRequest: Request = chain.request().newRequest {
-                putAccessToken(accessToken)
+                putAccessToken(name = "Authorization", accessToken = accessToken)
             }
             chain.proceed(newRequest)
         }

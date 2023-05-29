@@ -1,5 +1,6 @@
 package com.bcgg.core.domain.model
 
+import com.bcgg.core.util.Classification
 import java.time.LocalDate
 
 data class Destination(

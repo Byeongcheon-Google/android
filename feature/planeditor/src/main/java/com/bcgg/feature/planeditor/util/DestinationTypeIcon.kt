@@ -1,7 +1,7 @@
 package com.bcgg.feature.planeditor.util
 
 import androidx.compose.runtime.Composable
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Food
 import com.bcgg.core.ui.icon.icons.Home

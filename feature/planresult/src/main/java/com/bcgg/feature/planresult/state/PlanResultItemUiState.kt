@@ -1,6 +1,6 @@
 package com.bcgg.feature.planresult.state
 
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import java.time.LocalDate
@@ -25,8 +25,6 @@ sealed class PlanResultItemUiState(
         override val timeRange: ClosedRange<LocalTime>,
         val bound: LatLngBounds,
         val points: List<LatLng>,
-        val startPlace: LatLng,
-        val endPlace: LatLng
     ) : PlanResultItemUiState(date, timeRange)
 
 }

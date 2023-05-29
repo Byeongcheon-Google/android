@@ -6,7 +6,6 @@ import androidx.paging.map
 import com.bcgg.core.datamap.constant.KakaoMapConstant
 import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
 import com.bcgg.core.datamap.source.paging.KakaoMapSearchPagingSource
-import com.bcgg.core.domain.model.Classification
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
 import com.bcgg.core.domain.util.toClassification
 import kotlinx.coroutines.flow.map
@@ -29,7 +28,7 @@ class MapPlaceRepository @Inject constructor(
         .map {
             it.map {
                 PlaceSearchResult(
-                    id = it.id,
+                    kakaoPlaceId = it.id,
                     name = it.name,
                     address = it.address,
                     lat = it.lat.toDouble(),

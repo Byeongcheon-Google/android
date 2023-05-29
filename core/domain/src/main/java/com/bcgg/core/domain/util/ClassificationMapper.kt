@@ -1,6 +1,6 @@
 package com.bcgg.core.domain.util
 
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 
 fun String.toClassification() = when(this) {
     "FD6" -> Classification.Food

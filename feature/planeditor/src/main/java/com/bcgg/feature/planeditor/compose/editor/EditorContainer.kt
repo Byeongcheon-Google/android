@@ -31,10 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.Schedule
-import com.bcgg.core.domain.model.User
 import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowleft

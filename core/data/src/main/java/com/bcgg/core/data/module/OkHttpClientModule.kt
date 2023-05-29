@@ -2,8 +2,10 @@ package com.bcgg.core.data.module
 
 import com.bcgg.core.data.qualifier.Backend
 import com.bcgg.core.data.util.ErrorInterceptor
+import com.bcgg.core.networking.constant.Constant
 import com.bcgg.core.networking.qualifiers.Auth
 import com.bcgg.core.networking.qualifiers.NoAuth
+import com.bcgg.core.networking.qualifiers.Wss
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,34 +19,45 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object OkHttpClientModule {
-
-    @Backend
-    @Provides
-    @Singleton
-    fun provideBackendDefaultOkHttpClientBuilder(
-        defaultOkHttpClientBuilder: OkHttpClient.Builder
-    ) : OkHttpClient.Builder {
-        return defaultOkHttpClientBuilder
-            //.addInterceptor(ErrorInterceptor())
-    }
-
     @NoAuth
     @Provides
     @Singleton
     fun provideNoAuthOkHttpClient(
-        @Backend defaultOkHttpClientBuilder: OkHttpClient.Builder
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+        @Auth authInterceptor: Interceptor
     ): OkHttpClient {
-        return defaultOkHttpClientBuilder.build()
+        return OkHttpClient.Builder()
+            .connectTimeout(Constant.CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .readTimeout(Constant.READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .writeTimeout(Constant.WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
     }
 
     @Auth
     @Provides
     @Singleton
     fun provideAuthOkHttpClient(
-        @Backend defaultOkHttpClientBuilder: OkHttpClient.Builder,
+        httpLoggingInterceptor: HttpLoggingInterceptor,
         @Auth authInterceptor: Interceptor
     ): OkHttpClient {
-        return defaultOkHttpClientBuilder
+        return OkHttpClient.Builder()
+            .connectTimeout(Constant.CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .readTimeout(Constant.READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .writeTimeout(Constant.WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
+    }
+
+    @Wss
+    @Provides
+    @Singleton
+    fun provideWsOkHttpClient(
+        @Auth authInterceptor: Interceptor
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .pingInterval(5, TimeUnit.SECONDS)
             .addInterceptor(authInterceptor)
             .build()
     }

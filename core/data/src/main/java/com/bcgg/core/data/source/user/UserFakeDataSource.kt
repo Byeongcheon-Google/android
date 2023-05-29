@@ -16,13 +16,13 @@ class UserFakeDataSource : UserDataSource {
 
     override suspend fun signUp(signUpRequest: SignUpRequest) {
         delay(FAKE_HTTP_DELAY)
-        if (signUpRequest.username == "fail") throw RuntimeException("회원가입에 실패하였습니다.")
+        if (signUpRequest.id == "fail") throw RuntimeException("회원가입에 실패하였습니다.")
     }
 
-    override suspend fun isIdDuplicated(id: String): String {
+    override suspend fun isIdDuplicated(id: String): Boolean {
         delay(FAKE_HTTP_DELAY)
-        if(id == "dup") throw IllegalStateException("Id is duplicated")
-        return "사용가능한 ID 입니다."
+        if(id == "dup") return false
+        return true
     }
 
     companion object {

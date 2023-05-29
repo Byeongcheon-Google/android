@@ -18,7 +18,7 @@
         tools:targetApi="31"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name="com.bcgg.feature.planeditor.activity.PlanEditorActivity"
+            android:name=".activity.PlanEditorActivity"
             android:exported="false"
             android:label="@string/title_activity_plan_editor"
             android:theme="@style/AppTheme" />
@@ -36,7 +36,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:exported="true"
-            android:label="LoginActivity" >
+            android:label="PlanMaker" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,6 +48,9 @@
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="${naver_maps_client_id}" />
+
+        <activity android:name=".activity.PlanResultActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

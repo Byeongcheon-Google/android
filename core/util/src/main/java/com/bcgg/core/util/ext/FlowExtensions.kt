@@ -9,6 +9,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+suspend inline fun <T> Flow<Result<T>>.collectLatestWithLoading(
+    isLoading: MutableStateFlow<Boolean>,
+    crossinline block: suspend Result<T>.() -> Unit
+) {
+    isLoading.value = true
+    collectLatest {
+        isLoading.value = false
+        with(it) {
+            block()
+        }
+    }
+}
+
+suspend inline fun <T> Flow<Result<T>>.collectLatest(
+    crossinline block: suspend Result<T>.() -> Unit
+) {
+    collectLatest {
+        with(it) {
+            block()
+        }
+    }
+}
+
 suspend inline fun <T> Flow<Result<T>>.collectLatest(
     crossinline onSuccess: suspend (value: T) -> Unit,
     crossinline onFailure: suspend (errorMessage: String) -> Unit,

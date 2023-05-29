@@ -17,11 +17,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.Classification
+import com.bcgg.core.util.Classification
 import com.bcgg.core.ui.component.ClockIcon
 import com.bcgg.core.ui.component.DateItem
 import com.bcgg.core.ui.component.IndicatorType
@@ -61,26 +59,15 @@ import java.time.LocalTime
 fun PlanResultItems(
     modifier: Modifier = Modifier,
     planName: String,
+    dates: List<LocalDate>,
     planResultItemUiStates: List<PlanResultItemUiState>,
     selectedItem: PlanResultItemUiState?,
     onPlanResultItemSelect: (PlanResultItemUiState) -> Unit,
     selectedDate: LocalDate,
     onSelectedDateChange: (LocalDate) -> Unit
 ) {
-    val pagerState = rememberPagerState()
-    val dates = planResultItemUiStates.map { it.date }.distinct().sorted()
     var isPlanResultItemsFolded by rememberSaveable {
         mutableStateOf(false)
-    }
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect {
-            onSelectedDateChange(dates[it])
-        }
-    }
-
-    LaunchedEffect(selectedDate) {
-        pagerState.animateScrollToPage(dates.indexOf(selectedDate))
     }
 
     Column(
@@ -126,36 +113,29 @@ fun PlanResultItems(
             )
         }
 
-        HorizontalPager(
-            pageCount = dates.count(),
-            state = pagerState,
+        AnimatedVisibility(visible = !isPlanResultItemsFolded) {
+            LazyColumn(modifier = Modifier.fillMaxHeight(0.5f)) {
+                items(planResultItemUiStates.size) { position ->
+                    when (val item = planResultItemUiStates[position]) {
+                        is PlanResultItemUiState.Move -> PlanResultMoveItem(
+                            indicatorType = getIndicatorType(
+                                position,
+                                planResultItemUiStates.size
+                            ),
+                            move = item,
+                            isSelected = planResultItemUiStates[position] == selectedItem,
+                            onItemClick = onPlanResultItemSelect
+                        )
 
-            ) { page ->
-            val content = planResultItemUiStates.filter { it.date == dates[page] }
-            AnimatedVisibility(visible = !isPlanResultItemsFolded) {
-                LazyColumn(modifier = Modifier.fillMaxHeight(0.5f)) {
-                    items(content.size) { position ->
-                        when (val item = content[position]) {
-                            is PlanResultItemUiState.Move -> PlanResultMoveItem(
-                                indicatorType = getIndicatorType(
-                                    position,
-                                    content.size
-                                ),
-                                move = item,
-                                isSelected = planResultItemUiStates[position] == selectedItem,
-                                onItemClick = onPlanResultItemSelect
-                            )
-
-                            is PlanResultItemUiState.Place -> PlanResultPlaceItem(
-                                indicatorType = getIndicatorType(
-                                    position,
-                                    content.size
-                                ),
-                                place = item,
-                                isSelected = planResultItemUiStates[position] == selectedItem,
-                                onItemClick = onPlanResultItemSelect
-                            )
-                        }
+                        is PlanResultItemUiState.Place -> PlanResultPlaceItem(
+                            indicatorType = getIndicatorType(
+                                position,
+                                planResultItemUiStates.size
+                            ),
+                            place = item,
+                            isSelected = planResultItemUiStates[position] == selectedItem,
+                            onItemClick = onPlanResultItemSelect
+                        )
                     }
                 }
             }
@@ -291,9 +271,7 @@ internal fun PlanResultMoveItemPreview() {
         bound = LatLngBounds(
             LatLng(36.7612467, 127.2817232),
             LatLng(36.7655739, 127.2823278)
-        ),
-        startPlace = LatLng(36.7612467, 127.2817232),
-        endPlace = LatLng(36.7655739, 127.2823278)
+        )
     )
 
     PreviewContainer {

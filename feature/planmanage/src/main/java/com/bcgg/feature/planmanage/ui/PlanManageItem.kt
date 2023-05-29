@@ -34,9 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.feature.planmanage.state.PlanItemUiState
-import java.time.LocalDate
+import kotlinx.datetime.toKotlinLocalDateTime
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +68,7 @@ fun PlanManageItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = onClick)
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = item.title,
@@ -77,22 +76,20 @@ fun PlanManageItem(
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = "${item.date.start.format(DateTimeFormatter.ISO_DATE)} ~ ${
-                        item.date.endInclusive.format(
-                            DateTimeFormatter.ISO_DATE
-                        )
-                        }",
+                        text = if(item.dateCount == 0) "날짜를 선택하지 않았습니다." else "총 ${item.dateCount}일",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.outline
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = item.destinations.joinToString(separator = ", "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
+                    if(item.destinations.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = item.destinations.joinToString(separator = ", "),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }
@@ -156,8 +153,8 @@ internal fun PlanManageItemPreview() {
             item = PlanItemUiState(
                 id = 0,
                 title = "test",
-                modifiedDateTime = LocalDateTime.now(),
-                date = LocalDate.now()..LocalDate.now().plusDays(3),
+                modifiedDateTimeFormatted = "",
+                dateCount = 3,
                 destinations = listOf(
                     "test1",
                     "test2",

@@ -42,8 +42,6 @@ fun getSample(context: Context): List<PlanResultItemUiState> {
                         LatLng(item.boundNorthEast.lat, item.boundNorthEast.lng)
                     ),
                     points = item.points.map { LatLng(it.lat, it.lng) },
-                    startPlace = LatLng(startPlace.position.lat, startPlace.position.lng),
-                    endPlace = LatLng(endPlace.position.lat, endPlace.position.lng)
                 )
             }
 
