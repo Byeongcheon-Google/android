@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResult
 import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.feature.planeditor.compose.webview.PlaceSearchResultDetailWebView
 import com.bcgg.feature.planeditor.util.getClassificationIcon
@@ -37,6 +37,7 @@ import com.google.accompanist.web.rememberWebViewState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapSearchResultItem(
+    modifier: Modifier = Modifier,
     placeSearchResult: PlaceSearchResult,
     isAdded: Boolean,
     selected: Boolean,
@@ -66,7 +67,7 @@ fun MapSearchResultItem(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(color = backgroundColor)
             .clickable {
                 onItemClick(placeSearchResult)
@@ -111,9 +112,12 @@ fun MapSearchResultItem(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-            TextButton(onClick = { show = true }) {
-                Text(text = "자세히 보기")
-            }
+            if (!placeSearchResult.kakaoPlaceId.startsWith('A')
+                && !placeSearchResult.kakaoPlaceId.startsWith('K')
+            )
+                TextButton(onClick = { show = true }) {
+                    Text(text = "자세히 보기")
+                }
         }
     }
 }

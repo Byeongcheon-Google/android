@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation(
         project(":core:ui"),
+        project(":core:util"),
         project(":feature:splash"),
         project(":feature:planeditor"),
         project(":feature:planmanage"),

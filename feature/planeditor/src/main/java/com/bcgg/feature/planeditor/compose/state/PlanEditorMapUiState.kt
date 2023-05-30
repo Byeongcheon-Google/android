@@ -3,17 +3,18 @@ package com.bcgg.feature.planeditor.compose.state
 import androidx.compose.runtime.Stable
 import androidx.paging.PagingData
 import com.bcgg.core.data.model.Location
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResult
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Stable
 data class PlanEditorMapUiState(
     val placeSearchResult: Flow<PagingData<PlaceSearchResult>>? = null,
+    val placeSearchResultAi: List<PlaceSearchResult> = emptyList(),
     val expanded: Boolean = true,
-    val isSearching: Boolean = false,
+    val isAiSearching: Boolean = false,
     val search: String = "",
-    val selectedSearchPosition: Int = -1,
+    val selectedSearchResult: PlaceSearchResult? = null,
     val otherMapPositions: Map<String, Location> = emptyMap(),
     val otherShowingMarkers: List<OtherShowingMarker> = emptyList(),
     val addedSearchResults: List<PlaceSearchResult> = emptyList(),

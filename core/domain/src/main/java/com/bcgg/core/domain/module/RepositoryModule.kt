@@ -1,8 +1,10 @@
 package com.bcgg.core.domain.module
 
 import com.bcgg.core.data.source.find.PathFinderDataSource
+import com.bcgg.core.data.source.recommend.RecommendDataSource
 import com.bcgg.core.domain.repository.PathFinderRepository
 import com.bcgg.core.domain.repository.PlanEditorRepository
+import com.bcgg.core.domain.repository.RecommendRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,5 +22,13 @@ object RepositoryModule {
         pathFinderDataSource: PathFinderDataSource
     ) : PathFinderRepository {
         return PathFinderRepository(pathFinderDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendRepository(
+        recommendDataSource: RecommendDataSource
+    ) : RecommendRepository {
+        return RecommendRepository(recommendDataSource)
     }
 }

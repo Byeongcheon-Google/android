@@ -2,6 +2,11 @@ package com.bcgg.feature.planmanage.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Divider
@@ -54,6 +59,7 @@ fun PlanManageScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val navigationBarPaddingValues = WindowInsets.navigationBars.asPaddingValues()
 
     LaunchedEffect(Unit) {
         lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
@@ -84,22 +90,11 @@ fun PlanManageScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            PlanManageScreenTopAppBar()
-        },
-        floatingActionButton = {
-            PlanManageScreenFab {
-                viewModel.onAddButtonClick()
-            }
-        }
-    ) {
-        if(uiState.value.plans.isEmpty()) {
+    Box {
+        if (uiState.value.plans.isEmpty()) {
             EmptyPlans()
         } else {
-            LazyColumn(
-                modifier = modifier.padding(it)
-            ) {
+            LazyColumn {
                 val plans = uiState.value.plans
 
                 items(plans.size, key = { index -> plans[index].id }) { position ->
@@ -119,6 +114,10 @@ fun PlanManageScreen(
                             )
                         }
                     }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.padding(navigationBarPaddingValues))
                 }
             }
         }

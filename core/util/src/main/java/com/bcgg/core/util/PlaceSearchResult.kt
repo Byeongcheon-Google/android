@@ -1,7 +1,6 @@
-package com.bcgg.core.domain.model.editor.map
+package com.bcgg.core.util
 
 import androidx.compose.runtime.Stable
-import com.bcgg.core.util.Classification
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName

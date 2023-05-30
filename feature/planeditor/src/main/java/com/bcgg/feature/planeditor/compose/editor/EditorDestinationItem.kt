@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bcgg.core.util.Classification
 import com.bcgg.core.domain.model.Destination
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResultWithId
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Remove
 import com.bcgg.core.ui.preview.PreviewContainer

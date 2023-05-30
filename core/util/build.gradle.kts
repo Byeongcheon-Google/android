@@ -1,3 +1,4 @@
+import gradleconfig.configureCompose
 import gradleconfig.configureKotlinAndroid
 import gradleconfig.configureRetrofit2
 
@@ -10,6 +11,7 @@ android {
 
     configureKotlinAndroid(this)
     configureRetrofit2()
+    configureCompose(this)
 }
 
 dependencies {

@@ -54,7 +54,7 @@ class PlanResultViewModel @AssistedInject constructor(
                         pathFinderResult.date.toJavaLocalDate() to pathFinderResult.result.map { pathFinderItem ->
                             when (pathFinderItem) {
                                 is PathFinderResult.PathFinderItem.Move -> PlanResultItemUiState.Move(
-                                    distanceDescription = "${pathFinderItem.distance}${pathFinderItem.distanceUnit} 이동",
+                                    distanceDescription = "${String.format("%.1f", pathFinderItem.distance)}${pathFinderItem.distanceUnit} 이동",
                                     date = pathFinderResult.date.toJavaLocalDate(),
                                     timeRange = pathFinderItem.startTime.toJavaLocalTime()..pathFinderItem.startTime.toJavaLocalTime()
                                         .plusMinutes(pathFinderItem.durationMinute),

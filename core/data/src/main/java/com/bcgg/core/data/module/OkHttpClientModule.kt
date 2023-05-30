@@ -1,6 +1,7 @@
 package com.bcgg.core.data.module
 
 import com.bcgg.core.data.qualifier.Backend
+import com.bcgg.core.data.qualifier.BackendLongTime
 import com.bcgg.core.data.util.ErrorInterceptor
 import com.bcgg.core.networking.constant.Constant
 import com.bcgg.core.networking.qualifiers.Auth
@@ -23,8 +24,7 @@ object OkHttpClientModule {
     @Provides
     @Singleton
     fun provideNoAuthOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor,
-        @Auth authInterceptor: Interceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(Constant.CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
@@ -45,6 +45,22 @@ object OkHttpClientModule {
             .connectTimeout(Constant.CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
             .readTimeout(Constant.READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
             .writeTimeout(Constant.WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
+    }
+
+    @BackendLongTime
+    @Provides
+    @Singleton
+    fun provideAuthLongTimeoutOkHttpClient(
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+        @Auth authInterceptor: Interceptor
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.MINUTES)
+            .readTimeout(10, TimeUnit.MINUTES)
+            .writeTimeout(10, TimeUnit.MINUTES)
             .addInterceptor(httpLoggingInterceptor)
             .addInterceptor(authInterceptor)
             .build()

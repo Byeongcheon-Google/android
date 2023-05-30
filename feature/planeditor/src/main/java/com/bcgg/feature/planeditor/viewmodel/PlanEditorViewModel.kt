@@ -4,15 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.bcgg.core.data.model.Location
 import com.bcgg.core.data.model.chat.Chat
 import com.bcgg.core.domain.mapper.toPlaceSearchResultWithId
 import com.bcgg.core.domain.model.User
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResultWithId
 import com.bcgg.core.domain.model.schedule.ScheduleDetail
 import com.bcgg.core.domain.repository.ChatRepository
 import com.bcgg.core.domain.repository.MapPlaceRepository
+import com.bcgg.core.domain.repository.RecommendRepository
 import com.bcgg.core.domain.repository.ScheduleRepository
 import com.bcgg.core.domain.repository.UserRepository
 import com.bcgg.core.ui.viewmodel.BaseViewModel
@@ -46,6 +48,7 @@ class PlanEditorViewModel @AssistedInject constructor(
     private val userRepository: UserRepository,
     private val scheduleRepository: ScheduleRepository,
     private val chatRepositoryFactory: ChatRepository.Factory,
+    private val recommendRepository: RecommendRepository,
     @Assisted private val scheduleId: Int
 ) : BaseViewModel() {
 
@@ -54,7 +57,8 @@ class PlanEditorViewModel @AssistedInject constructor(
         fun create(scheduleId: Int): PlanEditorViewModel
     }
 
-    private var chatRepository: ChatRepository = chatRepositoryFactory.create(viewModelScope, scheduleId)
+    private var chatRepository: ChatRepository =
+        chatRepositoryFactory.create(viewModelScope, scheduleId)
 
     private var _user: User? = null
 
@@ -104,7 +108,8 @@ class PlanEditorViewModel @AssistedInject constructor(
                                 _optionsUiStatePerDate.value[date.toJavaLocalDate()]
                                     ?: initialPlanEditorOptionsUiStatePerDate
                             val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                            newMap[date.toJavaLocalDate()] = newValue.copy(endHopeTime = endTime.toJavaLocalTime())
+                            newMap[date.toJavaLocalDate()] =
+                                newValue.copy(endHopeTime = endTime.toJavaLocalTime())
                             _optionsUiStatePerDate.value = newMap
                         }
 
@@ -121,7 +126,8 @@ class PlanEditorViewModel @AssistedInject constructor(
                                 _optionsUiStatePerDate.value[date.toJavaLocalDate()]
                                     ?: initialPlanEditorOptionsUiStatePerDate
                             val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                            newMap[date.toJavaLocalDate()] = newValue.copy(mealTimes = mealTimes.map { it.toJavaLocalTime() })
+                            newMap[date.toJavaLocalDate()] =
+                                newValue.copy(mealTimes = mealTimes.map { it.toJavaLocalTime() })
 
                             _optionsUiStatePerDate.value = newMap
                         }
@@ -166,7 +172,8 @@ class PlanEditorViewModel @AssistedInject constructor(
                                 _optionsUiStatePerDate.value[date.toJavaLocalDate()]
                                     ?: initialPlanEditorOptionsUiStatePerDate
                             val newMap = _optionsUiStatePerDate.value.toMutableMap()
-                            newMap[date.toJavaLocalDate()] = newValue.copy(startTime = startTime.toJavaLocalTime())
+                            newMap[date.toJavaLocalDate()] =
+                                newValue.copy(startTime = startTime.toJavaLocalTime())
                             _optionsUiStatePerDate.value = newMap
                         }
 
@@ -177,7 +184,8 @@ class PlanEditorViewModel @AssistedInject constructor(
 
                         is Chat.ChatCount -> {
                             val (count) = it
-                            _optionsUiState.value = _optionsUiState.value.copy(activeUserCount = count)
+                            _optionsUiState.value =
+                                _optionsUiState.value.copy(activeUserCount = count)
                         }
 
                         else -> {}
@@ -251,26 +259,66 @@ class PlanEditorViewModel @AssistedInject constructor(
     }
 
     fun search(query: String, latLng: LatLng) {
-        _mapUiState.value = _mapUiState.value.copy(isSearching = true)
+        _mapUiState.value = _mapUiState.value.copy(isAiSearching = true)
         viewModelScope.launch {
-            try {
-                val mapSearchResult =
-                    mapPlaceRepository.getPlace(query, latLng.longitude, latLng.latitude)
-                _mapUiState.value = _mapUiState.value.copy(
-                    placeSearchResult = mapSearchResult,
-                    expanded = true
-                )
-            } catch (e: Exception) {
-                _errorMessage.emit(e.message ?: "Unknown error")
-            } finally {
-                _mapUiState.value = _mapUiState.value.copy(isSearching = false)
-            }
+            val mapSearchResult =
+                mapPlaceRepository.getPlace(query, latLng.longitude, latLng.latitude)
+                    .cachedIn(viewModelScope)
+
+            _mapUiState.value = _mapUiState.value.copy(
+                placeSearchResult = mapSearchResult,
+                expanded = true,
+                isAiSearching = true
+            )
+            recommendRepository.getRecommendPlacesByKeyword(query)
+                .collectLatest {
+                    _mapUiState.value = _mapUiState.value.copy(
+                        isAiSearching = false
+                    )
+
+                    onSuccess {
+                        _mapUiState.value = _mapUiState.value.copy(
+                            placeSearchResultAi = it
+                        )
+                    }
+                    onFailure {
+                        _errorMessage.emit(it)
+                    }
+                }
         }
     }
 
-    fun selectSearchResult(position: Int) {
-        _mapUiState.value = _mapUiState.value.copy(selectedSearchPosition = -1)
-        _mapUiState.value = _mapUiState.value.copy(selectedSearchPosition = position)
+    suspend fun updateRecommendPlaceByAddress() {
+        val planEditorOptionsUiStatePerDate = _optionsUiStatePerDate.value[_optionsUiState.value.selectedDate] ?: return
+
+        _optionsUiStatePerDate.value = _optionsUiStatePerDate.value.toMutableMap().apply {
+            this[_optionsUiState.value.selectedDate] = planEditorOptionsUiStatePerDate.copy(isAiSearching = true)
+        }
+
+        recommendRepository.getRecommendPlacesByAddress(
+            planEditorOptionsUiStatePerDate.searchResultMaps.map { it.placeSearchResult.address }
+        ).collectLatest {
+            onSuccess {
+                val newValue =
+                    _optionsUiStatePerDate.value[_optionsUiState.value.selectedDate]
+                        ?: return@onSuccess
+
+                val newMap = _optionsUiStatePerDate.value.toMutableMap()
+                newMap[_optionsUiState.value.selectedDate] =
+                    newValue.copy(aiAddressSearchResult = it, isAiSearching = false)
+
+                _optionsUiStatePerDate.value = newMap
+            }
+            onFailure {
+                _errorMessage.emit(it)
+            }
+        }
+
+    }
+
+    fun selectSearchResult(searchResult: PlaceSearchResult?) {
+        _mapUiState.value = _mapUiState.value.copy(selectedSearchResult = null)
+        _mapUiState.value = _mapUiState.value.copy(selectedSearchResult = searchResult)
     }
 
     fun expandSearchResult() {
@@ -394,7 +442,10 @@ class PlanEditorViewModel @AssistedInject constructor(
                             _errorMessage.emit("하루에 최대 10개의 여행지만 추가할 수 있습니다.")
                             return@collectLatest
                         }
-                        chatRepository.addPoint(localDate, PlaceSearchResultWithId(-1, placeSearchResult, stayTimeHour = 1))
+                        chatRepository.addPoint(
+                            localDate,
+                            PlaceSearchResultWithId(-1, placeSearchResult, stayTimeHour = 1)
+                        )
                     }, onFailure = {
                         _errorMessage.emit(it)
                     }

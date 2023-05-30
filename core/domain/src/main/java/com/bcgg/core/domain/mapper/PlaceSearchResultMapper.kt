@@ -1,8 +1,8 @@
 package com.bcgg.core.domain.mapper
 
 import com.bcgg.core.data.model.schedule.Place
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResultWithId
 import kotlinx.datetime.LocalDate
 
 fun PlaceSearchResultWithId.toPlace(scheduleId: Int, date: LocalDate): Place = Place(

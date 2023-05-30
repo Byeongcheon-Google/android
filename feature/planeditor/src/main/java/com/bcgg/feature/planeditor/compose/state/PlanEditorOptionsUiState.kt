@@ -1,8 +1,8 @@
 package com.bcgg.feature.planeditor.compose.state
 
 import androidx.compose.runtime.Stable
-import com.bcgg.core.domain.model.User
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResultWithId
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -20,7 +20,9 @@ data class PlanEditorOptionsUiStatePerDate(
     val endHopeTime: LocalTime = LocalTime.of(18, 0),
     val mealTimes: List<LocalTime> = listOf(),
     val startPlaceSearchResult: PlaceSearchResultWithId? = null,
-    val endPlaceSearchResult: PlaceSearchResultWithId? = null
+    val endPlaceSearchResult: PlaceSearchResultWithId? = null,
+    val aiAddressSearchResult: List<PlaceSearchResult> = emptyList(),
+    val isAiSearching: Boolean = false,
 )
 
 val initialPlanEditorOptionsUiStatePerDate = PlanEditorOptionsUiStatePerDate()

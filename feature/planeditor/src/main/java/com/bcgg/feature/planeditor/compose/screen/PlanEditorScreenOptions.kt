@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
@@ -16,30 +15,35 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bcgg.core.ui.component.ProgressDialog
-import com.bcgg.core.ui.constant.UiConstant
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.bcgg.feature.planeditor.compose.editor.EditorContainer
+import com.bcgg.feature.planeditor.compose.navigation.PlanEditorMapNavigation
+import com.bcgg.feature.planeditor.compose.navigation.PlanEditorOptionsNavigation
+import com.bcgg.feature.planeditor.compose.state.OptionsUiState
+import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.viewmodel.PlanEditorViewModel
+import java.time.LocalDate
 
 @Composable
 fun PlanEditorScreenOptions(
     scaffoldPaddingValues: PaddingValues,
-    planEditorViewModel: PlanEditorViewModel = hiltViewModel()
+    navController: NavController,
+    planEditorViewModel: PlanEditorViewModel = hiltViewModel(),
+    optionsUiState: OptionsUiState,
+    optionsUiStatePerDates: Map<LocalDate, PlanEditorOptionsUiStatePerDate>,
+    onBack: () -> Unit
 ) {
-    val navigationBarPaddingValues = WindowInsets.navigationBars.asPaddingValues()
     val statusBarPaddingValues = WindowInsets.statusBars.asPaddingValues()
     val localDensity = LocalDensity.current
-
-    val uiState by planEditorViewModel.optionsUiState.collectAsState()
-    val uiStatePerDate by planEditorViewModel.optionsUiStatePerDate.collectAsState()
 
     Box(
         modifier = Modifier
@@ -49,12 +53,11 @@ fun PlanEditorScreenOptions(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(navigationBarPaddingValues)
         ) {
             EditorContainer(
-                planName = uiState.name,
-                planEditorOptionsUiStatePerDates = uiStatePerDate,
-                selectedDate = uiState.selectedDate,
+                planName = optionsUiState.name,
+                planEditorOptionsUiStatePerDates = optionsUiStatePerDates,
+                selectedDate = optionsUiState.selectedDate,
                 onDateClick = {
                     planEditorViewModel.changeSelectedDate(it)
                 },
@@ -68,23 +71,37 @@ fun PlanEditorScreenOptions(
                     planEditorViewModel.setName(it)
                 },
                 onStartTimeChange = {
-                    planEditorViewModel.updateStartTime(uiState.selectedDate, it)
+                    planEditorViewModel.updateStartTime(optionsUiState.selectedDate, it)
                 },
                 onEndHopeTimeChange = {
-                    planEditorViewModel.updateEndHopeTime(uiState.selectedDate, it)
+                    planEditorViewModel.updateEndHopeTime(optionsUiState.selectedDate, it)
                 },
                 onMealTimeChange = {
-                    planEditorViewModel.updateMealTimes(uiState.selectedDate, it)
+                    planEditorViewModel.updateMealTimes(optionsUiState.selectedDate, it)
                 },
                 onSelectStartPosition = {
-                    planEditorViewModel.updateStartPlace(uiState.selectedDate, it)
+                    planEditorViewModel.updateStartPlace(optionsUiState.selectedDate, it)
                 },
                 onSelectEndPosition = {
-                    planEditorViewModel.updateEndPlace(uiState.selectedDate, it)
+                    planEditorViewModel.updateEndPlace(optionsUiState.selectedDate, it)
                 },
-                activeUserCount = uiState.activeUserCount,
+                activeUserCount = optionsUiState.activeUserCount,
                 onUserClick = {
                     planEditorViewModel.showInviteDialog()
+                },
+                onBack = onBack,
+                onRecommendPlaceAddButtonClicked = {
+                    planEditorViewModel.addItem(it)
+                },
+                onRecommendPlaceItemClicked = { _, it ->
+                    navController.navigate(PlanEditorMapNavigation.id) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                    planEditorViewModel.selectSearchResult(it)
                 }
             )
         }
@@ -92,7 +109,7 @@ fun PlanEditorScreenOptions(
         Box(
             modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            AnimatedVisibility(visible = uiStatePerDate.any { it.value.searchResultMaps.isNotEmpty() }) {
+            AnimatedVisibility(visible = optionsUiStatePerDates.any { it.value.searchResultMaps.isNotEmpty() }) {
                 FloatingActionButton(
                     modifier = Modifier
                         .padding(16.dp)

@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResultWithId
 import com.bcgg.feature.planeditor.compose.state.PlanEditorOptionsUiStatePerDate
 
 fun LazyListScope.editorExpanded(
@@ -19,6 +19,16 @@ fun LazyListScope.editorExpanded(
     onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
 ) {
     val items = planEditorOptionsUiStatePerDate.searchResultMaps
+
+    item {
+        androidx.compose.material3.Text(
+            text = "선택한 여행지 (${planEditorOptionsUiStatePerDate.searchResultMaps.size}/10)",
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+
     items(items.size) { position ->
         EditorDestinationItem(
             placeSearchResultWithId = items[position],

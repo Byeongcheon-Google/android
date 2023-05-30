@@ -5,9 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,5 +56,10 @@ fun TimePicker(
         modifier = modifier.clickable { dialog.show(fragmentManager, "timepicker") },
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            disabledBorderColor = MaterialTheme.colorScheme.primary,
+            disabledLabelColor = MaterialTheme.colorScheme.primary,
+            disabledTextColor = MaterialTheme.colorScheme.onSurface
+        )
     )
 }

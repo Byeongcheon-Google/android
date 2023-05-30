@@ -1,5 +1,6 @@
 package com.bcgg.core.data.module
 
+import com.bcgg.core.data.qualifier.BackendLongTime
 import com.bcgg.core.data.qualifier.BackendUrl
 import com.bcgg.core.data.source.find.PathFinderDataSource
 import com.bcgg.core.data.source.schedule.ScheduleAuthDataSource
@@ -40,6 +41,25 @@ object AuthDataSourceModule {
             .build()
     }
 
+
+    @BackendLongTime
+    @Provides
+    @Singleton
+    fun provideAuthLongTimeoutRetrofit(
+        @BackendLongTime okHttpClient: OkHttpClient,
+        @BackendUrl url: String
+    ): Retrofit {
+
+        val json = Json{ignoreUnknownKeys = true}
+
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(url)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
     @Provides
     @Singleton
     fun provideUserAuthDataSource(
@@ -59,7 +79,7 @@ object AuthDataSourceModule {
     @Provides
     @Singleton
     fun providePathFinderDataSource(
-        @Auth retrofit: Retrofit
+        @BackendLongTime retrofit: Retrofit
     ): PathFinderDataSource {
         return retrofit.create(PathFinderDataSource::class.java)
     }

@@ -1,10 +1,7 @@
 package com.bcgg.feature.planeditor.compose.webview
 
-import android.graphics.Bitmap
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -27,20 +24,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
-import com.bcgg.core.ui.icon.Icons
-import com.bcgg.core.ui.icon.icons.Arrowleft
+import com.bcgg.core.util.PlaceSearchResult
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.WebViewState
-import com.google.accompanist.web.rememberWebViewState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable

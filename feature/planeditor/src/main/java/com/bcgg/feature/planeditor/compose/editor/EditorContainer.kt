@@ -1,13 +1,17 @@
 package com.bcgg.feature.planeditor.compose.editor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.bcgg.core.util.Classification
 import com.bcgg.core.domain.model.Destination
 import com.bcgg.core.domain.model.Schedule
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResultWithId
 import com.bcgg.core.ui.icon.Icons
 import com.bcgg.core.ui.icon.icons.Arrowleft
 import com.bcgg.core.ui.theme.AppTheme
@@ -63,13 +69,31 @@ fun EditorContainer(
     onMealTimeChange: (List<LocalTime>) -> Unit,
     onSelectStartPosition: (PlaceSearchResultWithId) -> Unit,
     onSelectEndPosition: (PlaceSearchResultWithId) -> Unit,
-    onUserClick: () -> Unit
+    onUserClick: () -> Unit,
+    onBack: () -> Unit,
+    onRecommendPlaceItemClicked: (Int, PlaceSearchResult) -> Unit,
+    onRecommendPlaceAddButtonClicked: (PlaceSearchResult) -> Unit
 ) {
     val enabledDates = planEditorOptionsUiStatePerDates.keys
     val planEditorOptionsUiStatePerDate =
         planEditorOptionsUiStatePerDates[selectedDate] ?: initialPlanEditorOptionsUiStatePerDate
 
     val lazyListState = rememberLazyListState()
+
+    val navigationBarPaddingValues = WindowInsets.navigationBars.asPaddingValues()
+
+    val addedPlaceSearchResult by remember(
+        planEditorOptionsUiStatePerDate.searchResultMaps,
+        planEditorOptionsUiStatePerDate.aiAddressSearchResult
+    ) {
+        derivedStateOf {
+            planEditorOptionsUiStatePerDate.aiAddressSearchResult.filter { aiSearchResult ->
+                planEditorOptionsUiStatePerDate.searchResultMaps.find { it.placeSearchResult == aiSearchResult } != null
+            }
+        }
+    }
+
+    BackHandler(onBack = onBack)
 
     LaunchedEffect(selectedDate) {
         lazyListState.animateScrollBy(0f)
@@ -96,7 +120,7 @@ fun EditorContainer(
             navigationIcon = {
                 IconButton(
                     enabled = true,
-                    onClick = { }
+                    onClick = onBack
                 ) {
                     Icon(
                         imageVector = Icons.Arrowleft,
@@ -149,15 +173,6 @@ fun EditorContainer(
                 onChange = onMealTimeChange
             )
 
-            item {
-                Text(
-                    text = "선택한 여행지 (${planEditorOptionsUiStatePerDate.searchResultMaps.size}/10)",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
             editorExpanded(
                 planEditorOptionsUiStatePerDate = planEditorOptionsUiStatePerDate,
                 onStayTimeChange = onStayTimeChange,
@@ -166,8 +181,21 @@ fun EditorContainer(
                 onSelectEndPosition = onSelectEndPosition
             )
 
+            editorAiRecommendByAddress(
+                isSearching = planEditorOptionsUiStatePerDate.isAiSearching,
+                placeSearchResult = planEditorOptionsUiStatePerDate.aiAddressSearchResult,
+                addedPlaceSearchResult = addedPlaceSearchResult,
+                onAddButtonClick = onRecommendPlaceAddButtonClicked,
+                onItemClick = onRecommendPlaceItemClicked,
+                selectedSearchResult = null
+            )
+
             item {
-                Spacer(modifier = Modifier.height(60.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .padding(navigationBarPaddingValues)
+                )
             }
         }
     }

@@ -4,7 +4,7 @@ import com.bcgg.core.data.model.chat.Chat
 import com.bcgg.core.data.source.chat.KtorWebSocketDataSource
 import com.bcgg.core.data.source.user.UserAuthDataSource
 import com.bcgg.core.domain.mapper.toPlace
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResultWithId
+import com.bcgg.core.util.PlaceSearchResultWithId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalTime

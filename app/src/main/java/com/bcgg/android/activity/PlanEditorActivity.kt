@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,6 +68,7 @@ import com.bcgg.feature.planeditor.compose.navigation.PlanEditorMapNavigation
 import com.bcgg.feature.planeditor.compose.navigation.PlanEditorOptionsNavigation
 import com.bcgg.feature.planeditor.compose.screen.PlanEditorMapScreen
 import com.bcgg.feature.planeditor.compose.screen.PlanEditorScreenOptions
+import com.bcgg.feature.planeditor.compose.state.initialPlanEditorOptionsUiStatePerDate
 import com.bcgg.feature.planeditor.viewmodel.PlanEditorViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -75,9 +78,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PlanEditorActivity : AppCompatActivity() {
 
-    private val planResultActivityContract = registerForActivityResult(PlanResultActivityContract()) {
+    private val planResultActivityContract =
+        registerForActivityResult(PlanResultActivityContract()) {
 
-    }
+        }
 
     @Inject
     lateinit var planEditorViewModelFactory: PlanEditorViewModel.Factory
@@ -107,8 +111,34 @@ class PlanEditorActivity : AppCompatActivity() {
             val navigationBarPaddingValues = WindowInsets.navigationBars.asPaddingValues()
             val isLoading by planEditorViewModel.isLoading.collectAsState()
             val optionsUiState by planEditorViewModel.optionsUiState.collectAsState()
+            val optionsUiStatePerDates by planEditorViewModel.optionsUiStatePerDate.collectAsState()
+            val mapUiState by planEditorViewModel.mapUiState.collectAsState()
             var confirmDialogMessage by rememberSaveable { mutableStateOf<String?>(null) }
             var showInviteDialog by rememberSaveable { mutableStateOf(false) }
+
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            val placeSearchResult = mapUiState.placeSearchResult
+
+            val bottomBarCornerRadius by
+                animateDpAsState(
+                    targetValue =
+                    if (
+                        optionsUiStatePerDates[optionsUiState.selectedDate]?.aiAddressSearchResult?.isNotEmpty() == true
+                        || mapUiState.placeSearchResultAi.isNotEmpty()
+                        || placeSearchResult != null
+                    ) {
+                        0.dp
+                    } else {
+                        16.dp
+                    }
+                )
+
+            val addresses by remember(optionsUiState, optionsUiStatePerDates[optionsUiState.selectedDate]) {
+                derivedStateOf {
+                    optionsUiStatePerDates[optionsUiState.selectedDate]?.searchResultMaps?.map { it.placeSearchResult.address } ?: emptyList()
+                }
+            }
 
             LaunchedEffect(key1 = Unit) {
                 lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
@@ -130,12 +160,19 @@ class PlanEditorActivity : AppCompatActivity() {
                 }
             }
 
+            LaunchedEffect(addresses) {
+                planEditorViewModel.updateRecommendPlaceByAddress()
+            }
+
             EdgeToEdge()
 
             AppTheme {
                 ProgressDialog(show = isLoading)
 
-                AnimatedVisibility(visible = confirmDialogMessage != null, exit = ExitTransition.None) {
+                AnimatedVisibility(
+                    visible = confirmDialogMessage != null,
+                    exit = ExitTransition.None
+                ) {
                     AlertDialog(onDismissRequest = { confirmDialogMessage = null }) {
                         if (confirmDialogMessage != null)
                             Column(
@@ -151,7 +188,10 @@ class PlanEditorActivity : AppCompatActivity() {
                                     color = MaterialTheme.colorScheme.secondary,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(text = confirmDialogMessage ?: "", color = MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    text = confirmDialogMessage ?: "",
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
 
                                 Row(
                                     modifier = Modifier.padding(top = 16.dp),
@@ -190,7 +230,12 @@ class PlanEditorActivity : AppCompatActivity() {
                                 modifier = Modifier.padding(top = 16.dp),
                                 value = textFieldValue,
                                 onValueChange = { textFieldValue = it },
-                                label = { Text(text = "사용자 id로 초대", color = MaterialTheme.colorScheme.onSurface) },
+                                label = {
+                                    Text(
+                                        text = "사용자 id로 초대",
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                },
                             )
 
                             Row(
@@ -221,7 +266,9 @@ class PlanEditorActivity : AppCompatActivity() {
                             modifier = Modifier.clip(
                                 MaterialTheme.shapes.large.copy(
                                     bottomEnd = CornerSize(0),
-                                    bottomStart = CornerSize(0)
+                                    bottomStart = CornerSize(0),
+                                    topStart = CornerSize(bottomBarCornerRadius),
+                                    topEnd = CornerSize(bottomBarCornerRadius)
                                 )
                             ),
                             elevation = 16.dp
@@ -229,15 +276,11 @@ class PlanEditorActivity : AppCompatActivity() {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(navigationBarPaddingValues)
                                     .padding(vertical = 16.dp)
                                     .height(56.dp)
                                     .selectableGroup(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                                val currentDestination = navBackStackEntry?.destination
-
                                 BottomNavigationItem(
                                     icon = {
                                         Icon(
@@ -302,12 +345,19 @@ class PlanEditorActivity : AppCompatActivity() {
                             CompositionLocalProvider(LocalFragmentManager provides supportFragmentManager) {
                                 PlanEditorScreenOptions(
                                     planEditorViewModel = planEditorViewModel,
-                                    scaffoldPaddingValues = scaffoldPadding
+                                    scaffoldPaddingValues = scaffoldPadding,
+                                    onBack = {
+                                        finish()
+                                    },
+                                    optionsUiState = optionsUiState,
+                                    optionsUiStatePerDates = optionsUiStatePerDates,
+                                    navController = navController
                                 )
                             }
                         }
                         composable(PlanEditorMapNavigation.id) {
                             PlanEditorMapScreen(
+                                snackbarHostState = snackbarHostState,
                                 planEditorViewModel = planEditorViewModel,
                                 mapPadding = scaffoldPadding,
                                 onBack = {
@@ -318,7 +368,11 @@ class PlanEditorActivity : AppCompatActivity() {
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                })
+                                },
+                                optionsUiState = optionsUiState,
+                                optionsUiStatePerDate = optionsUiStatePerDates[optionsUiState.selectedDate] ?: initialPlanEditorOptionsUiStatePerDate,
+                                mapUiState = mapUiState
+                            )
                         }
                     }
                 }

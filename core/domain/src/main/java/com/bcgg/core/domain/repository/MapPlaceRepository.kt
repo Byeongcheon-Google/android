@@ -6,7 +6,7 @@ import androidx.paging.map
 import com.bcgg.core.datamap.constant.KakaoMapConstant
 import com.bcgg.core.datamap.source.KakaoMapPlaceDataSource
 import com.bcgg.core.datamap.source.paging.KakaoMapSearchPagingSource
-import com.bcgg.core.domain.model.editor.map.PlaceSearchResult
+import com.bcgg.core.util.PlaceSearchResult
 import com.bcgg.core.domain.util.toClassification
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

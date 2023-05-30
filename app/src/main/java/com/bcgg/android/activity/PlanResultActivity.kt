@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.bcgg.feature.planresult.compose.PlanResultScreen
@@ -41,6 +42,7 @@ class PlanResultActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         val scheduleId = intent.extras?.getInt(PLAN_ID) ?: kotlin.run {
@@ -71,7 +73,9 @@ class PlanResultActivity : ComponentActivity() {
                     }
                 }
             }
+
             EdgeToEdge()
+
             AppTheme {
                 Scaffold(
                     snackbarHost = {
@@ -89,7 +93,8 @@ class PlanResultActivity : ComponentActivity() {
                     }
                     if (planResultScreenUiState.dates.isNotEmpty()) {
                         PlanResultScreen(
-                            modifier = Modifier.padding(paddingValues),
+                            modifier = Modifier,
+                            scaffoldPaddingValues = paddingValues,
                             planResultViewModel = planResultViewModel
                         ) {
                             finish()

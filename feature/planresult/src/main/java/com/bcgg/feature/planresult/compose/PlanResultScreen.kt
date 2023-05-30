@@ -63,6 +63,7 @@ import java.time.LocalDate
 @Composable
 fun PlanResultScreen(
     modifier: Modifier = Modifier,
+    scaffoldPaddingValues: PaddingValues,
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     useNaviType: Boolean = true,
     planResultViewModel: PlanResultViewModel,
@@ -274,7 +275,9 @@ fun PlanResultScreen(
             dates = planResultScreenUiState.dates
         )
 
-        BackButton() {
+        BackButton(
+            modifier = Modifier.padding(top = scaffoldPaddingValues.calculateTopPadding())
+        ) {
             onBack()
         }
     }

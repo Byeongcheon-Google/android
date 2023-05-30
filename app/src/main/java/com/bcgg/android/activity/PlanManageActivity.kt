@@ -16,6 +16,8 @@ import com.bcgg.core.ui.theme.AppTheme
 import com.bcgg.core.ui.util.EdgeToEdge
 import com.bcgg.android.activity.contract.PlanEditorContract
 import com.bcgg.feature.planmanage.ui.PlanManageScreen
+import com.bcgg.feature.planmanage.ui.PlanManageScreenFab
+import com.bcgg.feature.planmanage.ui.PlanManageScreenTopAppBar
 import com.bcgg.feature.planmanage.viewmodel.PlanManageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,8 +40,16 @@ class PlanManageActivity : ComponentActivity() {
 
             AppTheme {
                 Scaffold(
+                    topBar = {
+                        PlanManageScreenTopAppBar()
+                    },
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState)
+                    },
+                    floatingActionButton = {
+                        PlanManageScreenFab {
+                            planManageViewModel.onAddButtonClick()
+                        }
                     }
                 ) {
                     PlanManageScreen(
